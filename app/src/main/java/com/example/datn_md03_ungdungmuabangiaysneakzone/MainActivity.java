@@ -21,5 +21,4 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
     }
-    // Test commit lan 2333333
 }
