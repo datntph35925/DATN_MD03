@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
             //may 1
             // đừng lắm mồm với bổn đế
+            // ngu thì im me mon vao
         });
     }
 }
