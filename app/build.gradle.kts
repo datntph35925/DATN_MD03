@@ -30,6 +30,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
+    buildFeatures{
+        viewBinding = true
+    }
+
+
+
 }
 
 dependencies {
@@ -41,4 +48,11 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    
+    implementation("com.tbuonomo:dotsindicator:5.0")
+    implementation("com.google.android.material:material:1.11.0")
+    implementation ("androidx.constraintlayout:constraintlayout:2.1.1")
+    implementation(kotlin("script-runtime"))
+
+
 }
