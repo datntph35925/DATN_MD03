@@ -5,8 +5,9 @@
     <color name="green">#068251</color>
     <color name="blue">#30A0E0</color>
     <color name="lightGrey">#efefef</color>
-    <color name="Grey">#d2d2d2</color>
+   <color name="Grey2">#d2d2d2</color>
     <color name="darkGrey">#616161</color>
+    <color name="Grey"> #f2f2f2 </color>
 
 
 </resources>
