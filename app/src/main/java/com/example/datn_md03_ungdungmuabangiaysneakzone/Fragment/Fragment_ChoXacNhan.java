@@ -48,6 +48,6 @@ public class Fragment_ChoXacNhan extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment__cho_xac_nhan, container, false);
+        return inflater.inflate(R.layout.fragment_cho_xac_nhan, container, false);
     }
 }

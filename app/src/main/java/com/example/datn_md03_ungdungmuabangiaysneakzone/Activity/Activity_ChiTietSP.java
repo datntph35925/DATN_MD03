@@ -114,6 +114,7 @@ public class Activity_ChiTietSP extends AppCompatActivity {
         reviews.add(new DanhGia_Demo("Hồng hài nhi", 5, "Giày đẹp quá shop ơi...."));
         reviews.add(new DanhGia_Demo("Ngư ma vương", 5, "GIAYDEP..."));
         reviews.add(new DanhGia_Demo("Nhị lang thần", 5, "Có tiền để mua giầy nhưnghfyfghkhxgdfgvhkjhcxzfsdghvcx yufghjvhcfvgbjk uyuftygyuhiugyfygyuh gufythg không thể mua được em :P"));
+        reviews.add(new DanhGia_Demo("Nhị lang thần", 5, "Có tiền để mua giầy nhưnghfyfghkhxgdfgvhkjhcxzfsdghvcx yufghjvhcfvgbjk uyuftygyuhiugyfygyuh gufythg không thể mua được em :P"));
         return reviews;
     }
 }

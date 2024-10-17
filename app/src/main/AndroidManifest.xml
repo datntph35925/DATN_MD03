@@ -41,10 +41,10 @@
             android:name=".Activity.Activity_Cart"
             android:exported="false" />
         <activity
-            android:name=".Activity.Activity_ChiTietSP"
+            android:name=".Activity.Activity_Profile"
             android:exported="false" />
         <activity
-            android:name=".Activity.Activity_Profile"
+            android:name=".Activity.Activity_ChiTietSP"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
