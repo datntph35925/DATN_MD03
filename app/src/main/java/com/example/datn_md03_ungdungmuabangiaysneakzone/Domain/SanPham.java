@@ -1,22 +1,24 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.Domain;
 
-import android.view.View;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
 public class SanPham {
-    private String tenSanPham;
-    private String anhUrl;
-    private double gia;
+    String tenSanPham;
+    Double gia;
+    int PicUrl;
 
-    public SanPham() {
+    public Double getGia() {
+        return gia;
     }
 
-    public SanPham(String tenSanPham, String anhUrl, double gia) {
-        this.tenSanPham = tenSanPham;
-        this.anhUrl = anhUrl;
+    public void setGia(Double gia) {
         this.gia = gia;
+    }
+
+    public int getPicUrl() {
+        return PicUrl;
+    }
+
+    public void setPicUrl(int picUrl) {
+        PicUrl = picUrl;
     }
 
     public String getTenSanPham() {
@@ -27,25 +29,9 @@ public class SanPham {
         this.tenSanPham = tenSanPham;
     }
 
-    public String getAnhUrl() {
-        return anhUrl;
-    }
-
-    public void setAnhUrl(String anhUrl) {
-        this.anhUrl = anhUrl;
-    }
-
-    public double getGia() {
-        return gia;
-    }
-
-    public void setGia(double gia) {
+    public SanPham(String tenSanPham, Double gia, int PicUrl) {
+        this.tenSanPham = tenSanPham;
         this.gia = gia;
-    }
-
-    public class Viewholder extends RecyclerView.ViewHolder {
-        public Viewholder(@NonNull View itemView) {
-            super(itemView);
-        }
+        this.PicUrl = PicUrl;
     }
 }
