@@ -39,7 +39,7 @@ public class SanPhamAdapter extends RecyclerView.Adapter<SanPhamAdapter.Viewhold
         binding.txtTieuDe.setText(items.get(position).getTenSanPham());
         binding.txtGia.setText("" + items.get(position).getGia());
 
-        int drawableResource = holder.itemView.getResources().getIdentifier(items.get(position).getAnhUrl()
+        int drawableResource = holder.itemView.getResources().getIdentifier(items.get(position).getPicUrl()
                 ,"drawable",holder.itemView.getContext().getPackageName());
 
         Glide.with(context)
