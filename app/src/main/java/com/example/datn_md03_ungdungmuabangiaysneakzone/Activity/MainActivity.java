@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView spRecyclerView;
     private SanPhamAdapter sanPhamAdapter;
     private List<SanPham> sanPhams;
+    //asdsd
     BottomNavigationView bottomNavigationView;
 
     @Override
