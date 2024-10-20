@@ -27,6 +27,7 @@ public class SanPhamAdapter extends RecyclerView.Adapter<SanPhamAdapter.Viewhold
 
     public SanPhamAdapter(ArrayList<SanPham> items) {
         this.items = items;
+
     }
 
     @NonNull

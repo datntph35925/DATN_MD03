@@ -75,5 +75,6 @@ public class Activity_Cart extends AppCompatActivity {
             }
         });
         bottomNavigationView.setSelectedItemId(R.id.giohang);
+
     }
 }

@@ -23,6 +23,7 @@ public class SanPham {
 
     public String getTenSanPham() {
         return tenSanPham;
+
     }
 
     public void setTenSanPham(String tenSanPham) {

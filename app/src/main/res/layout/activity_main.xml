@@ -138,6 +138,7 @@
                 android:layout_marginLeft="8dp"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="2"
+
                 />
         </LinearLayout>
     </ScrollView>

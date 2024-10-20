@@ -33,7 +33,7 @@ public class Activity_Profile extends AppCompatActivity {
 
         tvChinhSuaThongTin = findViewById(R.id.tvFixInfor_profile);
         tvChinhSuaThongTin.setOnClickListener(view -> {
-           startActivity(new Intent(Activity_Profile.this, Activity_FixInfor.class));
+            startActivity(new Intent(Activity_Profile.this, Activity_FixInfor.class));
         });
 
         cvChangePass = findViewById(R.id.cvChangePass);
@@ -62,6 +62,7 @@ public class Activity_Profile extends AppCompatActivity {
                 return true;
             }
         });
+
         bottomNavigationView.setSelectedItemId(R.id.hoso);
     }
 }

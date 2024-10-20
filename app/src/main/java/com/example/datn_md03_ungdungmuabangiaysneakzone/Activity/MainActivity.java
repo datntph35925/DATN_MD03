@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView spRecyclerView;
     private SanPhamAdapter sanPhamAdapter;
     private List<SanPham> sanPhams;
-    //asdsd
+
     BottomNavigationView bottomNavigationView;
 
     @Override
@@ -54,19 +54,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setBottomNavigationView() {
-       bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-           @Override
-           public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-               if(item.getItemId() == R.id.yeuthich){
-                 startActivity(new Intent(MainActivity.this, Activity_YeuThich.class));
-               } else if (item.getItemId() == R.id.giohang) {
-                   startActivity(new Intent(MainActivity.this, Activity_Cart.class));
-               } else if (item.getItemId() == R.id.hoso) {
-                   startActivity(new Intent(MainActivity.this, Activity_Profile.class));
-               }
-               return true;
-           }
-       });
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                if(item.getItemId() == R.id.yeuthich){
+                    startActivity(new Intent(MainActivity.this, Activity_YeuThich.class));
+                } else if (item.getItemId() == R.id.giohang) {
+                    startActivity(new Intent(MainActivity.this, Activity_Cart.class));
+                } else if (item.getItemId() == R.id.hoso) {
+                    startActivity(new Intent(MainActivity.this, Activity_Profile.class));
+                }
+                return true;
+            }
+        });
         bottomNavigationView.setSelectedItemId(R.id.trangchu);
     }
 }

@@ -61,5 +61,6 @@ public class Activity_YeuThich extends AppCompatActivity {
             }
         });
         bottomNavigationView.setSelectedItemId(R.id.yeuthich);
+
     }
 }
