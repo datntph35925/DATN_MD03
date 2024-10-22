@@ -6,6 +6,7 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         setBottomNavigationView();
 
         spRecyclerView = findViewById(R.id.SanPhamPhoBienView);
-        spRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        spRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 
         sanPhams = new ArrayList<>();
         sanPhams.add(new SanPham("Nike Air Max", 64.95, R.drawable.nice_shoe));

@@ -16,7 +16,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DATN_MD03_UngDungMuaBanGiaySneakZone"
         tools:targetApi="31">
-
+        <activity
+            android:name=".Activity.Activity_CTDH_DaGiao"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Activity_CTDH_HuyDH"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Activity_CTDH_DangGiao"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Activity_CTDH_ChoXacNhan"
+            android:exported="false" />
         <activity
             android:name=".Activity.Activity_DonHang"
             android:exported="false" />

@@ -8,47 +8,99 @@
     app:cardCornerRadius="16dp"
     app:cardElevation="4dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
-
-        <!-- Hình ảnh của giày -->
-        <ImageView
-            android:id="@+id/shoe_image_SPPB"
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/nice_shoe"
-            />
-
-        <!-- Tên giày -->
-        <TextView
-            android:id="@+id/shoe_name_SPPB"
+        android:layout_height="wrap_content">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Shoe Name"
-            android:textSize="16sp"
-            android:textColor="@android:color/black"
-            android:gravity="left"
-            android:layout_marginTop="8dp"
-            />
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="SneakerZone"
-            android:gravity="left"
-            />
-        <!-- Giá giày -->
-        <TextView
-            android:id="@+id/shoe_price_SPPB"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="$00.00"
-            android:textSize="14sp"
-            android:textColor="@android:color/darker_gray"
-            android:gravity="left"/>
-    </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_margin="10dp">
+                    <ImageView
+                        android:id="@+id/img_byer"
+                        android:layout_width="130dp"
+                        android:layout_height="130dp"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/nice_shoe"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginTop="10dp">
+                        <TextView
+                            android:id="@+id/tv_nameByer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ten nguoi mua:"
+                            android:textSize="20sp"/>
+
+                        <TextView
+                            android:id="@+id/adresByer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Dia chi:"
+                            android:textSize="17sp"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            />
+
+                        <TextView
+                            android:id="@+id/phoneByer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="SDT:"
+                            android:textSize="17sp"/>
+
+                        <TextView
+                            android:id="@+id/soluong"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="So luong sp:"
+                            android:textSize="17sp"/>
+
+                        <TextView
+                            android:visibility="gone"
+                            android:textColor="#438E0F"
+                            android:id="@+id/tv_paid"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Đã thanh toán bằng ví"
+                            android:textSize="17sp"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:textStyle="bold"
+                    android:textSize="17dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tvTotal"
+                    android:text="Tổng cộng : "/>
+
+                <TextView
+                    android:textStyle="bold"
+                    android:textSize="20dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tvDate"
+                    android:gravity="end"
+                    android:text="Date"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
 </androidx.cardview.widget.CardView>
