@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,7 +29,7 @@ public class Activity_ThanhToan extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_thanh_toan);
-        ImageView imgChooseAddress = findViewById(R.id.imgChooseAddress);
+        LinearLayout imgChooseAddress = findViewById(R.id.lrlAddress);
 
         imgChooseAddress.setOnClickListener(new View.OnClickListener() {
             @Override
