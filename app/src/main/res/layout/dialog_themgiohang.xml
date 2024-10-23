@@ -113,6 +113,6 @@
         android:text="Đặt mua"
         android:textSize="20dp"
         android:layout_marginVertical="15dp"
-        android:background="@drawable/backgroud_button"
+        android:backgroundTint="@color/blue"
         />
 </LinearLayout>

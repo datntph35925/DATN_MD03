@@ -2,11 +2,14 @@ package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -19,7 +22,9 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Activity_Cart extends AppCompatActivity {
@@ -53,6 +58,15 @@ public class Activity_Cart extends AppCompatActivity {
 
         // Update total price
         updateTotalCost();
+
+        AppCompatButton checkoutButton = findViewById(R.id.checkout_button);
+        checkoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               ThanhToanActivity();
+            }
+        });
+
     }
 
     private void updateTotalCost() {
@@ -76,5 +90,10 @@ public class Activity_Cart extends AppCompatActivity {
         });
         bottomNavigationView.setSelectedItemId(R.id.giohang);
 
+    }
+
+    private void ThanhToanActivity() {
+        Intent intent = new Intent(Activity_Cart.this, Activity_ThanhToan.class);
+        startActivity(intent);
     }
 }

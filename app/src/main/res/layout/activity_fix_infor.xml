@@ -194,6 +194,7 @@
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"
+            android:backgroundTint="@color/blue"
             />
     </androidx.cardview.widget.CardView>
 

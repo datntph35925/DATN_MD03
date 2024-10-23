@@ -5,7 +5,9 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.Activity_Profile">
+    tools:context=".Activity.Activity_Profile"
+    android:layout_marginTop="30dp"
+    >
 
     <ImageView
         android:id="@+id/imgBack_profile"

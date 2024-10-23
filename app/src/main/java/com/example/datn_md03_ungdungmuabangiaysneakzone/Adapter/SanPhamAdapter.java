@@ -16,17 +16,16 @@ import com.bumptech.glide.load.resource.bitmap.GranularRoundedCorners;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Demo.SP_PhoBienAdapterDemo;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Domain.SanPham;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
-import com.example.datn_md03_ungdungmuabangiaysneakzone.databinding.ViewholderPupListBinding;
-
 import java.util.ArrayList;
 
 public class SanPhamAdapter extends RecyclerView.Adapter<SanPhamAdapter.Viewholder> { // Đã sửa
     ArrayList<SanPham> items;
     Context context;
-    ViewholderPupListBinding binding;
+
 
     public SanPhamAdapter(ArrayList<SanPham> items) {
         this.items = items;
+
 
     }
 

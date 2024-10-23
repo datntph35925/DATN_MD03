@@ -1,6 +1,8 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.Demo;
 
-public class Cart_Demo {
+import java.io.Serializable;
+
+public class Cart_Demo implements Serializable {
 
     private String name;
     private double price;

@@ -28,6 +28,13 @@ public class Activity_Profile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_profile);
+
+
+        CardView cvAddDiaChi = findViewById(R.id.cvAdddiachi);
+        cvAddDiaChi.setOnClickListener(v -> {
+            Intent intent = new Intent(Activity_Profile.this, ShowListLocationActivity.class);
+            startActivity(intent);
+        });
         bottomNavigationView = findViewById(R.id.bottomnavigation);
         setBottomNavigationView();
 
