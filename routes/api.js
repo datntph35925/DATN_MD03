@@ -240,7 +240,7 @@ router.get("/get-list-product", async (req, res) => {
 //         res.json({
 //           "status":200,
 //           "message":"Thêm thành công",
-//           "data": result
+//           "data": resultzzz
 //         })
 //       }else{
 //         res.json({
