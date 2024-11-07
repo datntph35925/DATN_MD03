@@ -18,15 +18,17 @@ public class DangNhap extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_dang_nhap);
+
+
         AppCompatButton button = findViewById(R.id.btnDangKy);
         AppCompatButton button1 = findViewById(R.id.btnDangNhap);
         TextView forgotPasswordTextView = findViewById(R.id.textviewQMK);
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(DangNhap.this, DangKy.class);
                 startActivity(intent);
-
             }
         });
 
@@ -37,10 +39,10 @@ public class DangNhap extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
         forgotPasswordTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Chuyển sang màn hình quên mật khẩu
                 Intent intent = new Intent(DangNhap.this, Activity_QuenMatKhau.class);
                 startActivity(intent);
             }
