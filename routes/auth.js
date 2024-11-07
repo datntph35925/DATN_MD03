@@ -104,6 +104,47 @@ router.delete('/delete-account/:id', async (req, res) => {
         res.status(500).json({ message: 'Đã xảy ra lỗi', error: err });
     }
 });
+// Route cập nhật tài khoản
+router.put('/update-account/:id', async (req, res) => {
+    try {
+        const accountId = req.params.id;
+        const { Tentaikhoan, Hoten, Matkhau, Anhtk } = req.body;
+
+        // Tìm tài khoản cần cập nhật
+        const account = await CustomerAccounts.findById(accountId);
+        if (!account) {
+            return res.status(404).json({ message: 'Tài khoản không tồn tại' });
+        }
+
+        // Kiểm tra định dạng email (nếu có thay đổi Tentaikhoan)
+        if (Tentaikhoan) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(Tentaikhoan)) {
+                return res.status(400).json({ message: 'Tên tài khoản phải là một địa chỉ email hợp lệ' });
+            }
+        }
+
+        // Mã hóa mật khẩu mới (nếu có)
+        let hashedPassword = account.Matkhau; // Giữ nguyên mật khẩu cũ
+        if (Matkhau) {
+            hashedPassword = await bcrypt.hash(Matkhau, 10);
+        }
+
+        // Cập nhật thông tin tài khoản (bỏ qua kiểm tra trùng)
+        account.Tentaikhoan = Tentaikhoan || account.Tentaikhoan;
+        account.Hoten = Hoten || account.Hoten;
+        account.Matkhau = hashedPassword;
+        account.Anhtk = Anhtk || account.Anhtk;
+
+        // Lưu thay đổi vào cơ sở dữ liệu
+        await account.save();
+
+        res.status(200).json({ message: 'Cập nhật tài khoản thành công', account });
+    } catch (err) {
+        console.error("Lỗi khi cập nhật tài khoản:", err);
+        res.status(500).json({ message: 'Đã xảy ra lỗi', error: err });
+    }
+});
 
 
 module.exports = router;
