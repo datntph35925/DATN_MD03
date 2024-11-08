@@ -68,6 +68,8 @@
             android:exported="false" />
         <activity android:name=".Activity.Activity_QuenMatKhau"
             android:exported="false" />
+        <activity android:name=".Activity.MainActivity"
+            android:exported="false" />
 
         <activity
             android:name=".Activity.DangNhap"

@@ -22,6 +22,10 @@ public class CustomerAccount {
         this.Tentaikhoan = email;
         this.Matkhau = password;
     }
+    public CustomerAccount( String email, String password) {
+        this.Tentaikhoan = email;
+        this.Matkhau = password;
+    }
 
 
     // Getters
