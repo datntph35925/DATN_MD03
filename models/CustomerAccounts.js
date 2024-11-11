@@ -1,3 +1,4 @@
+// models/CustomerAccounts.js
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -7,7 +8,9 @@ const CustomerAccountsSchema = new Schema({
     Hoten: { type: String, required: true }, // Họ tên
     Matkhau: { type: String, required: true }, // Mật khẩu (mã hóa)
     Anhtk: { type: String, default: '' }, // Ảnh đại diện (nếu có)
-    seq: { type: Number, default: 0 } // Giá trị bộ đếm để tạo mã tài khoản tự động
+    seq: { type: Number, default: 0 }, // Giá trị bộ đếm để tạo mã tài khoản tự động
+    verificationCode: { type: String }, // Mã xác thực
+    createdAt: { type: Date } // Thời gian mã được tạo
 });
 
 module.exports = mongoose.model('CustomerAccounts', CustomerAccountsSchema);
