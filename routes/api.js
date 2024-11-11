@@ -196,41 +196,48 @@ router.get("/get-list-product", async (req, res) => {
 
 
     router.post('/add-product', async (req, res) => {
-        try {
-            const data = req.body; // Lấy dữ liệu từ body 
-            const newProducts = new Products({
-              Masanpham: data.Masanpham,
+      try {
+          const data = req.body; // Lấy dữ liệu từ body 
+  
+          // Tạo một đối tượng sản phẩm mới với dữ liệu từ body
+          const newProducts = new Products({
+              MaSaPham: data.MaSaPham,
               TenSP: data.TenSP,
-              Thuonghieu: data.Thuonghieu,
-              Size: data.Size,
-              MauSac: data.MauSac,
-              SoLuongTon: data.SoLuongTon,
+              ThuongHieu: data.ThuongHieu,
+              KichThuoc: data.KichThuoc,
               GiaBan: data.GiaBan,
               MoTa: data.MoTa,
               HinhAnh: data.HinhAnh,
-              TrangThaiYeuThich: data.TrangThaiYeuThich,
-            }); // Tạo một đối tượng mới
-            const result = await newProducts.save(); //Thêm vào database
-            if (result)
-            {
-                // Nếu thêm thành công result Inull trả về dữ liệu
-                res.json({
-                    "status": 200,
-                    "messenger": "Thêm thành công",
-                    "data": result
-                })
-            }else{
-                // Nếu thêm không thành công result null, thông báo không thành công
-                res.json({
-                    "status": 400,
-                    "messenger": "Lỗi, thêm không thành công",
-                    "data":[]
-                })
-            }
-            } catch (error) {
-                console.log(error);
-            }
-      });
+              TrangThaiYeuThich: data.TrangThaiYeuThich
+          });
+  
+          // Lưu sản phẩm vào cơ sở dữ liệu
+          const result = await newProducts.save();
+  
+          // Nếu thêm thành công, trả về dữ liệu
+          if (result) {
+              res.json({
+                  status: 200,
+                  messenger: "Thêm thành công",
+                  data: result
+              });
+          } else {
+              // Nếu thêm không thành công, thông báo lỗi
+              res.json({
+                  status: 400,
+                  messenger: "Lỗi, thêm không thành công",
+                  data: []
+              });
+          }
+      } catch (error) {
+          console.error(error);
+          res.status(500).json({
+              status: 500,
+              messenger: "Lỗi server",
+              error: error.message
+          });
+      }
+  });
 
 // router.post('/add', async(req,res) =>{
 //     try{
@@ -287,11 +294,8 @@ router.get("/get-list-product", async (req, res) => {
           updateProduct.Masanpham = data.Masanpham ?? updateProduct.Masanpham;
           updateProduct.TenSP = data.TenSP ?? updateProduct.TenSP,
           updateProduct.Thuonghieu = data.Thuonghieu ?? updateProduct.Thuonghieu,
-          updateProduct.Size = data.Size ?? updateProduct.Size,
-          updateProduct.MauSac = data.MauSac ?? updateProduct.MauSac,
-          updateProduct.SoLuongTon = data.SoLuongTon ?? updateProduct.SoLuongTon,
+          updateProduct.KichThuoc = data.KichThuoc ?? updateProduct.KichThuoc,
           updateProduct.GiaBan = data.GiaBan ?? updateProduct.GiaBan,
-          updateProduct.SoLuongTon = data.SoLuongTon ?? updateProduct.SoLuongTon,
           updateProduct.MoTa = data.MoTa ?? updateProduct.MoTa,
           updateProduct.HinhAnh = data.HinhAnh ?? updateProduct.HinhAnh,
           updateProduct.TrangThaiYeuThich = data.TrangThaiYeuThich ?? updateProduct.TrangThaiYeuThich,

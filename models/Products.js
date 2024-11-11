@@ -2,12 +2,15 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const Product = new Schema({
-    Masanpham: { type: String, required: true },
+    MaSaPham: { type: String, required: true },
     TenSP: { type: String, required: true },
-    Thuonghieu: { type: String, required: true },
-    Size: { type: [Number], required: true },
-    MauSac: { type: String, required: true },
-    SoLuongTon: { type: Number, required: true },
+    ThuongHieu: { type: String, required: true },
+    KichThuoc: [
+        {
+            size: { type: Number, required: true }, // Kích cỡ của sản phẩm
+            soLuongTon: { type: Number, required: true } // Số lượng tồn tương ứng với kích cỡ
+        }
+    ],
     GiaBan: { type: Number, required: true },
     MoTa: String,
     HinhAnh: [String],
@@ -17,4 +20,3 @@ const Product = new Schema({
 });
 
 module.exports = mongoose.model('product', Product);
-
