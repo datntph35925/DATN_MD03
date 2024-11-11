@@ -26,6 +26,8 @@ public class CustomerAccount {
         this.Tentaikhoan = email;
         this.Matkhau = password;
     }
+    public CustomerAccount() {
+    }
 
 
     // Getters
