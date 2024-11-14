@@ -35,12 +35,6 @@
             android:layout_marginTop="8dp"
           />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="SneakerZone"
-            android:gravity="left"
-            />
         <!-- Giá giày -->
         <TextView
             android:id="@+id/shoe_price_SPPB"

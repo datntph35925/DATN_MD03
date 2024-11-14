@@ -18,6 +18,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_back" />
 
+    <ImageView
+        android:id="@+id/btnYeuThich_CTSP"
+        android:layout_width="50dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="30dp"
+        android:src="@drawable/yeuthich"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
         android:layout_width="wrap_content"
@@ -44,7 +54,7 @@
     <ScrollView
         android:id="@+id/sc"
         android:layout_width="match_parent"
-        android:layout_height="470dp"
+        android:layout_height="720dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView"
@@ -99,7 +109,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginLeft="16dp"
-                    android:text="Trong bài văn, Thảo viết: “Máy quay dường như đang chậm lại, từng cảnh từng nét hiện lên rõ ràng. Tôi thấy thầy đang lụi hụi trồng rau, chăm sóc con chó lông trắng đen già khụ, thấy cả chúng tôi ngày đó, trong những ngày vất vả nhưng yên bình. Tôi nghĩ, có lẽ đó là những ngày hạnh phúc và vui vẻ nhất tôi từng có. Sau này, khi bước đi trên đường đời chông gai, có thể sẽ chẳng còn ai chỉ bảo, dạy dỗ tôi tận tình như thầy đã từng, có thể sẽ chẳng có ai lo tôi liệu có ngủ đủ giấc, liệu có stress khi nhồi nhét quá nhiều. Nhưng, cố nhân từng nói, cuộc đời chỉ cần một người khiến ta ngưỡng mộ, để cả đời noi gương, cả đời thương mến. Vậy là quá đủ rồi”."
+                    android:text=" lông trắng đen già khụ, thấy cả chúng tôi ngày đó, trong những ngày vất vả nhưng yên bình. Tôi nghĩ, có lẽ đó là những ngày hạnh phúc và vui vẻ nhất tôi từng có. Sau này, khi bước đi trên đường đời chông gai, có thể sẽ chẳng còn ai chỉ bảo, dạy dỗ tôi tận tình như thầy đã từng, có thể sẽ chẳng có ai lo tôi liệu có ngủ đủ giấc, liệu có stress khi nhồi nhét quá nhiều. Nhưng, cố nhân từng nói, cuộc đời chỉ cần một người khiến ta ngưỡng mộ, để cả đời noi gương, cả đời thương mến. Vậy là quá đủ rồi”."
                     android:textColor="@color/black" />
             </ScrollView>
 
@@ -114,17 +124,19 @@
                 android:textStyle="bold"
                 />
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcvDanhGia_SPCT"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                />
         </LinearLayout>
     </ScrollView>
 
     <!-- User Reviews -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rcvDanhGia_SPCT"
-        android:layout_width="match_parent"
-        android:layout_height="230dp"
-        app:layout_constraintTop_toBottomOf="@+id/sc"
-        app:layout_constraintLeft_toLeftOf="parent"
-        />
+
+
 
     <RelativeLayout
         android:id="@+id/rl"
@@ -134,21 +146,21 @@
         app:layout_constraintLeft_toLeftOf="parent"
         >
         <ImageView
-            android:id="@+id/imgLove"
+            android:id="@+id/btnBoxChat_CTSP"
             android:layout_width="50dp"
             android:layout_height="30dp"
-            app:srcCompat="@drawable/ic_favorite"
+            app:srcCompat="@drawable/boxchat"
             android:layout_marginStart="10dp"
             android:layout_marginTop="20dp"
             />
 
         <ImageView
-            android:id="@+id/btnBoxChat_CTSP"
+            android:id="@+id/btnGioHang_CTSP"
             android:layout_width="50dp"
             android:layout_height="30dp"
             android:layout_marginStart="90dp"
             android:layout_marginTop="20dp"
-            android:src="@drawable/boxchat"
+            android:src="@drawable/giohang"
             />
 
         <Button
@@ -158,7 +170,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="24dp"
             android:layout_marginTop="10dp"
-            android:text="Thêm vào giỏ hàng"
+            android:text="Mua sản phẩm ngay"
             android:textSize="16dp"
             android:textStyle="bold"
             android:layout_alignParentEnd="true"

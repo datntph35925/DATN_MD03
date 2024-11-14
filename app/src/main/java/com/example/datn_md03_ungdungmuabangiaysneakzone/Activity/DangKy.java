@@ -91,6 +91,7 @@ public class DangKy extends AppCompatActivity {
                     Toast.makeText(DangKy.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
+
         });
     }
 }

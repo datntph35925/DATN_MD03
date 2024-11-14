@@ -2,7 +2,10 @@ package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,24 +14,27 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter.SanPhamAdapter;
-import com.example.datn_md03_ungdungmuabangiaysneakzone.Demo.CartAdapter_Demo;
-import com.example.datn_md03_ungdungmuabangiaysneakzone.Demo.Cart_Demo;
-import com.example.datn_md03_ungdungmuabangiaysneakzone.Domain.SanPham;
-import com.example.datn_md03_ungdungmuabangiaysneakzone.Fragment.TrangChuFragment;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiService;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.api.RetrofitClient;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Product;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
 import java.util.ArrayList;
-import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView spRecyclerView;
-    private SanPhamAdapter sanPhamAdapter;
-    private List<SanPham> sanPhams;
-
+    RecyclerView spRecyclerView;
+    ApiService apiService;
+    SanPhamAdapter productAdapter;
+    ArrayList<Product> productArrayList;
     BottomNavigationView bottomNavigationView;
+    TextView tvXemThem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,23 +43,46 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottomnavigation);
         setBottomNavigationView();
 
+        tvXemThem = findViewById(R.id.tvXemThem);
+        tvXemThem.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, Activity_SP_PhoBien.class));
+        });
         spRecyclerView = findViewById(R.id.SanPhamPhoBienView);
-        spRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        apiService = RetrofitClient.getClient().create(ApiService.class);
+        productArrayList = new ArrayList<>();
+        // Gọi API để lấy danh sách sản phẩm
+        getListProducts();
 
-        sanPhams = new ArrayList<>();
-        sanPhams.add(new SanPham("Nike Air Max", 64.95, R.drawable.nice_shoe));
-        sanPhams.add(new SanPham("Nike Air Max", 64.95, R.drawable.nice_shoe));
-        sanPhams.add(new SanPham("Nike Air Max", 64.95, R.drawable.nice_shoe));
-        sanPhams.add(new SanPham("Nike Air Max", 64.95, R.drawable.nice_shoe));
-        sanPhams.add(new SanPham("Nike Air Max", 64.95, R.drawable.nice_shoe));
-        sanPhams.add(new SanPham("Nike Air Max", 64.95, R.drawable.nice_shoe));
-        sanPhams.add(new SanPham("Nike Air Max", 64.95, R.drawable.nice_shoe));
-        sanPhams.add(new SanPham("Nike Air Max", 64.95, R.drawable.nice_shoe));
-
-        sanPhamAdapter = new SanPhamAdapter((ArrayList<SanPham>) sanPhams);
-        spRecyclerView.setAdapter(sanPhamAdapter);
     }
 
+    private void loadDuLieu(ArrayList<Product> list){
+        productAdapter = new SanPhamAdapter(this, list);
+        spRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        spRecyclerView.setAdapter(productAdapter);
+    }
+    private void getListProducts() {
+       Call<Response<ArrayList<Product>>> call = apiService.getListProducts();
+       call.enqueue(new Callback<Response<ArrayList<Product>>>() {
+           @Override
+           public void onResponse(Call<Response<ArrayList<Product>>> call, retrofit2.Response<Response<ArrayList<Product>>> response) {
+               if (response.isSuccessful() && response.body() != null) {
+                   if(response.body().getStatus() == 200) {
+                       productArrayList = response.body().getData();
+                       loadDuLieu(productArrayList);
+                   } else {
+                       Toast.makeText(MainActivity.this, "Không có dữ liệu", Toast.LENGTH_SHORT).show();
+                   }
+               } else {
+                   Toast.makeText(MainActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
+               }
+           }
+
+           @Override
+           public void onFailure(Call<Response<ArrayList<Product>>> call, Throwable t) {
+               Toast.makeText(MainActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+           }
+       });
+    }
     public void setBottomNavigationView() {
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
