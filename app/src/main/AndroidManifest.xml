@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -15,13 +16,23 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DATN_MD03_UngDungMuaBanGiaySneakZone"
-        tools:targetApi="31"
-        android:usesCleartextTraffic="true">
-        >
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
+        <activity
+            android:name=".Activity.xacthucemailmoi"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.manguimaemailmoi"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.manhinhnhanguima"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.xacthucmaemailhientai"
+            android:exported="false" />
         <activity
             android:name=".Activity.ShowListLocationActivity"
             android:exported="false" />
-
         <activity
             android:name=".Activity.Activity_ThanhToan"
             android:exported="false" />
@@ -64,13 +75,15 @@
         <activity
             android:name=".Activity.Activity_Profile"
             android:exported="false" />
-        <activity android:name=".Activity.DangKy"
+        <activity
+            android:name=".Activity.DangKy"
             android:exported="false" />
-        <activity android:name=".Activity.Activity_QuenMatKhau"
+        <activity
+            android:name=".Activity.Activity_QuenMatKhau"
             android:exported="false" />
-        <activity android:name=".Activity.MainActivity"
+        <activity
+            android:name=".Activity.MainActivity"
             android:exported="false" />
-
         <activity
             android:name=".Activity.DangNhap"
             android:exported="true">

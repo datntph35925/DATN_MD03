@@ -54,8 +54,11 @@ public class Activity_QuenMatKhau extends AppCompatActivity {
 
         // Tạo instance của ApiService và gọi API
         ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
-        CustomerAccount customerAccount = new CustomerAccount();
-        customerAccount.setTentaikhoan(email); // Gán email vào Tentaikhoan
+//        CustomerAccount customerAccount = new CustomerAccount();
+        CustomerAccount customerAccount = new CustomerAccount.Builder()
+                .setTentaikhoan(email)
+                .build();
+//        customerAccount.setTentaikhoan(email); // Gán email vào Tentaikhoan
 
         // Gọi API với Retrofit
         Call<ApiResponse> call = apiService.forgotPassword(customerAccount);

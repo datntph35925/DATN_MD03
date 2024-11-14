@@ -69,7 +69,12 @@ public class DangKy extends AppCompatActivity {
             }
 
             // Tạo đối tượng CustomerAccount và thực hiện yêu cầu đăng ký
-            CustomerAccount account = new CustomerAccount(ten, email, password);
+//            CustomerAccount account = new CustomerAccount(ten, email, password);
+            CustomerAccount account = new CustomerAccount.Builder()
+                    .setHoten(ten)
+                    .setTentaikhoan(email)
+                    .setMatkhau(password)
+                    .build();
             Call<ApiResponse> call = apiService.register(account);
             call.enqueue(new Callback<ApiResponse>() {
                 @Override

@@ -7,28 +7,20 @@ public class CustomerAccount {
     private String Matkhau;
     private String Anhtk;
     private int seq;
+    private String verificationCode;
+    private String EmailMoi;
 
-    // Constructor
-    public CustomerAccount(String matk, String tentaikhoan, String hoten, String matkhau, String anhtk, int seq) {
-        this.Matk = matk;
-        this.Tentaikhoan = tentaikhoan;
-        this.Hoten = hoten;
-        this.Matkhau = matkhau;
-        this.Anhtk = anhtk;
-        this.seq = seq;
+    // Constructor private để chỉ Builder có thể tạo đối tượng
+    private CustomerAccount(Builder builder) {
+        this.Matk = builder.matk;
+        this.Tentaikhoan = builder.tentaikhoan;
+        this.Hoten = builder.hoten;
+        this.Matkhau = builder.matkhau;
+        this.Anhtk = builder.anhtk;
+        this.seq = builder.seq;
+        this.verificationCode = builder.verificationCode;
+        this.EmailMoi = builder.emailMoi;
     }
-    public CustomerAccount(String hoten, String email, String password) {
-        this.Hoten = hoten;
-        this.Tentaikhoan = email;
-        this.Matkhau = password;
-    }
-    public CustomerAccount( String email, String password) {
-        this.Tentaikhoan = email;
-        this.Matkhau = password;
-    }
-    public CustomerAccount() {
-    }
-
 
     // Getters
     public String getMatk() {
@@ -55,29 +47,68 @@ public class CustomerAccount {
         return seq;
     }
 
-    // Setters
-    public void setMatk(String matk) {
-        this.Matk = matk;
+    public String getVerificationCode() {
+        return verificationCode;
     }
 
-    public void setTentaikhoan(String tentaikhoan) {
-        this.Tentaikhoan = tentaikhoan;
+    public String getEmailMoi() {
+        return EmailMoi;
     }
 
-    public void setHoten(String hoten) {
-        this.Hoten = hoten;
-    }
+    // Builder class
+    public static class Builder {
+        private String matk;
+        private String tentaikhoan;
+        private String hoten;
+        private String matkhau;
+        private String anhtk;
+        private int seq;
+        private String verificationCode;
+        private String emailMoi;
 
-    public void setMatkhau(String matkhau) {
-        this.Matkhau = matkhau;
-    }
+        public Builder setMatk(String matk) {
+            this.matk = matk;
+            return this;
+        }
 
-    public void setAnhtk(String anhtk) {
-        this.Anhtk = anhtk;
-    }
+        public Builder setTentaikhoan(String tentaikhoan) {
+            this.tentaikhoan = tentaikhoan;
+            return this;
+        }
 
-    public void setSeq(int seq) {
-        this.seq = seq;
+        public Builder setHoten(String hoten) {
+            this.hoten = hoten;
+            return this;
+        }
+
+        public Builder setMatkhau(String matkhau) {
+            this.matkhau = matkhau;
+            return this;
+        }
+
+        public Builder setAnhtk(String anhtk) {
+            this.anhtk = anhtk;
+            return this;
+        }
+
+        public Builder setSeq(int seq) {
+            this.seq = seq;
+            return this;
+        }
+
+        public Builder setVerificationCode(String verificationCode) {
+            this.verificationCode = verificationCode;
+            return this;
+        }
+
+        public Builder setEmailMoi(String emailMoi) {
+            this.emailMoi = emailMoi;
+            return this;
+        }
+
+        // Phương thức build để tạo đối tượng CustomerAccount
+        public CustomerAccount build() {
+            return new CustomerAccount(this);
+        }
     }
 }
-

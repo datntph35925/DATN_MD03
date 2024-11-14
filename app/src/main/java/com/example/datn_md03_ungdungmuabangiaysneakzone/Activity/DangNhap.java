@@ -1,6 +1,8 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -14,8 +16,8 @@ import androidx.appcompat.widget.AppCompatButton;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiResponse;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiService;
-import com.example.datn_md03_ungdungmuabangiaysneakzone.model.CustomerAccount;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.RetrofitClient;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.CustomerAccount;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -27,6 +29,7 @@ public class DangNhap extends AppCompatActivity {
     private AppCompatButton btnDangKy, btnDangNhap;
     private TextView textviewQMK;
     private ApiService apiService;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +46,9 @@ public class DangNhap extends AppCompatActivity {
 
         // Khởi tạo ApiService
         apiService = RetrofitClient.getClient().create(ApiService.class);
+
+        // Khởi tạo SharedPreferences
+        sharedPreferences = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
 
         // Xử lý sự kiện khi bấm vào nút Đăng Ký
         btnDangKy.setOnClickListener(new View.OnClickListener() {
@@ -80,7 +86,12 @@ public class DangNhap extends AppCompatActivity {
                 }
 
                 // Chuẩn bị dữ liệu đăng nhập
-                CustomerAccount account = new CustomerAccount(email, password);
+//                CustomerAccount account = new CustomerAccount(email, password);
+                CustomerAccount account = new CustomerAccount.Builder()
+                        .setTentaikhoan(email)
+                        .setMatkhau(password)
+                        .build();
+
 
                 // Gọi API để đăng nhập
                 apiService.login(account).enqueue(new Callback<ApiResponse>() {
@@ -89,6 +100,13 @@ public class DangNhap extends AppCompatActivity {
                         if (response.isSuccessful() && response.body() != null) {
                             // Xử lý đăng nhập thành công
                             Toast.makeText(DangNhap.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+
+                            // Lưu Tentaikhoan vào SharedPreferences
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString("Tentaikhoan", email); // Lưu email vào SharedPreferences
+                            editor.apply();
+
+                            // Chuyển sang MainActivity
                             Intent intent = new Intent(DangNhap.this, MainActivity.class);
                             startActivity(intent);
                             finish();

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activity.xacthucemailmoi">
+
+    <!-- Nút quay lại -->
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackground"
+        android:src="@drawable/ic_back"
+        android:contentDescription="Quay lại"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="16dp"/>
+
+    <!-- Tiêu đề -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nhập mã xác minh"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Mô tả -->
+    <TextView
+        android:id="@+id/tvDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mã xác thực đã được gửi đến Email"
+        android:textSize="16sp"
+        android:textColor="@android:color/darker_gray"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"/>
+
+    <TextView
+        android:id="@+id/tvEmailMoi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="email mới"
+        android:textSize="16sp"
+        android:textColor="@android:color/black"
+        app:layout_constraintTop_toBottomOf="@id/tvDescription"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="4dp"/>
+
+
+    <!-- Trường nhập mã xác thực -->
+    <LinearLayout
+        android:id="@+id/llCodeInput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/tvEmailMoi"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp">
+
+        <!-- Sử dụng các trường EditText riêng lẻ cho từng số, có id riêng -->
+        <EditText
+            android:id="@+id/edtVerificationCode1"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:inputType="number"
+            android:gravity="center"
+            android:maxLength="1"
+            android:textSize="18sp"
+            android:background="@android:drawable/edit_text"
+            android:padding="8dp"
+            android:layout_margin="4dp"/>
+
+        <EditText
+            android:id="@+id/edtVerificationCode2"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:inputType="number"
+            android:gravity="center"
+            android:maxLength="1"
+            android:textSize="18sp"
+            android:background="@android:drawable/edit_text"
+            android:padding="8dp"
+            android:layout_margin="4dp"/>
+
+        <EditText
+            android:id="@+id/edtVerificationCode3"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:inputType="number"
+            android:gravity="center"
+            android:maxLength="1"
+            android:textSize="18sp"
+            android:background="@android:drawable/edit_text"
+            android:padding="8dp"
+            android:layout_margin="4dp"/>
+
+        <EditText
+            android:id="@+id/edtVerificationCode4"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:inputType="number"
+            android:gravity="center"
+            android:maxLength="1"
+            android:textSize="18sp"
+            android:background="@android:drawable/edit_text"
+            android:padding="8dp"
+            android:layout_margin="4dp"/>
+
+        <EditText
+            android:id="@+id/edtVerificationCode5"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:inputType="number"
+            android:gravity="center"
+            android:maxLength="1"
+            android:textSize="18sp"
+            android:background="@android:drawable/edit_text"
+            android:padding="8dp"
+            android:layout_margin="4dp"/>
+
+        <EditText
+            android:id="@+id/edtVerificationCode6"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:inputType="number"
+            android:gravity="center"
+            android:maxLength="1"
+            android:textSize="18sp"
+            android:background="@android:drawable/edit_text"
+            android:padding="8dp"
+            android:layout_margin="4dp"/>
+    </LinearLayout>
+
+    <!-- Nút xác nhận -->
+    <Button
+        android:id="@+id/btnChangeEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Thay đổi"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/llCodeInput"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="32dp"
+        android:backgroundTint="@android:color/holo_red_light"
+        android:textColor="@android:color/white"/>
+
+    <!-- Liên kết gửi lại mã -->
+    <TextView
+        android:id="@+id/tvResendCode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Gửi lại bây giờ"
+        android:textSize="14sp"
+        android:textColor="@android:color/holo_blue_dark"
+        app:layout_constraintTop_toBottomOf="@id/btnChangeEmail"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
