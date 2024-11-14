@@ -218,6 +218,174 @@ router.post('/reset-password', async (req, res) => {
         }
     }
 });
+// Route gửi mã xác thực
+router.post('/ma-xac-thuc', async (req, res) => {
+    const { Tentaikhoan } = req.body;
+    try {
+        // Tìm người dùng theo email
+        const user = await CustomerAccounts.findOne({ Tentaikhoan });
+        if (!user) {
+            return res.status(404).json({ message: 'Tài khoản không tồn tại' });
+        }
+
+        // Kiểm tra nếu mã xác thực hiện tại vẫn tồn tại
+        if (user.verificationCode) {
+            return res.status(400).json({ message: 'Mã xác thực hiện tại vẫn còn hiệu lực, vui lòng thử lại sau' });
+        }
+
+        // Tạo mã xác thực 6 số
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        user.verificationCode = verificationCode;
+
+        // Lưu mã xác thực vào cơ sở dữ liệu
+        console.log('Mã xác thực được gán:', user.verificationCode);
+        await user.save();
+        console.log('Đã lưu mã xác thực vào cơ sở dữ liệu');
+
+        // Sử dụng `setTimeout` để xóa mã sau 3 phút
+        setTimeout(async () => {
+            user.verificationCode = null; // Xóa mã xác thực
+            await user.save();
+            console.log(`Mã xác thực cho tài khoản ${Tentaikhoan} đã hết hạn và bị xóa.`);
+        }, 3 * 60 * 1000); // 3 phút
+
+        // Gửi email
+        const mailOptions = {
+            from: 'datnmd03@gmail.com',
+            to: Tentaikhoan,
+            subject: 'Mã xác thực Gmail của bạn',
+            html: `<p>Mã xác thực của bạn là: <strong>${verificationCode}</strong></p>
+                   <p>Mã này có hiệu lực trong 3 phút.</p>`
+        };
+        await transporter.sendMail(mailOptions);
+
+        res.status(200).json({ message: 'Mã xác thực đã được gửi qua email' });
+    } catch (error) {
+        console.error('Lỗi khi gửi email:', error);
+        res.status(500).json({ message: 'Lỗi khi gửi email', error });
+    }
+});
+// Route xác thực mã
+router.post('/xacthucma', async (req, res) => {
+    const { Tentaikhoan, verificationCode } = req.body;
+    try {
+        // Tìm người dùng theo email
+        const user = await CustomerAccounts.findOne({ Tentaikhoan });
+        if (!user) {
+            return res.status(404).json({ message: 'Tài khoản không tồn tại' });
+        }
+
+        // Kiểm tra xem mã xác thực có tồn tại và chưa hết hạn
+        if (!user.verificationCode) {
+            return res.status(400).json({ message: 'Mã xác thực không tồn tại hoặc đã hết hạn' });
+        }
+
+        // Kiểm tra mã xác thực
+        if (user.verificationCode !== verificationCode) {
+            return res.status(400).json({ message: 'Mã xác thực không hợp lệ' });
+        }
+
+        // Mã xác thực hợp lệ
+        user.verificationCode = null; // Xóa mã xác thực sau khi xác thực thành công
+        await user.save();
+
+        res.status(200).json({ message: 'Mã xác thực hợp lệ và đã được xác thực thành công' });
+    } catch (error) {
+        console.error('Lỗi khi xác thực mã:', error);
+        res.status(500).json({ message: 'Lỗi khi xác thực mã', error });
+    }
+});
+
+// Route gửi mã xác thực đến email mới
+router.post('/ma-xac-thuc-email-moi', async (req, res) => {
+    const { Tentaikhoan, EmailMoi } = req.body;
+
+    // Kiểm tra xem `Tentaikhoan` và `EmailMoi` có dữ liệu không
+    if (!Tentaikhoan || !EmailMoi) {
+        return res.status(400).json({ message: 'Thiếu Tentaikhoan hoặc EmailMoi' });
+    }
+
+    console.log("Tentaikhoan received:", Tentaikhoan);
+    console.log("EmailMoi received:", EmailMoi);
+
+    try {
+        // Tìm người dùng theo tên tài khoản (email hiện tại)
+        const user = await CustomerAccounts.findOne({ Tentaikhoan: Tentaikhoan.toLowerCase() });
+        if (!user) {
+            console.log("User not found with Tentaikhoan:", Tentaikhoan);
+            return res.status(404).json({ message: 'Tài khoản không tồn tại' });
+        }
+
+        // Tạo mã xác thực 6 số
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        user.verificationCode = verificationCode;
+
+        // Lưu mã xác thực vào cơ sở dữ liệu
+        await user.save();
+        console.log("Verification code saved:", verificationCode);
+
+        // Sử dụng `setTimeout` để xóa mã sau 3 phút
+        setTimeout(async () => {
+            user.verificationCode = null; // Xóa mã xác thực
+            user.EmailMoi = ''; // Đặt EmailMoi thành chuỗi rỗng
+            await user.save();
+            console.log(`Mã xác thực cho tài khoản ${Tentaikhoan} đã hết hạn và EmailMoi đã bị xóa.`);
+        }, 3 * 60 * 1000); // 3 phút
+
+        // Gửi email xác thực đến email mới
+        const mailOptions = {
+            from: 'datnmd03@gmail.com',
+            to: EmailMoi,
+            subject: 'Mã xác thực Gmail mới của bạn',
+            html: `<p>Mã xác thực của bạn là: <strong>${verificationCode}</strong></p>
+                   <p>Mã này có hiệu lực trong 3 phút.</p>`
+        };
+
+        // Gửi email và xử lý lỗi nếu xảy ra
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Lỗi khi gửi email:', error);
+                return res.status(500).json({ message: 'Lỗi khi gửi email', error });
+            }
+            console.log('Email sent:', info.response);
+            res.status(200).json({ message: 'Mã xác thực đã được gửi đến email mới' });
+        });
+
+    } catch (error) {
+        console.error('Lỗi khi gửi mã xác thực đến email mới:', error);
+        res.status(500).json({ message: 'Lỗi khi gửi mã xác thực đến email mới', error });
+    }
+});
+
+
+// Route để xác thực mã và cập nhật email mới nếu hợp lệ
+router.post('/xacthucma-email-moi', async (req, res) => {
+    const { Tentaikhoan, EmailMoi, verificationCode } = req.body;
+
+    try {
+        // Tìm người dùng theo tên tài khoản hiện tại (email hiện tại)
+        const user = await CustomerAccounts.findOne({ Tentaikhoan });
+        if (!user) {
+            return res.status(404).json({ message: 'Tài khoản không tồn tại' });
+        }
+
+        // Kiểm tra mã xác thực của người dùng
+        if (user.verificationCode !== verificationCode) {
+            return res.status(400).json({ message: 'Mã xác thực không hợp lệ hoặc đã hết hạn' });
+        }
+
+        // Cập nhật email mới
+        user.Tentaikhoan = EmailMoi; // Cập nhật email mới
+        user.verificationCode = null; // Xóa mã xác thực sau khi cập nhật thành công
+        await user.save();
+
+        res.status(200).json({ message: 'Email đã được cập nhật thành công' });
+    } catch (error) {
+        console.error('Lỗi khi xác thực mã và cập nhật email:', error);
+        res.status(500).json({ message: 'Lỗi khi xác thực mã và cập nhật email', error });
+    }
+});
+
 
 
 module.exports = router;
