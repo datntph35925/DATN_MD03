@@ -26,7 +26,8 @@ const CustomerAccountsSchema = new Schema({
     Anhtk: { type: String, default: '' }, // Ảnh đại diện (nếu có)
     seq: { type: Number, default: 0 }, // Giá trị bộ đếm để tạo mã tài khoản tự động
     verificationCode: { type: String }, // Mã xác thực
-    createdAt: { type: Date } // Thời gian mã được tạo
+    createdAt: { type: Date }, // Thời gian mã được tạo
+    MatkhauMoi: { type: String }
 });
 
 module.exports = mongoose.model('CustomerAccounts', CustomerAccountsSchema);
