@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const CustomerAccounts = require('../models/CustomerAccounts');
+const TemporaryVerificationCodes = require('../models/TemporaryVerificationCodes');
 
 const nodemailer = require('nodemailer');
 
@@ -16,7 +17,7 @@ const transporter = nodemailer.createTransport({
 });
 
 
-// Route đăng ký
+//  Route đăng ký (Kiểm tra thông tin và gửi mã xác thực)
 router.post('/register', async (req, res) => {
     try {
         const { Tentaikhoan, Hoten, Matkhau, Anhtk } = req.body;
@@ -33,6 +34,63 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ message: 'Tên tài khoản đã tồn tại' });
         }
 
+        // Lưu thông tin vào bộ nhớ tạm thời (không tạo tài khoản ngay)
+        await TemporaryVerificationCodes.create({
+            Tentaikhoan,
+            Hoten,
+            Matkhau,
+            Anhtk
+        });
+
+        res.status(200).json({ message: 'Thông tin hợp lệ, vui lòng gửi mã xác thực để tiếp tục' });
+    } catch (err) {
+        console.error("Lỗi khi xử lý đăng ký:", err);
+        res.status(500).json({ message: 'Đã xảy ra lỗi', error: err });
+    }
+});
+
+//  Route gửi mã xác thực qua email
+router.post('/guimataotk', async (req, res) => {
+    const { Tentaikhoan } = req.body;
+    try {
+        // Kiểm tra xem email có trong dữ liệu tạm thời không
+        const tempUser = await TemporaryVerificationCodes.findOne({ Tentaikhoan });
+        if (!tempUser) {
+            return res.status(400).json({ message: 'Email không hợp lệ hoặc chưa được đăng ký' });
+        }
+
+        // Tạo mã xác thực 6 số
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        tempUser.verificationCode = verificationCode;
+        await tempUser.save();
+
+        // Gửi mã xác thực qua email
+        const mailOptions = {
+            from: 'datnmd03@gmail.com',
+            to: Tentaikhoan,
+            subject: 'Mã xác thực tài khoản của bạn',
+            html: `<p>Mã xác thực của bạn là: <strong>${verificationCode}</strong></p>
+                   <p>Mã này có hiệu lực trong 5 phút.</p>`
+        };
+
+        await transporter.sendMail(mailOptions);
+        res.status(200).json({ message: 'Mã xác thực đã được gửi qua email' });
+    } catch (error) {
+        console.error('Lỗi khi gửi mã xác thực:', error);
+        res.status(500).json({ message: 'Lỗi khi gửi mã xác thực', error });
+    }
+});
+
+//  Route xác thực mã và tạo tài khoản
+router.post('/xacthucmataotk', async (req, res) => {
+    const { Tentaikhoan, verificationCode } = req.body;
+    try {
+        // Kiểm tra xem mã xác thực có hợp lệ không
+        const tempUser = await TemporaryVerificationCodes.findOne({ Tentaikhoan, verificationCode });
+        if (!tempUser) {
+            return res.status(400).json({ message: 'Mã xác thực không hợp lệ hoặc đã hết hạn' });
+        }
+
         // Tạo mã tài khoản tự động dựa trên seq
         const lastUser = await CustomerAccounts.findOne().sort({ seq: -1 });
         const accountNumber = `AC${(lastUser ? lastUser.seq + 1 : 1).toString().padStart(3, '0')}`;
@@ -40,23 +98,25 @@ router.post('/register', async (req, res) => {
         // Tạo tài khoản mới
         const newUser = new CustomerAccounts({
             Matk: accountNumber,
-            Tentaikhoan,
-            Hoten,
-            Matkhau, // Lưu mật khẩu dưới dạng văn bản thuần túy
-            Anhtk: Anhtk || '', // Nếu không có ảnh đại diện, để trống
-            seq: lastUser ? lastUser.seq + 1 : 1 // Tăng giá trị seq
+            Tentaikhoan: tempUser.Tentaikhoan,
+            Hoten: tempUser.Hoten,
+            Matkhau: tempUser.Matkhau,
+            Anhtk: tempUser.Anhtk || '',
+            seq: lastUser ? lastUser.seq + 1 : 1
         });
 
         // Lưu người dùng vào cơ sở dữ liệu
         await newUser.save();
 
-        res.status(201).json({ message: 'Đăng ký thành công' });
+        // Xóa thông tin tạm thời sau khi tạo tài khoản
+        await TemporaryVerificationCodes.deleteOne({ Tentaikhoan });
+
+        res.status(201).json({ message: 'Tài khoản đã được tạo thành công' });
     } catch (err) {
-        console.error("Lỗi khi lưu vào cơ sở dữ liệu:", err);
+        console.error("Lỗi khi tạo tài khoản:", err);
         res.status(500).json({ message: 'Đã xảy ra lỗi', error: err });
     }
 });
-
 // Route đăng nhập
 router.post('/login', async (req, res) => {
     try {
@@ -406,6 +466,48 @@ router.post('/xacthucma-doi-matkhau', async (req, res) => {
     } catch (error) {
         console.error('Lỗi khi xác thực mã và đổi mật khẩu:', error);
         res.status(500).json({ message: 'Lỗi khi xác thực mã và đổi mật khẩu', error });
+    }
+});
+// Route để đổi họ tên
+router.put('/doi-hoten', async (req, res) => {
+    try {
+        const { Tentaikhoan, HotenMoi } = req.body;
+
+        // Tìm người dùng theo tên tài khoản
+        const user = await CustomerAccounts.findOne({ Tentaikhoan });
+        if (!user) {
+            return res.status(400).json({ message: 'Tài khoản không tồn tại' });
+        }
+
+        // Cập nhật họ tên mới
+        user.Hoten = HotenMoi;
+        await user.save();
+
+        res.status(200).json({ message: 'Họ tên đã được cập nhật thành công' });
+    } catch (error) {
+        console.error('Lỗi khi đổi họ tên:', error);
+        res.status(500).json({ message: 'Đã xảy ra lỗi khi đổi họ tên', error });
+    }
+});
+// Route để đổi ảnh đại diện
+router.put('/doi-anh', async (req, res) => {
+    try {
+        const { Tentaikhoan, AnhtkMoi } = req.body;
+
+        // Tìm người dùng theo tên tài khoản
+        const user = await CustomerAccounts.findOne({ Tentaikhoan });
+        if (!user) {
+            return res.status(400).json({ message: 'Tài khoản không tồn tại' });
+        }
+
+        // Cập nhật ảnh đại diện mới
+        user.Anhtk = AnhtkMoi;
+        await user.save();
+
+        res.status(200).json({ message: 'Ảnh đại diện đã được cập nhật thành công' });
+    } catch (error) {
+        console.error('Lỗi khi đổi ảnh đại diện:', error);
+        res.status(500).json({ message: 'Đã xảy ra lỗi khi đổi ảnh đại diện', error });
     }
 });
 
