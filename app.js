@@ -8,6 +8,7 @@ const session = require('express-session');
 const indexRouter = require('./routes/index');
 const apiRouter = require('./routes/api');
 const authRouter = require('./routes/auth');
+const cartRouter = require('./routes/cart');
 const database = require('./config/db');
 
 const app = express();
@@ -39,6 +40,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/api', apiRouter);
 app.use('/auth', authRouter);
+app.use('/cart', cartRouter);
 
 // Kết nối đến MongoDB
 database.connect().catch(() => {
