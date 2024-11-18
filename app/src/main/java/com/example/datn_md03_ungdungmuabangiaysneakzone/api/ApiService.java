@@ -4,6 +4,7 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.model.CustomerAccount;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Product;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ResetPasswordRequest;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.TemporaryVerificationCode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,18 +18,24 @@ import retrofit2.http.Path;
 
 public interface ApiService {
     @POST("/auth/register")
-    Call<ApiResponse> register(@Body CustomerAccount customerAccount);
+    Call<ApiResponse> register(@Body TemporaryVerificationCode tempCode);
+
+
+    @POST("/auth/guimataotk")
+    Call<ApiResponse> sendVerificationCodee(@Body TemporaryVerificationCode tempCode);
+
+    @POST("/auth/xacthucmataotk")
+    Call<ApiResponse> verifyCodee(@Body TemporaryVerificationCode tempCode);
 
     @POST("/auth/login")
     Call<ApiResponse> login(@Body CustomerAccount customerAccount);
-    @PUT("/update-account/{id}")
-    Call<ApiResponse> updateAccount(@Path("id") String id, @Body CustomerAccount customerAccount);
 
     @POST("/auth/send-reset-password-email")
     Call<ApiResponse> forgotPassword(@Body CustomerAccount customerAccount);
 
     @POST("/auth/reset-password")
     Call<ApiResponse> resetPassword(@Body ResetPasswordRequest request);
+
     @POST("/auth/ma-xac-thuc")
     Call<ApiResponse>   sendVerificationCode(@Body CustomerAccount customerAccount);
 
@@ -43,6 +50,7 @@ public interface ApiService {
 
     @GET("/api/get-list-product")
     Call<Response<ArrayList<Product>>> getListProducts();
+
     @GET("/api/get-product-by-id/{id}")
     Call<Response<Product>> getProductById(@Path("id") String id);
 

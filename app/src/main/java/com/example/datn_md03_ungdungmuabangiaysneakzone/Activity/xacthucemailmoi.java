@@ -2,16 +2,21 @@ package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiResponse;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiService;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.RetrofitClient;
+
 import java.util.HashMap;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -28,7 +33,7 @@ public class xacthucemailmoi extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_xacthucemailmoi);
 
-        // Khởi tạo các view
+        // Ánh xạ các view
         edtVerificationCode1 = findViewById(R.id.edtVerificationCode1);
         edtVerificationCode2 = findViewById(R.id.edtVerificationCode2);
         edtVerificationCode3 = findViewById(R.id.edtVerificationCode3);
@@ -47,6 +52,9 @@ public class xacthucemailmoi extends AppCompatActivity {
             finish();
             return;
         }
+
+        // Thiết lập tự động chuyển ô khi nhập/xóa
+        setupEditTextFocusHandling();
 
         // Xử lý sự kiện khi nhấn "Thay đổi"
         btnChangeEmail.setOnClickListener(view -> verifyEmailCode());
@@ -85,7 +93,6 @@ public class xacthucemailmoi extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 } else {
-                    // Xử lý lỗi từ phản hồi không thành công
                     String errorMessage = "Lỗi: " + (response.body() != null ? response.body().getMessage() : response.message());
                     Toast.makeText(xacthucemailmoi.this, errorMessage, Toast.LENGTH_SHORT).show();
                 }
@@ -96,5 +103,34 @@ public class xacthucemailmoi extends AppCompatActivity {
                 Toast.makeText(xacthucemailmoi.this, "Lỗi mạng: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void setupEditTextFocusHandling() {
+        EditText[] editTexts = {
+                edtVerificationCode1, edtVerificationCode2, edtVerificationCode3,
+                edtVerificationCode4, edtVerificationCode5, edtVerificationCode6
+        };
+
+        for (int i = 0; i < editTexts.length; i++) {
+            int currentIndex = i;
+            editTexts[i].addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    if (s.length() == 1 && currentIndex < editTexts.length - 1) {
+                        // Chuyển sang ô tiếp theo
+                        editTexts[currentIndex + 1].requestFocus();
+                    } else if (s.length() == 0 && currentIndex > 0) {
+                        // Quay lại ô trước nếu xóa
+                        editTexts[currentIndex - 1].requestFocus();
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {}
+            });
+        }
     }
 }

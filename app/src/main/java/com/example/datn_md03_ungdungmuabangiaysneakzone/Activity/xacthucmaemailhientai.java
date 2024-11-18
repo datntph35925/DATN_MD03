@@ -4,18 +4,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiResponse;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiService;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.RetrofitClient;
-
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.CustomerAccount;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -33,7 +37,7 @@ public class xacthucmaemailhientai extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_xacthucmaemailhientai);
 
-        // Initialize views
+        // Ánh xạ các view
         edtVerificationCode1 = findViewById(R.id.edtVerificationCode1);
         edtVerificationCode2 = findViewById(R.id.edtVerificationCode2);
         edtVerificationCode3 = findViewById(R.id.edtVerificationCode3);
@@ -44,26 +48,58 @@ public class xacthucmaemailhientai extends AppCompatActivity {
         tvResendCode = findViewById(R.id.tvResendCode);
         tvEmail = findViewById(R.id.tvEmail);
 
-        // Retrieve email from SharedPreferences
+        // Lấy email từ SharedPreferences
         SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
         email = sharedPreferences.getString("Tentaikhoan", "");
 
-        // Display email in TextView if available
+        // Hiển thị email
         if (!email.isEmpty()) {
             tvEmail.setText(email);
         } else {
             tvEmail.setText("Không tìm thấy email");
         }
 
-        // Handle "Xác nhận" button click
+        // Thiết lập tự động chuyển focus giữa các ô nhập mã
+        setupEditTextFocusHandling();
+
+        // Xử lý khi nhấn nút "Xác nhận"
         btnConfirm.setOnClickListener(view -> verifyEmailCode());
 
-        // Handle "Gửi lại bây giờ" button click
+        // Xử lý khi nhấn nút "Gửi lại bây giờ"
         tvResendCode.setOnClickListener(view -> resendVerificationCode());
     }
 
+    private void setupEditTextFocusHandling() {
+        EditText[] editTexts = {
+                edtVerificationCode1, edtVerificationCode2, edtVerificationCode3,
+                edtVerificationCode4, edtVerificationCode5, edtVerificationCode6
+        };
+
+        for (int i = 0; i < editTexts.length; i++) {
+            int currentIndex = i;
+            editTexts[i].addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    if (s.length() == 1 && currentIndex < editTexts.length - 1) {
+                        // Chuyển sang ô tiếp theo
+                        editTexts[currentIndex + 1].requestFocus();
+                    } else if (s.length() == 0 && currentIndex > 0) {
+                        // Quay lại ô trước nếu xóa
+                        editTexts[currentIndex - 1].requestFocus();
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {}
+            });
+        }
+    }
+
     private void verifyEmailCode() {
-        // Concatenate verification code from EditTexts
+        // Ghép các ký tự từ các EditText thành mã xác thực
         String code = edtVerificationCode1.getText().toString().trim() +
                 edtVerificationCode2.getText().toString().trim() +
                 edtVerificationCode3.getText().toString().trim() +
@@ -71,25 +107,20 @@ public class xacthucmaemailhientai extends AppCompatActivity {
                 edtVerificationCode5.getText().toString().trim() +
                 edtVerificationCode6.getText().toString().trim();
 
-        // Check if the verification code has 6 characters
+        // Kiểm tra độ dài mã xác thực
         if (code.length() != 6) {
             Toast.makeText(this, "Mã xác thực phải có 6 ký tự", Toast.LENGTH_SHORT).show();
             return;
         }
         Log.d("VerificationCode", "Mã xác thực: " + code);
 
-        // Send verification code to API
-        ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
-//        CustomerAccount customerAccount = new CustomerAccount();
-//        customerAccount.setTentaikhoan(email);
-//        customerAccount.setVerificationCode(code);
-
+        // Tạo đối tượng CustomerAccount và gửi yêu cầu API
         CustomerAccount customerAccount = new CustomerAccount.Builder()
                 .setTentaikhoan(email)
                 .setVerificationCode(code)
                 .build();
 
-        // Call API to verify the code
+        ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
         Call<ApiResponse> call = apiService.verifyCode(customerAccount);
         call.enqueue(new Callback<ApiResponse>() {
             @Override
@@ -98,35 +129,30 @@ public class xacthucmaemailhientai extends AppCompatActivity {
                     String message = response.body().getMessage();
                     Toast.makeText(xacthucmaemailhientai.this, "Xác thực thành công: " + message, Toast.LENGTH_SHORT).show();
 
-                    // Chuyển sang màn hình mới khi xác thực thành công
+                    // Chuyển sang màn hình khác
                     Intent intent = new Intent(xacthucmaemailhientai.this, manguimaemailmoi.class);
                     startActivity(intent);
                     finish();
                 } else {
                     String errorMessage = "Lỗi: " + response.code() + " - " + response.message();
                     Toast.makeText(xacthucmaemailhientai.this, errorMessage, Toast.LENGTH_SHORT).show();
-                    Log.d("VerificationRequest", "Response code: " + response.code() + ", message: " + response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse> call, Throwable t) {
                 Toast.makeText(xacthucmaemailhientai.this, "Lỗi mạng: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("VerificationRequest", "Error: " + t.getMessage(), t);
             }
         });
     }
 
     private void resendVerificationCode() {
-        // Send request to resend verification code
-        ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
-//        CustomerAccount customerAccount = new CustomerAccount();
-//        customerAccount.setTentaikhoan(email);
-
+        // Gửi yêu cầu gửi lại mã xác thực
         CustomerAccount customerAccount = new CustomerAccount.Builder()
                 .setTentaikhoan(email)
                 .build();
 
+        ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
         Call<ApiResponse> call = apiService.sendVerificationCode(customerAccount);
         call.enqueue(new Callback<ApiResponse>() {
             @Override
@@ -137,14 +163,12 @@ public class xacthucmaemailhientai extends AppCompatActivity {
                 } else {
                     String errorMessage = "Lỗi: " + response.code() + " - " + response.message();
                     Toast.makeText(xacthucmaemailhientai.this, errorMessage, Toast.LENGTH_SHORT).show();
-                    Log.d("ResendCodeRequest", "Response code: " + response.code() + ", message: " + response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse> call, Throwable t) {
                 Toast.makeText(xacthucmaemailhientai.this, "Lỗi mạng: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("ResendCodeRequest", "Error: " + t.getMessage(), t);
             }
         });
     }

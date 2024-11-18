@@ -14,7 +14,7 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiResponse;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiService;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.RetrofitClient;
-import com.example.datn_md03_ungdungmuabangiaysneakzone.model.CustomerAccount;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.TemporaryVerificationCode;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -68,24 +68,28 @@ public class DangKy extends AppCompatActivity {
                 return;
             }
 
-            // Tạo đối tượng CustomerAccount và thực hiện yêu cầu đăng ký
-//            CustomerAccount account = new CustomerAccount(ten, email, password);
-            CustomerAccount account = new CustomerAccount.Builder()
-                    .setHoten(ten)
-                    .setTentaikhoan(email)
-                    .setMatkhau(password)
-                    .build();
-            Call<ApiResponse> call = apiService.register(account);
+            // Tạo đối tượng TemporaryVerificationCode rỗng
+            TemporaryVerificationCode tempCode = new TemporaryVerificationCode();
+
+// Thiết lập các thuộc tính cần thiết
+            tempCode.setTentaikhoan(email); // Thiết lập email
+            tempCode.setHoten(ten); // Thiết lập tên
+            tempCode.setMatkhau(password); // Thiết lập mật khẩu
+// Các trường khác như verificationCode hoặc createdAt không cần thiết lập vì server xử lý
+
+
+            Call<ApiResponse> call = apiService.register(tempCode);
             call.enqueue(new Callback<ApiResponse>() {
                 @Override
                 public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                     if (response.isSuccessful() && response.body() != null) {
-                        Toast.makeText(DangKy.this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(DangKy.this, "Đăng ký tạm thời thành công!", Toast.LENGTH_SHORT).show();
 
-                        // Chuyển sang màn hình đăng nhập
-                        Intent intent = new Intent(DangKy.this, DangNhap.class);
+                        // Chuyển sang màn hình gửi mã xác thực
+                        Intent intent = new Intent(DangKy.this,Activity_manhinhguimadangky.class);
+                        intent.putExtra("email", email); // Gửi email để xác thực
                         startActivity(intent);
-                        finish(); // Đóng màn hình đăng ký để người dùng không quay lại được
+                        finish(); // Đóng màn hình đăng ký
                     } else {
                         Toast.makeText(DangKy.this, "Đăng ký thất bại!", Toast.LENGTH_SHORT).show();
                     }
@@ -96,7 +100,6 @@ public class DangKy extends AppCompatActivity {
                     Toast.makeText(DangKy.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
-
         });
     }
 }

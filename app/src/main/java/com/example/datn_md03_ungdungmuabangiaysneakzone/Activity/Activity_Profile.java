@@ -20,7 +20,7 @@ import com.google.android.material.navigation.NavigationBarView;
 public class Activity_Profile extends AppCompatActivity {
 
     TextView tvChinhSuaThongTin;
-    CardView cvChangePass, cvAdddiachi, cvOderForShop, cvChatBox;
+    CardView  cvAdddiachi, cvOderForShop, cvChatBox;
 
     BottomNavigationView bottomNavigationView;
     @Override
@@ -43,10 +43,7 @@ public class Activity_Profile extends AppCompatActivity {
             startActivity(new Intent(Activity_Profile.this, Activity_FixInfor.class));
         });
 
-        cvChangePass = findViewById(R.id.cvChangePass);
-        cvChangePass.setOnClickListener(view -> {
-            startActivity(new Intent(Activity_Profile.this, Activity_DoiMK.class));
-        });
+
 
         cvOderForShop = findViewById(R.id.cvOderForShop);
         cvOderForShop.setOnClickListener(view -> {

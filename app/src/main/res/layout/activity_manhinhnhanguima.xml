@@ -54,7 +54,7 @@
             android:contentDescription="Email Icon"
             android:layout_gravity="center_vertical"/>
 
-        <!-- Trường nhập email -->
+        <!-- Trường hien email -->
         <TextView
             android:id="@+id/tvEmaill"
             android:layout_width="0dp"
