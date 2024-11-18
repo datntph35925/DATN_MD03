@@ -35,7 +35,7 @@ router.get("/get-list-product", async (req, res) => {
   
           // Tạo một đối tượng sản phẩm mới với dữ liệu từ body
           const newProducts = new Products({
-              MaSaPham: data.MaSaPham,
+              MaSanPham: data.MaSanPham,
               TenSP: data.TenSP,
               ThuongHieu: data.ThuongHieu,
               KichThuoc: data.KichThuoc,
