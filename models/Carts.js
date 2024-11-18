@@ -13,7 +13,7 @@ const ProductItemSchema = new Schema({
 
 // Định nghĩa Schema cho GioHang
 const CartSchema = new Schema({
-  Matk: { type: Schema.Types.ObjectId, ref: 'CustomerAccounts', required: true, unique: true }, // Tham chiếu đến tài khoản người dùng
+  Tentaikhoan: { type: String, ref: 'CustomerAccounts', required: true, unique: true }, // Tham chiếu đến tài khoản người dùng
   SanPham: [ProductItemSchema], // Mảng chứa các sản phẩm trong giỏ hàng
   TongSoLuong: { type: Number, default: 0 }, // Tổng số lượng sản phẩm trong giỏ hàng
   TongGiaTri: { type: Number, default: 0 }, // Tổng giá trị của giỏ hàng
