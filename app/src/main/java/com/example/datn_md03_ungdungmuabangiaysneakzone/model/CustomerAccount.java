@@ -9,6 +9,7 @@ public class CustomerAccount {
     private int seq;
     private String verificationCode;
     private String EmailMoi;
+    private String MatkhauMoi; // Thêm trường MatkhauMoi
 
     // Constructor private để chỉ Builder có thể tạo đối tượng
     private CustomerAccount(Builder builder) {
@@ -20,6 +21,7 @@ public class CustomerAccount {
         this.seq = builder.seq;
         this.verificationCode = builder.verificationCode;
         this.EmailMoi = builder.emailMoi;
+        this.MatkhauMoi = builder.matkhauMoi; // Thêm MatkhauMoi từ Builder
     }
 
     // Getters
@@ -55,6 +57,15 @@ public class CustomerAccount {
         return EmailMoi;
     }
 
+    public String getMatkhauMoi() {
+        return MatkhauMoi;
+    }
+
+    // Setter cho MatkhauMoi
+    public void setMatkhauMoi(String matkhauMoi) {
+        this.MatkhauMoi = matkhauMoi;
+    }
+
     // Builder class
     public static class Builder {
         private String matk;
@@ -65,6 +76,7 @@ public class CustomerAccount {
         private int seq;
         private String verificationCode;
         private String emailMoi;
+        private String matkhauMoi; // Thêm trường này vào Builder
 
         public Builder setMatk(String matk) {
             this.matk = matk;
@@ -103,6 +115,11 @@ public class CustomerAccount {
 
         public Builder setEmailMoi(String emailMoi) {
             this.emailMoi = emailMoi;
+            return this;
+        }
+
+        public Builder setMatkhauMoi(String matkhauMoi) {
+            this.matkhauMoi = matkhauMoi;
             return this;
         }
 

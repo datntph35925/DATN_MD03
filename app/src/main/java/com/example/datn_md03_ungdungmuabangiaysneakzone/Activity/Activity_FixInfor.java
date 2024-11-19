@@ -46,5 +46,9 @@ public class Activity_FixInfor extends AppCompatActivity {
 
             startActivity(new Intent(Activity_FixInfor.this, manhinhnhanguima.class));
         });
+        btnChangePass.setOnClickListener(v -> {
+
+            startActivity(new Intent(Activity_FixInfor.this, Activity_DoiMK.class));
+        });
     }
 }

@@ -28,6 +28,10 @@
             android:name=".Activity.Manhinhguimathaydoimatkhau"
             android:exported="false" />
         <activity
+            android:name=".Activity.Xacthucmathaydoimatkhau"
+            android:exported="false" />
+
+        <activity
             android:name=".Activity.xacthucemailmoi"
             android:exported="false" />
         <activity

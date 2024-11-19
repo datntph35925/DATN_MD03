@@ -15,6 +15,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface ApiService {
     @POST("/auth/register")
@@ -53,5 +54,14 @@ public interface ApiService {
 
     @GET("/api/get-product-by-id/{id}")
     Call<Response<Product>> getProductById(@Path("id") String id);
+
+    @GET("/auth/chitiettaikhoan") // Đường dẫn API phù hợp
+    Call<CustomerAccount> getUserDetails(@Query("Tentaikhoan") String tentaikhoan);
+
+    @POST("/auth/doi-matkhau-tam-thoi")
+    Call<ApiResponse> saveTemporaryPassword(@Body CustomerAccount CustomerAccount);
+
+    @POST("/auth/xacthucma-doi-matkhau")
+    Call<ApiResponse> confirmCodeAndChangePassword(@Body CustomerAccount CustomerAccount);
 
 }

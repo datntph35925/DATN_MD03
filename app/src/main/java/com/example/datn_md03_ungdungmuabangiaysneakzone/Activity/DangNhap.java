@@ -104,6 +104,7 @@ public class DangNhap extends AppCompatActivity {
                             // Lưu Tentaikhoan vào SharedPreferences
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putString("Tentaikhoan", email); // Lưu email vào SharedPreferences
+
                             editor.apply();
 
                             // Chuyển sang MainActivity
