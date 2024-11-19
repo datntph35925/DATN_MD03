@@ -110,51 +110,51 @@ router.post('/add-cart/:userId', async (req, res) => {
 
 
 // Route để xóa một sản phẩm khỏi giỏ hàng
-// router.delete('/remove-item/:userId', async (req, res) => {
-//     try {
-//         const { userId } = req.params; // Lấy userId từ URL
-//         const { productId, size } = req.body; // Lấy productId và size từ body
+router.delete('/remove-item/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params; // Lấy userId từ URL
+        const { productId, size } = req.body; // Lấy productId và size từ body
 
-//         // Kiểm tra xem tài khoản người dùng có tồn tại không
-//         const userAccount = await CustomerAccounts.findOne({ Tentaikhoan: userId });
-//         if (!userAccount) {
-//             return res.status(404).json({ message: 'Tài khoản không tồn tại' });
-//         }
+        // Kiểm tra xem tài khoản người dùng có tồn tại không
+        const userAccount = await CustomerAccounts.findOne({ Tentaikhoan: userId });
+        if (!userAccount) {
+            return res.status(404).json({ message: 'Tài khoản không tồn tại' });
+        }
 
-//         // Tìm giỏ hàng của người dùng
-//         const cart = await Carts.findOne({ Tentaikhoan: userAccount.Tentaikhoan });
-//         if (!cart) {
-//             return res.status(404).json({ message: 'Giỏ hàng không tồn tại' });
-//         }
+        // Tìm giỏ hàng của người dùng
+        const cart = await Carts.findOne({ Tentaikhoan: userAccount.Tentaikhoan });
+        if (!cart) {
+            return res.status(404).json({ message: 'Giỏ hàng không tồn tại' });
+        }
 
-//         // Tìm sản phẩm cần xóa trong giỏ hàng
-//         const productIndex = cart.SanPham.findIndex(
-//             item => item.MaSanPham.toString() === productId && item.Size === size
-//         );
+        // Tìm sản phẩm cần xóa trong giỏ hàng
+        const productIndex = cart.SanPham.findIndex(
+            item => item.MaSanPham.toString() === productId && item.Size === size
+        );
 
-//         if (productIndex === -1) {
-//             return res.status(404).json({ message: 'Sản phẩm không tồn tại trong giỏ hàng' });
-//         }
+        if (productIndex === -1) {
+            return res.status(404).json({ message: 'Sản phẩm không tồn tại trong giỏ hàng' });
+        }
 
-//         // Xóa sản phẩm khỏi giỏ hàng
-//         cart.SanPham.splice(productIndex, 1);
+        // Xóa sản phẩm khỏi giỏ hàng
+        cart.SanPham.splice(productIndex, 1);
 
-//         // Cập nhật tổng số lượng và tổng giá trị của giỏ hàng
-//         cart.TongSoLuong = cart.SanPham.reduce((total, item) => total + item.SoLuongGioHang, 0);
-//         cart.TongGiaTri = cart.SanPham.reduce((total, item) => total + item.TongTien, 0);
+        // Cập nhật tổng số lượng và tổng giá trị của giỏ hàng
+        cart.TongSoLuong = cart.SanPham.reduce((total, item) => total + item.SoLuongGioHang, 0);
+        cart.TongGiaTri = cart.SanPham.reduce((total, item) => total + item.TongTien, 0);
 
-//         // Lưu lại giỏ hàng sau khi xóa sản phẩm
-//         await cart.save();
+        // Lưu lại giỏ hàng sau khi xóa sản phẩm
+        await cart.save();
 
-//         return res.status(200).json({
-//             message: 'Sản phẩm đã được xóa khỏi giỏ hàng thành công',
-//             cart
-//         });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ message: 'Có lỗi xảy ra khi xóa sản phẩm khỏi giỏ hàng' });
-//     }
-// });
+        return res.status(200).json({
+            message: 'Sản phẩm đã được xóa khỏi giỏ hàng thành công',
+            cart
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Có lỗi xảy ra khi xóa sản phẩm khỏi giỏ hàng' });
+    }
+});
 
 
 module.exports = router;
