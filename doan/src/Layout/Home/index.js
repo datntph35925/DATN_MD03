@@ -9,7 +9,7 @@ const { Header, Footer, Sider, Content } = Layout;
 const Home = () => {
   return (
     <Layout className="custom-layout">
-      <Header className="custom-header">Header</Header>s
+      <Header className="custom-header">SneakZone</Header>
       <Layout>
         <Sider width="20%" className="custom-sider">
           <Dashboard />

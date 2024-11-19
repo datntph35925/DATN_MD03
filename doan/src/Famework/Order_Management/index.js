@@ -1,7 +1,10 @@
+// QuanLyDonHang.js
 import React, { useState } from "react";
 import { Table, Tag, Button, Space, Popconfirm } from "antd";
+import OrderDetailModal from "../../Modal/MoldechitietDH";
 
-const QuanLyDonHang = () => {
+//Quản lý đơn hàng
+const Order_Management = () => {
   const [orders, setOrders] = useState([
     {
       key: "1",
@@ -20,6 +23,9 @@ const QuanLyDonHang = () => {
       totalAmount: "3,000,000 VND",
     },
   ]);
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   const columns = [
     {
@@ -55,11 +61,13 @@ const QuanLyDonHang = () => {
       key: "actions",
       render: (text, record) => (
         <Space size="middle">
-          <Button type="link">Xem Chi tiết</Button>
+          <Button type="link" onClick={() => showModal(record)}>
+            Xem Chi tiết
+          </Button>
           <Button type="link">Cập nhật Trạng thái</Button>
           <Popconfirm
             title="Bạn có chắc muốn hủy đơn hàng này không?"
-            onConfirm={() => handleCancel(record.key)}
+            onConfirm={() => handleCancelOrder(record.key)}
             okText="Có"
             cancelText="Không"
           >
@@ -72,16 +80,32 @@ const QuanLyDonHang = () => {
     },
   ];
 
-  const handleCancel = (key) => {
+  const showModal = (order) => {
+    setSelectedOrder(order);
+    setIsModalVisible(true);
+  };
+
+  const handleCancelOrder = (key) => {
     setOrders(orders.filter((order) => order.key !== key));
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+    setSelectedOrder(null);
   };
 
   return (
     <div>
       <h2>Quản lý Đơn hàng</h2>
       <Table columns={columns} dataSource={orders} rowKey="key" />
+
+      <OrderDetailModal
+        visible={isModalVisible}
+        onClose={handleCloseModal}
+        order={selectedOrder}
+      />
     </div>
   );
 };
 
-export default QuanLyDonHang;
+export default Order_Management;

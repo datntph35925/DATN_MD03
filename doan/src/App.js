@@ -1,12 +1,12 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./Page/Home";
+import Home from "./Layout/Home";
 import Login from "./Auth/Login";
 import Homes from "./Famework/Home";
-import Products from "./Famework/AddProduct";
-import QlDonHang from "./Famework/QLDonHang";
+import Products from "./Famework/Product";
+import QlDonHang from "./Famework/Order_Management/index";
 
-import Profile from "./Famework/QuanlyTK/Index";
+import Profile from "./Famework/Account_Management/Index";
 
 const App = () => {
   return (
