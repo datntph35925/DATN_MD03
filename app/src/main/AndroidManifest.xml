@@ -19,6 +19,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Activity.CapnhathotenActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.Activity_Manhinhxacthucdangky"
             android:exported="false" />
         <activity
@@ -30,7 +33,6 @@
         <activity
             android:name=".Activity.Xacthucmathaydoimatkhau"
             android:exported="false" />
-
         <activity
             android:name=".Activity.xacthucemailmoi"
             android:exported="false" />

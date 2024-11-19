@@ -8,6 +8,7 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.model.TemporaryVerificat
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -63,5 +64,10 @@ public interface ApiService {
 
     @POST("/auth/xacthucma-doi-matkhau")
     Call<ApiResponse> confirmCodeAndChangePassword(@Body CustomerAccount CustomerAccount);
+
+
+    @PUT("/auth/doi-hoten")
+    Call<ApiResponse> changeNameWithBody(@Body Map<String, String> params);
+
 
 }

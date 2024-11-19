@@ -15,7 +15,7 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
 
 public class Activity_FixInfor extends AppCompatActivity {
 
-    Button btnEmaill,btnChangePass;
+    Button btnEmaill,btnChangePass,btnName;
     ImageView imgBack_fixInfor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +29,7 @@ public class Activity_FixInfor extends AppCompatActivity {
             return insets;
         });
         // btnBack = findViewById(R.id.btnBack);
+        btnName = findViewById(R.id.btnName);
         btnEmaill = findViewById(R.id.btnEmaill);
         btnChangePass = findViewById(R.id.btnChangePass);
         imgBack_fixInfor = findViewById(R.id.imgBack_fixinfor);
@@ -42,6 +43,10 @@ public class Activity_FixInfor extends AppCompatActivity {
 //            finish(); // Kết thúc Activity hiện tại nếu muốn
 //        });
 
+        btnName.setOnClickListener(v -> {
+
+            startActivity(new Intent(Activity_FixInfor.this, CapnhathotenActivity.class));
+        });
         btnEmaill.setOnClickListener(v -> {
 
             startActivity(new Intent(Activity_FixInfor.this, manhinhnhanguima.class));
