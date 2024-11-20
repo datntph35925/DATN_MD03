@@ -4,7 +4,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const CustomerAccounts = require('../models/CustomerAccounts');
 const TemporaryVerificationCodes = require('../models/TemporaryVerificationCodes');
-
+const multer = require('multer');
+const path = require("path");
 const nodemailer = require('nodemailer');
 
 // Cấu hình tài khoản Gmail của bạn để gửi email
@@ -489,27 +490,96 @@ router.put('/doi-hoten', async (req, res) => {
         res.status(500).json({ message: 'Đã xảy ra lỗi khi đổi họ tên', error });
     }
 });
-// Route để đổi ảnh đại diện
-router.put('/doi-anh', async (req, res) => {
+// Cấu hình Multer để lưu ảnh vào thư mục 'uploads'
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/'); // Thư mục lưu ảnh
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname)); // Tên file là timestamp + extension
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    fileFilter: function (req, file, cb) {
+        const fileTypes = /jpeg|jpg|png|gif/;
+        const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
+        const mimetype = fileTypes.test(file.mimetype);
+
+        if (extname && mimetype) {
+            cb(null, true);
+        } else {
+            cb(new Error('Chỉ hỗ trợ các tệp hình ảnh có định dạng jpeg, jpg, png hoặc gif'));
+        }
+    }
+});
+
+// Route cập nhật ảnh đại diện
+router.put('/doi-anh', upload.single('AnhtkMoi'), async (req, res) => {
     try {
-        const { Tentaikhoan, AnhtkMoi } = req.body;
+        const { Tentaikhoan } = req.body;
+        const avatarFile = req.file;  // Lấy ảnh từ form
+
+        if (!avatarFile) {
+            return res.status(400).json({ message: 'Vui lòng chọn ảnh để cập nhật' });
+        }
 
         // Tìm người dùng theo tên tài khoản
         const user = await CustomerAccounts.findOne({ Tentaikhoan });
         if (!user) {
-            return res.status(400).json({ message: 'Tài khoản không tồn tại' });
+            return res.status(404).json({ message: 'Tài khoản không tồn tại' });
         }
 
-        // Cập nhật ảnh đại diện mới
-        user.Anhtk = AnhtkMoi;
+        // Cập nhật đường dẫn ảnh (sử dụng '/' thay cho '\\' để chuẩn hóa đường dẫn)
+        user.Anhtk = avatarFile.path.replace(/\\/g, '/'); // Thay '\\' thành '/'
         await user.save();
 
-        res.status(200).json({ message: 'Ảnh đại diện đã được cập nhật thành công' });
+        res.status(200).json({ 
+            message: 'Ảnh đại diện đã được cập nhật thành công', 
+            avatarUrl: user.Anhtk 
+        });
     } catch (error) {
         console.error('Lỗi khi đổi ảnh đại diện:', error);
         res.status(500).json({ message: 'Đã xảy ra lỗi khi đổi ảnh đại diện', error });
     }
 });
+router.get('/chitiettaikhoan', async (req, res) => {
+    try {
+        // Lấy Tentaikhoan từ query params
+        const { Tentaikhoan } = req.query;
+
+        // Kiểm tra nếu không có Tentaikhoan
+        if (!Tentaikhoan) {
+            return res.status(400).json({ 
+                message: 'Thiếu thông tin Tentaikhoan' 
+            });
+        }
+
+        // Tìm user theo Tentaikhoan
+        const user = await CustomerAccounts.findOne({ Tentaikhoan: Tentaikhoan });
+
+        // Kiểm tra nếu không tìm thấy user
+        if (!user) {
+            return res.status(404).json({ 
+                message: 'Không tìm thấy người dùng' 
+            });
+        }
+
+        // Trả về thông tin người dùng
+        res.status(200).json({
+            Tentaikhoan: user.Tentaikhoan,
+            Hoten: user.Hoten,
+            Anhtk: user.Anhtk
+        });
+    } catch (error) {
+        console.error('Lỗi khi lấy thông tin tài khoản:', error);
+        res.status(500).json({ 
+            message: 'Đã xảy ra lỗi trong quá trình xử lý' 
+        });
+    }
+});
+
 
 
 module.exports = router;
