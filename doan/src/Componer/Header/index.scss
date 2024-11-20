@@ -1,0 +1,18 @@
+.container_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    height: 64px;
+    background: #001529;
+    color: #fff;
+  }
+  
+  .container_header .ant-avatar {
+    margin-right: 8px;
+  }
+  
+  .container_header .ant-badge {
+    cursor: pointer;
+  }
+  

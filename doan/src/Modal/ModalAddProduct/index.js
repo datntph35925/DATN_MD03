@@ -1,57 +1,43 @@
-import React, { useState } from "react";
-import { Modal, Button, Form, Input, Space, message, InputNumber } from "antd";
+import React, { useEffect, useState } from "react";
+import { Modal, Button, Form, Input, Space, InputNumber, message } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
-import { addProduct } from "../../Server/ProductsApi"; // Điều chỉnh đường dẫn nếu cần thiết
 
-const AddProductModal = ({ visible, onAdd, onCancel }) => {
+const AddProductModal = ({ visible, onAdd, onCancel, initialValues }) => {
   const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Xử lý khi gửi form
+  // Set giá trị ban đầu khi mở modal
+  useEffect(() => {
+    if (initialValues) {
+      form.setFieldsValue(initialValues);
+    } else {
+      form.resetFields();
+    }
+  }, [initialValues, form]);
+
   const handleAddProduct = async () => {
     try {
-      // Xác minh các trường dữ liệu
       const values = await form.validateFields();
-      console.log(values);
-
-      // Kiểm tra và xử lý giá trị GiaBan
-      const giaBan = parseFloat(values.GiaBan);
-      if (isNaN(giaBan)) {
-        throw new Error("Giá bán không hợp lệ");
-      }
-
-      const productData = {
-        MaSanPham: values.MaSanPham, // Đảm bảo key đúng với backend
-        TenSP: values.TenSP,
-        GiaBan: giaBan, // Chuyển sang kiểu số
-        ThuongHieu: values.Thuonghieu,
-        KichThuoc: values.KichThuoc.map((item) => ({
-          size: item.Size, // Chuyển từ Size sang size
-          soLuongTon: parseInt(item.Quantity, 10), // Chuyển số lượng sang số nguyên, từ Quantity sang soLuongTon
-        })),
-        HinhAnh: Array.isArray(values.HinhAnh)
-          ? values.HinhAnh
-          : [values.HinhAnh], // Đảm bảo là mảng
-        MoTa: values.MoTa,
-      };
-
-      // Đặt trạng thái đang gửi
       setIsSubmitting(true);
 
-      // Gọi API để thêm sản phẩm
-      const response = await addProduct(productData);
+      // Chuẩn hóa dữ liệu trước khi gửi
+      const formattedValues = {
+        ...values,
+        KichThuoc: values.KichThuoc.map((item) => ({
+          size: item.size,
+          soLuongTon: parseInt(item.soLuongTon, 10),
+        })),
+      };
 
-      if (response.status === 200) {
-        message.success("Sản phẩm đã được thêm thành công!");
-        onAdd(response.data.data); // Thông báo cho thành phần cha về dữ liệu sản phẩm mới
-        form.resetFields(); // Xóa các trường sau khi thêm thành công
-      } else {
-        message.error("Không thể thêm sản phẩm, vui lòng thử lại!");
-      }
-    } catch (error) {
-      message.error(
-        "Đã xảy ra lỗi: " + (error.message || "Kiểm tra lại thông tin!")
+      onAdd(formattedValues);
+      message.success(
+        initialValues
+          ? "Sản phẩm đã được cập nhật!"
+          : "Sản phẩm đã được thêm thành công!"
       );
+      form.resetFields();
+    } catch (error) {
+      message.error("Vui lòng kiểm tra lại thông tin!");
     } finally {
       setIsSubmitting(false);
     }
@@ -60,10 +46,10 @@ const AddProductModal = ({ visible, onAdd, onCancel }) => {
   return (
     <Modal
       visible={visible}
-      title="Thêm Sản phẩm"
+      title={initialValues ? "Sửa Sản phẩm" : "Thêm Sản phẩm"}
       onOk={handleAddProduct}
       onCancel={onCancel}
-      confirmLoading={isSubmitting} // Hiển thị trạng thái tải khi gửi
+      confirmLoading={isSubmitting}
     >
       <Form form={form} layout="vertical">
         <Form.Item
@@ -85,10 +71,10 @@ const AddProductModal = ({ visible, onAdd, onCancel }) => {
           label="Giá bán"
           rules={[{ required: true, message: "Vui lòng nhập giá bán!" }]}
         >
-          <Input type="number" />
+          <InputNumber min={0} style={{ width: "100%" }} />
         </Form.Item>
         <Form.Item
-          name="Thuonghieu"
+          name="ThuongHieu"
           label="Thương hiệu"
           rules={[{ required: true, message: "Vui lòng nhập thương hiệu!" }]}
         >
@@ -101,28 +87,20 @@ const AddProductModal = ({ visible, onAdd, onCancel }) => {
                 {fields.map(({ key, name }) => (
                   <Space key={key} style={{ display: "flex", marginBottom: 8 }}>
                     <Form.Item
-                      name={[name, "Size"]}
+                      name={[name, "size"]}
                       rules={[
                         { required: true, message: "Vui lòng nhập size!" },
                       ]}
                     >
-                      <InputNumber
-                        placeholder="Kích thước"
-                        min={1} // Giới hạn giá trị tối thiểu
-                        style={{ width: "100%" }} // Đảm bảo kích thước đẹp
-                      />
+                      <InputNumber placeholder="Kích thước" min={1} />
                     </Form.Item>
                     <Form.Item
-                      name={[name, "Quantity"]}
+                      name={[name, "soLuongTon"]}
                       rules={[
                         { required: true, message: "Vui lòng nhập số lượng!" },
                       ]}
                     >
-                      <InputNumber
-                        placeholder="Số lượng"
-                        min={1} // Giới hạn giá trị tối thiểu
-                        style={{ width: "100%" }}
-                      />
+                      <InputNumber placeholder="Số lượng" min={1} />
                     </Form.Item>
                     <CloseOutlined onClick={() => remove(name)} />
                   </Space>
@@ -134,7 +112,6 @@ const AddProductModal = ({ visible, onAdd, onCancel }) => {
             )}
           </Form.List>
         </Form.Item>
-
         <Form.Item
           name="HinhAnh"
           label="Ảnh sản phẩm"

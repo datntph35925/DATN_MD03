@@ -8,10 +8,9 @@ import {
   Descriptions,
   message,
 } from "antd";
-import { getListAccount } from "../../Server/account_api"; // Adjust the path to your API functions
+import { getListAccount, deleteAccounts } from "../../Server/account_api"; // Adjust the path to your API functions
 
 // quản lý tài khoản
-
 const Account_Management = () => {
   const [customers, setCustomers] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -24,7 +23,7 @@ const Account_Management = () => {
       setLoading(true);
       try {
         const data = await getListAccount();
-        console.log("acount", data);
+        console.log("account data", data);
         setCustomers(
           data.map((customer) => ({
             key: customer._id,
@@ -83,7 +82,7 @@ const Account_Management = () => {
           </Button>
           <Popconfirm
             title="Are you sure to delete this customer?"
-            onConfirm={() => handleDelete(record.key)}
+            onConfirm={() => handleDelete(record.key)} // Call delete with the account ID
             okText="Yes"
             cancelText="No"
           >
@@ -97,9 +96,20 @@ const Account_Management = () => {
   ];
 
   // Delete customer handler
-  const handleDelete = (key) => {
-    setCustomers(customers.filter((customer) => customer.key !== key));
-    message.success("Customer deleted successfully");
+  const handleDelete = async (accountId) => {
+    setLoading(true); // Set loading state to true during API call
+    try {
+      // Call the delete API
+      await deleteAccounts(accountId);
+      // Remove the deleted account from the local state
+      setCustomers(customers.filter((customer) => customer.key !== accountId));
+      message.success("Customer deleted successfully");
+    } catch (error) {
+      message.error("Failed to delete customer");
+      console.error("Error deleting customer:", error);
+    } finally {
+      setLoading(false); // Reset loading state
+    }
   };
 
   // Open modal and set selected customer

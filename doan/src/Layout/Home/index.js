@@ -3,13 +3,13 @@ import "./index.scss";
 import { Layout } from "antd";
 import Dashboard from "../Dashboard/Index"; // Import Dashboard
 import { Outlet } from "react-router-dom"; // Import Outlet
-
-const { Header, Footer, Sider, Content } = Layout;
+import Header from "../../Componer/Header";
+const { Footer, Sider, Content } = Layout;
 
 const Home = () => {
   return (
     <Layout className="custom-layout">
-      <Header className="custom-header">SneakZone</Header>
+      <Header />
       <Layout>
         <Sider width="20%" className="custom-sider">
           <Dashboard />

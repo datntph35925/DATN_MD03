@@ -9,5 +9,13 @@ const getListAccount = async () => {
     throw error; // Re-throw error for handling in calling functions
   }
 };
-
-export { getListAccount };
+const deleteAccounts = async (accountId) => {
+  try {
+    const response = await axios.delete(`/auth/delete-account/${accountId}`);
+    return response.data; // Return the response data (e.g., success message)
+  } catch (error) {
+    console.error("Error deleting account:", error);
+    throw error; // Re-throw error for handling in calling functions
+  }
+};
+export { getListAccount, deleteAccounts };

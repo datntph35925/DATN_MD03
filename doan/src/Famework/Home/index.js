@@ -33,39 +33,43 @@ const Dashboard = () => {
     },
     {
       count: 5,
-      label: "Đơn hàng chưa xử lý",
+      label: "ĐH chưa xử lý",
       icon: <ProductOutlined />,
     },
   ];
 
   return (
     <div className="dashboard-container">
-      <Row gutter={[16, 16]} justify="space-between">
-        {data.map((item, index) => (
-          <Col xs={24} sm={12} md={8} lg={4} key={index}>
-            <Card
-              className="dashboard-card"
-              style={{ backgroundColor: item.color }}
-              hoverable
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.05)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1)";
-              }}
-            >
-              <div className="card-content">
-                <div className="card-count">{item.count}</div>
-                <div className="card-label">
-                  {item.icon} <span>{item.label}</span>
+      <div className="menu">
+        <Row gutter={[16, 16]} justify="space-between">
+          {data.map((item, index) => (
+            <Col xs={24} sm={12} md={8} lg={4} key={index}>
+              <Card
+                className="dashboard-card"
+                style={{ backgroundColor: item.color }}
+                hoverable
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "scale(1.05)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "scale(1)";
+                }}
+              >
+                <div className="card-content">
+                  <div className="card-count">{item.count}</div>
+                  <div className="card-label">
+                    {item.icon} <span>{item.label}</span>
+                  </div>
+                  <div className="card-detail">Chi tiết ➡️</div>
                 </div>
-                <div className="card-detail">Chi tiết ➡️</div>
-              </div>
-            </Card>
-          </Col>
-        ))}
-      </Row>
-      <Bieudo />
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </div>
+      <div className="bieudo">
+        <Bieudo />
+      </div>
     </div>
   );
 };

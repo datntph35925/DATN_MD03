@@ -31,13 +31,10 @@ const ApexChart = () => {
       curve: "straight",
     },
     title: {
-      text: "Fundamental Analysis of Stocks",
+      text: "Thông kê doanh thu",
       align: "left",
     },
-    subtitle: {
-      text: "Price Movements",
-      align: "left",
-    },
+
     labels: monthDataSeries1.dates,
     xaxis: {
       type: "datetime",

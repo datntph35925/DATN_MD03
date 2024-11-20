@@ -31,5 +31,24 @@ const deleteProductById = async (productId) => {
     return null;
   }
 };
+const updateProductById = async (productId, updatedData) => {
+  try {
+    const response = await axios.put(`/api/update-product-by-id`, {
+      productId,
+      ...updatedData,
+    });
 
-export { getProduct, addProduct, deleteProductById };
+    if (response.status === 200) {
+      console.log("Product updated successfully");
+      return response.data; // Return the updated product data
+    } else {
+      console.error("Failed to update product");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error updating product:", error);
+    return null;
+  }
+};
+
+export { getProduct, addProduct, deleteProductById, updateProductById };
