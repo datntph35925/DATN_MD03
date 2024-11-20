@@ -21,6 +21,9 @@ const io = socketIo(server); // Gắn socket.io vào server
 // Cấu hình để phục vụ tệp tĩnh từ thư mục 'public'
 app.use(express.static(path.join(__dirname, "public")));
 
+// Cấu hình để phục vụ các tệp tĩnh từ thư mục 'uploads'
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Cài đặt view engine
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "hbs");
