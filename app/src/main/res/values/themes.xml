@@ -1,20 +1,67 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+
+    <!-- Base application theme -->
     <style name="Base.Theme.DATN_MD03_UngDungMuaBanGiaySneakZone" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- Màu sắc chính -->
+        <item name="colorPrimary">@color/primaryBlue</item>
+        <item name="colorPrimaryVariant">@color/primaryBlueDark</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Màu nền -->
+        <item name="android:windowBackground">@color/lightGrayBackground</item>
+
+        <item name="colorOnBackground">@color/black</item>
+
+        <!-- Màu nhấn -->
+        <item name="colorAccent">@color/secondaryBlue</item>
+
+        <!-- Hiệu ứng Ripple -->
+        <item name="android:colorControlHighlight">@color/rippleEffect</item>
+
+        <!-- Font mặc định -->
+
     </style>
 
+    <!-- Application theme -->
     <style name="Theme.DATN_MD03_UngDungMuaBanGiaySneakZone" parent="Base.Theme.DATN_MD03_UngDungMuaBanGiaySneakZone" />
 
+    <!-- Text Styles -->
     <style name="textStyle" parent="Widget.AppCompat.TextView">
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@color/black</item>
+
     </style>
+
     <style name="textStyleBold" parent="Widget.AppCompat.TextView">
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textStyle">bold</item>
 
     </style>
+
+    <!-- Button Styles -->
+    <style name="buttonStylePrimary" parent="Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">@color/primaryBlue</item>
+        <item name="android:textColor">@color/white</item>
+
+        <item name="android:textSize">16sp</item>
+        <item name="android:padding">12dp</item>
+    </style>
+
+    <style name="buttonStyleSecondary" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:backgroundTint">@color/white</item>
+        <item name="android:textColor">@color/primaryBlue</item>
+        <item name="android:strokeColor">@color/primaryBlue</item>
+
+        <item name="android:textSize">16sp</item>
+        <item name="android:padding">12dp</item>
+    </style>
+
+    <!-- CardView Style -->
+    <style name="cardViewStyle" parent="Widget.MaterialComponents.CardView">
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">6dp</item>
+        <item name="cardBackgroundColor">@color/white</item>
+    </style>
+
 </resources>

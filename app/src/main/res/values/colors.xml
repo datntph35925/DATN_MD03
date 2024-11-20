@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="colorButton">#FF5733</color>
-    <color name="blue">#30A0E0</color>
-    <color name="lightGrey">#D3D3D3</color>
-    <color name="Grey">#808080</color>
-    <color name="gray_4dd">#4dd9d9d9</color>
-    <color name="gray_d9d">#d9d9d9</color>
+    <!-- Các màu cơ bản -->
+    <color name="black">#FF000000</color> <!-- Màu đen -->
+    <color name="white">#FFFFFFFF</color> <!-- Màu trắng -->
+    <color name="colorButton">#FF5733</color> <!-- Màu cam cho nút -->
+    <color name="blue">#30A0E0</color> <!-- Màu xanh nhẹ -->
+    <color name="lightGrey">#D3D3D3</color> <!-- Màu xám nhạt -->
+    <color name="Grey">#808080</color> <!-- Màu xám trung bình -->
+    <color name="gray_4dd">#4DD9D9D9</color> <!-- Xám mờ -->
+    <color name="gray_d9d">#D9D9D9</color> <!-- Xám nhạt hơn -->
 
+    <!-- Các màu bổ sung từ theme -->
+    <color name="primaryBlue">#4A90E2</color> <!-- Màu xanh chính -->
+    <color name="primaryBlueDark">#357ABD</color> <!-- Màu xanh đậm -->
+    <color name="secondaryBlue">#5AC8FA</color> <!-- Màu xanh nhấn -->
+    <color name="lightGrayBackground">#F5F5F5</color> <!-- Màu nền xám nhạt -->
+    <color name="rippleEffect">#D1E9FF</color> <!-- Màu hiệu ứng chạm -->
 </resources>

@@ -179,6 +179,9 @@ public class activity_update_avatar extends AppCompatActivity {
             public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(activity_update_avatar.this, "Cập nhật ảnh thành công!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(activity_update_avatar.this, Manhinhthanhconganimation.class);
+                  startActivity(intent);
+//                    finish(); // Kết thúc Activity hiện tại nếu muốn
                 } else {
                     Toast.makeText(activity_update_avatar.this, "Lỗi khi cập nhật ảnh", Toast.LENGTH_SHORT).show();
                 }
