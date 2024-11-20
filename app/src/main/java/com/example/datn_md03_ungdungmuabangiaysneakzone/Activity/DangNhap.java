@@ -51,79 +51,67 @@ public class DangNhap extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
 
         // Xử lý sự kiện khi bấm vào nút Đăng Ký
-        btnDangKy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(DangNhap.this, DangKy.class);
-                startActivity(intent);
-            }
+        btnDangKy.setOnClickListener(view -> {
+            Intent intent = new Intent(DangNhap.this, DangKy.class);
+            startActivity(intent);
         });
 
         // Xử lý sự kiện khi bấm vào TextView Quên Mật Khẩu
-        textviewQMK.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(DangNhap.this, Activity_QuenMatKhau.class);
-                startActivity(intent);
-            }
+        textviewQMK.setOnClickListener(view -> {
+            Intent intent = new Intent(DangNhap.this, Activity_QuenMatKhau.class);
+            startActivity(intent);
         });
 
         // Xử lý sự kiện khi bấm vào nút Đăng Nhập
-        btnDangNhap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String email = editTextEmail.getText().toString().trim();
-                String password = editTextPassword.getText().toString().trim();
+        btnDangNhap.setOnClickListener(view -> {
+            String email = editTextEmail.getText().toString().trim();
+            String password = editTextPassword.getText().toString().trim();
 
-                if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    Toast.makeText(DangNhap.this, "Vui lòng nhập email hợp lệ!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (password.isEmpty()) {
-                    Toast.makeText(DangNhap.this, "Vui lòng nhập mật khẩu!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                // Chuẩn bị dữ liệu đăng nhập
-//                CustomerAccount account = new CustomerAccount(email, password);
-                CustomerAccount account = new CustomerAccount.Builder()
-                        .setTentaikhoan(email)
-                        .setMatkhau(password)
-                        .build();
-
-
-                // Gọi API để đăng nhập
-                apiService.login(account).enqueue(new Callback<ApiResponse>() {
-                    @Override
-                    public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            // Xử lý đăng nhập thành công
-                            Toast.makeText(DangNhap.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-
-                            // Lưu Tentaikhoan vào SharedPreferences
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString("Tentaikhoan", email); // Lưu email vào SharedPreferences
-
-                            editor.apply();
-
-                            // Chuyển sang MainActivity
-                            Intent intent = new Intent(DangNhap.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                        } else {
-                            // Xử lý đăng nhập thất bại
-                            Toast.makeText(DangNhap.this, "Đăng nhập thất bại. Vui lòng thử lại!", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ApiResponse> call, Throwable t) {
-                        // Xử lý lỗi kết nối
-                        Toast.makeText(DangNhap.this, "Lỗi kết nối. Vui lòng thử lại!", Toast.LENGTH_SHORT).show();
-                    }
-                });
+            if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                Toast.makeText(DangNhap.this, "Vui lòng nhập email hợp lệ!", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            if (password.isEmpty()) {
+                Toast.makeText(DangNhap.this, "Vui lòng nhập mật khẩu!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Chuẩn bị dữ liệu đăng nhập
+            CustomerAccount account = new CustomerAccount.Builder()
+                    .setTentaikhoan(email)
+                    .setMatkhau(password)
+                    .build();
+
+            // Gọi API để đăng nhập
+            apiService.login(account).enqueue(new Callback<ApiResponse>() {
+                @Override
+                public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        // Xử lý đăng nhập thành công
+                        Toast.makeText(DangNhap.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+
+                        // Lưu Tentaikhoan vào SharedPreferences
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("Tentaikhoan", email); // Lưu email vào SharedPreferences
+                        editor.apply();
+
+                        // Chuyển sang MainActivity
+                        Intent intent = new Intent(DangNhap.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        // Xử lý đăng nhập thất bại
+                        Toast.makeText(DangNhap.this, "Đăng nhập thất bại. Vui lòng thử lại!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ApiResponse> call, Throwable t) {
+                    // Xử lý lỗi kết nối
+                    Toast.makeText(DangNhap.this, "Lỗi kết nối. Vui lòng thử lại!", Toast.LENGTH_SHORT).show();
+                }
+            });
         });
     }
 }

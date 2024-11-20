@@ -10,11 +10,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -69,5 +73,10 @@ public interface ApiService {
     @PUT("/auth/doi-hoten")
     Call<ApiResponse> changeNameWithBody(@Body Map<String, String> params);
 
-
+    @Multipart
+    @PUT("/auth/doi-anh") // Endpoint của API trên server
+    Call<ApiResponse> uploadAvatar(
+            @Part("Tentaikhoan") RequestBody tentaikhoan, // Truyền tên tài khoản
+            @Part MultipartBody.Part image // Truyền file ảnh
+    );
 }

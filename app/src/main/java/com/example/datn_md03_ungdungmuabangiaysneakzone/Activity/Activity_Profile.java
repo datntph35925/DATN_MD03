@@ -92,7 +92,7 @@ public class Activity_Profile extends AppCompatActivity {
                     CustomerAccount account = response.body();
 
                     // Debug log để kiểm tra dữ liệu trả về từ API
-                    Log.d(TAG, "Dữ liệu tài khoản từ API: " + account.toString());
+                    Log.d(TAG, "Dữ liệu tài khoản từ API: " + account);
 
                     // Hiển thị họ tên
                     tvNameProduct.setText(account.getHoten() != null ? account.getHoten() : "Chưa cập nhật");
@@ -100,8 +100,10 @@ public class Activity_Profile extends AppCompatActivity {
                     // Hiển thị ảnh đại diện
                     String avatarUrl = account.getAnhtk();
                     if (avatarUrl != null && !avatarUrl.isEmpty()) {
+                        // Kiểm tra và xây dựng URL đầy đủ cho ảnh
+                        String imageUrl = "http://10.0.2.2:3000/" + avatarUrl;
                         Glide.with(Activity_Profile.this)
-                                .load(avatarUrl)
+                                .load(imageUrl)
                                 .placeholder(R.drawable.anh1) // Ảnh mặc định khi đang tải
                                 .error(R.drawable.anh1)       // Ảnh lỗi khi tải thất bại
                                 .into(imgAvatarProfile);
@@ -125,9 +127,6 @@ public class Activity_Profile extends AppCompatActivity {
             }
         });
     }
-
-
-
 
     private void setClickListeners() {
         tvChinhSuaThongTin.setOnClickListener(view -> {
