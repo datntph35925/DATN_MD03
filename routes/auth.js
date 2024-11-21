@@ -7,6 +7,7 @@ const TemporaryVerificationCodes = require('../models/TemporaryVerificationCodes
 const multer = require('multer');
 const path = require("path");
 const nodemailer = require('nodemailer');
+const Admin = require('../models/Admin'); 
 
 // Cấu hình tài khoản Gmail của bạn để gửi email
 const transporter = nodemailer.createTransport({
@@ -17,7 +18,78 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+// Đăng nhập admin
+router.post('/login-admin', async (req, res) => {
+    const { username, password } = req.body;
 
+    try {
+        // Tìm admin với username (email)
+        const admin = await Admin.findOne({ username });
+        if (!admin) {
+            return res.status(404).json({ message: 'Tài khoản không tồn tại!' });
+        }
+
+        // Kiểm tra mật khẩu
+        if (admin.password !== password) {
+            return res.status(401).json({ message: 'Mật khẩu không chính xác!' });
+        }
+
+        // Đăng nhập thành công
+        res.json({ message: 'Đăng nhập thành công!' });
+    } catch (err) {
+        res.status(500).json({ message: 'Có lỗi xảy ra!', error: err.message });
+    }
+});
+
+// Đổi mật khẩu
+router.post('/change-password-admin', async (req, res) => {
+    const { username, oldPassword, newPassword } = req.body;
+
+    try {
+        // Tìm admin
+        const admin = await Admin.findOne({ username });
+        if (!admin) {
+            return res.status(404).json({ message: 'Tài khoản không tồn tại!' });
+        }
+
+        // Kiểm tra mật khẩu cũ
+        if (admin.password !== oldPassword) {
+            return res.status(401).json({ message: 'Mật khẩu cũ không chính xác!' });
+        }
+
+        // Cập nhật mật khẩu mới
+        admin.password = newPassword;
+        await admin.save();
+
+        res.json({ message: 'Đổi mật khẩu thành công!' });
+    } catch (err) {
+        res.status(500).json({ message: 'Có lỗi xảy ra!', error: err.message });
+    }
+});
+
+// Quên mật khẩu (khôi phục mật khẩu)
+router.post('/forgot-password-admin', async (req, res) => {
+    const { username } = req.body;
+
+    try {
+        // Tìm admin
+        const admin = await Admin.findOne({ username });
+        if (!admin) {
+            return res.status(404).json({ message: 'Tài khoản không tồn tại!' });
+        }
+
+        // Tạo mật khẩu tạm thời
+        const tempPassword = 'temp1234'; // Bạn có thể random mật khẩu
+        admin.password = tempPassword;
+        await admin.save();
+
+        res.json({
+            message: `Mật khẩu tạm thời đã được đặt thành công. Mật khẩu mới là: ${tempPassword}`
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'Có lỗi xảy ra!', error: err.message });
+    }
+});
 //  Route đăng ký (Kiểm tra thông tin và gửi mã xác thực)
 router.post('/register', async (req, res) => {
     try {
