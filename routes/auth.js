@@ -35,7 +35,7 @@ router.post('/dang-nhap-admin', async (req, res) => {
 
         // Tạo mã OTP
         const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-        const codeExpiry = new Date(Date.now() + 10 * 60 * 1000); // Hết hạn sau 10 phút
+        const codeExpiry = new Date(Date.now() + 3 * 60 * 1000); // Hết hạn sau 3 phút
 
         // Lưu mã OTP và thời gian hết hạn
         admin.verificationCode = verificationCode;
@@ -103,7 +103,7 @@ router.post('/gui-ma-doi-mat-khau-admin', async (req, res) => {
 
         // Tạo mã OTP
         const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-        const codeExpiry = new Date(Date.now() + 10 * 60 * 1000); // Hết hạn sau 10 phút
+        const codeExpiry = new Date(Date.now() + 3 * 60 * 1000); // Hết hạn sau 3 phút
 
         // Lưu mã OTP và thời gian hết hạn
         admin.verificationCode = verificationCode;
@@ -115,7 +115,7 @@ router.post('/gui-ma-doi-mat-khau-admin', async (req, res) => {
             from: 'datnmd03@gmail.com',
             to: username,
             subject: 'Mã xác thực đổi mật khẩu',
-            text: `Mã xác thực của bạn là: ${verificationCode}. Mã này có hiệu lực trong 10 phút.`
+            text: `Mã xác thực của bạn là: ${verificationCode}. Mã này có hiệu lực trong 3 phút.`
         });
 
         res.json({ message: 'Mã xác thực đã được gửi tới email!' });
@@ -167,7 +167,7 @@ router.post('/gui-ma-dat-lai-mat-khau-admin', async (req, res) => {
 
         // Tạo mã OTP
         const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-        const codeExpiry = new Date(Date.now() + 10 * 60 * 1000); // Hết hạn sau 10 phút
+        const codeExpiry = new Date(Date.now() + 3 * 60 * 1000); // Hết hạn sau 3 phút
 
         // Lưu mã OTP và thời gian hết hạn
         admin.verificationCode = verificationCode;
@@ -179,7 +179,7 @@ router.post('/gui-ma-dat-lai-mat-khau-admin', async (req, res) => {
             from: 'datnmd03@gmail.com',
             to: username,
             subject: 'Mã xác thực đặt lại mật khẩu',
-            text: `Mã xác thực của bạn là: ${verificationCode}. Mã này có hiệu lực trong 10 phút.`
+            text: `Mã xác thực của bạn là: ${verificationCode}. Mã này có hiệu lực trong 3 phút.`
         });
 
         res.json({ message: 'Mã xác thực đã được gửi tới email!' });
