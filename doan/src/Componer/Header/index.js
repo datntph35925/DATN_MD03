@@ -3,7 +3,6 @@ import { Avatar, Badge, Dropdown, Menu } from "antd";
 import { BellOutlined, UserOutlined, LogoutOutlined } from "@ant-design/icons";
 
 const Header = () => {
-  // Mock user data
   const user = {
     name: "John Doe",
     avatar: "",
@@ -11,10 +10,8 @@ const Header = () => {
 
   const handleLogout = () => {
     console.log("Logging out...");
-    // Add logout functionality here
   };
 
-  // User menu dropdown items
   const userMenu = (
     <Menu>
       <Menu.Item key="1" icon={<UserOutlined />}>
@@ -26,7 +23,6 @@ const Header = () => {
     </Menu>
   );
 
-  // Notifications dropdown items
   const notificationsMenu = (
     <Menu>
       <Menu.Item key="1">You have a new message</Menu.Item>

@@ -53,7 +53,7 @@ const Dashboard = () => {
         <Link to="/products">Sản phẩm</Link>
       </Menu.Item>
       <Menu.Item key="4" icon={<BarChartOutlined />}>
-        Thống kê
+        <Link to="/thongke"> Thống kê</Link>
       </Menu.Item>
       <Menu.Item key="5" icon={<OrderedListOutlined />}>
         <Link to="/Quanlydonhang">Quản lý đơn hàng</Link>
