@@ -44,10 +44,10 @@ public class Activity_FixInfor extends AppCompatActivity {
 //            finish(); // Kết thúc Activity hiện tại nếu muốn
 //        });
 
-//        btn_Imgae.setOnClickListener(v -> {
-//
-//            startActivity(new Intent(Activity_FixInfor.this, activity_update_avatar.class ));
-//        });
+        btn_Imgae.setOnClickListener(v -> {
+
+            startActivity(new Intent(Activity_FixInfor.this, activity_update_avatar.class ));
+        });
         btnName.setOnClickListener(v -> {
 
             startActivity(new Intent(Activity_FixInfor.this, CapnhathotenActivity.class));
