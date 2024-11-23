@@ -1,30 +1,27 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.api;
 
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.CustomerAccount;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ChatMessage;
 
-public class ApiResponse {
-    private String message;
-    private String token; // Nếu API đăng nhập trả về token
-    private String id;
-    private CustomerAccount data;
+import java.util.List;
 
-    public CustomerAccount getData() {
-        return data;
-    }
-
-    public void setData(CustomerAccount data) {
-        this.data = data;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
+public class ApiResponse<T> {
+    private boolean success; // Trường success được thêm từ phần Stashed changes
+    private String message; // Thông báo từ server
+    private String token; // Token nếu API đăng nhập trả về
+    private String id; // ID được trả về từ server
+    private CustomerAccount data; // Dữ liệu chi tiết của tài khoản khách hàng
+    private List<ChatMessage> messages; // Danh sách tin nhắn từ server
 
     // Getters và Setters
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
     public String getMessage() {
         return message;
     }
@@ -40,5 +37,28 @@ public class ApiResponse {
     public void setToken(String token) {
         this.token = token;
     }
-}
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public CustomerAccount getData() {
+        return data;
+    }
+
+    public void setData(CustomerAccount data) {
+        this.data = data;
+    }
+
+    public List<ChatMessage> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<ChatMessage> messages) {
+        this.messages = messages;
+    }
+}

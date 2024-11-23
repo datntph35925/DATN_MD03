@@ -141,6 +141,9 @@ public class Activity_Profile extends AppCompatActivity {
             startActivity(new Intent(Activity_Profile.this, Activity_DonHang.class));
         });
 
+        cvChatBox.setOnClickListener(view -> {
+            startActivity(new Intent(Activity_Profile.this,activity_chat.class));
+        });
         // Uncomment nếu cần sử dụng chức năng nhắn tin
         /*
         cvChatBox.setOnClickListener(view -> {

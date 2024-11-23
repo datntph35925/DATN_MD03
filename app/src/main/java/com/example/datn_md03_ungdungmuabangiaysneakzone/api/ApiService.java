@@ -7,9 +7,11 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Product;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ResetPasswordRequest;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.TemporaryVerificationCode;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ChatMessage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.MultipartBody;
@@ -17,8 +19,6 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
-import retrofit2.http.Field;
-import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.HTTP;
 import retrofit2.http.Multipart;
@@ -29,6 +29,8 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiService {
+
+    // ------------------- Authentication --------------------
     @POST("/auth/register")
     Call<ApiResponse> register(@Body TemporaryVerificationCode tempCode);
 
@@ -48,7 +50,7 @@ public interface ApiService {
     Call<ApiResponse> resetPassword(@Body ResetPasswordRequest request);
 
     @POST("/auth/ma-xac-thuc")
-    Call<ApiResponse>   sendVerificationCode(@Body CustomerAccount customerAccount);
+    Call<ApiResponse> sendVerificationCode(@Body CustomerAccount customerAccount);
 
     @POST("/auth/xacthucma")
     Call<ApiResponse> verifyCode(@Body CustomerAccount customerAccount);
@@ -59,31 +61,43 @@ public interface ApiService {
     @POST("/auth/xacthucma-email-moi")
     Call<ApiResponse> verifyCodeAndUpdateEmail(@Body HashMap<String, String> requestData);
 
+    @GET("/auth/chitiettaikhoan")
+    Call<CustomerAccount> getUserDetails(@Query("Tentaikhoan") String tentaikhoan);
+
+    @POST("/auth/doi-matkhau-tam-thoi")
+    Call<ApiResponse> saveTemporaryPassword(@Body CustomerAccount customerAccount);
+
+    @POST("/auth/xacthucma-doi-matkhau")
+    Call<ApiResponse> confirmCodeAndChangePassword(@Body CustomerAccount customerAccount);
+
+    @PUT("/auth/doi-hoten")
+    Call<ApiResponse> changeNameWithBody(@Body Map<String, String> params);
+
+    @Multipart
+    @PUT("/auth/doi-anh")
+    Call<ApiResponse> uploadAvatar(
+            @Part("Tentaikhoan") RequestBody tentaikhoan,
+            @Part MultipartBody.Part image
+    );
+
+    // ------------------- Product APIs ---------------------
     @GET("/api/get-list-product")
     Call<Response<ArrayList<Product>>> getListProducts();
 
     @GET("/api/get-product-by-id/{id}")
     Call<Response<Product>> getProductById(@Path("id") String id);
 
-    @GET("/auth/chitiettaikhoan") // Đường dẫn API phù hợp
-    Call<CustomerAccount> getUserDetails(@Query("Tentaikhoan") String tentaikhoan);
+    // ------------------- Chat APIs ------------------------
+    @GET("chatRouter/lich-su-tin-nhan")
+    Call<List<ChatMessage>> getMessages(@Query("TentaiKhoan") String tentaiKhoan);
 
-    @POST("/auth/doi-matkhau-tam-thoi")
-    Call<ApiResponse> saveTemporaryPassword(@Body CustomerAccount CustomerAccount);
+    @POST("chatRouter/khach-hang-gui-tin-nhan")
+    Call<Void> sendMessage(@Body Map<String, String> message);
 
-    @POST("/auth/xacthucma-doi-matkhau")
-    Call<ApiResponse> confirmCodeAndChangePassword(@Body CustomerAccount CustomerAccount);
+    @DELETE("chatRouter/khach-hang-xoa-tin-nhan/{id}")
+    Call<Void> deleteMessage(@Path("id") String id, @Body Map<String, String> body);
 
-    @PUT("/auth/doi-hoten")
-    Call<ApiResponse> changeNameWithBody(@Body Map<String, String> params);
-
-    @Multipart
-    @PUT("/auth/doi-anh") // Endpoint của API trên server
-    Call<ApiResponse> uploadAvatar(
-            @Part("Tentaikhoan") RequestBody tentaikhoan, // Truyền tên tài khoản
-            @Part MultipartBody.Part image // Truyền file ảnh
-    );
-
+    // ------------------- Cart APIs ------------------------
     @POST("/cart/add-cart/{userId}")
     Call<Response<ArrayList<Cart>>> addListCart(@Path("userId") String userId, @Body Cart cart);
 
@@ -95,5 +109,4 @@ public interface ApiService {
             @Path("userId") String userId,
             @Body DeleteCartRequest request
     );
-
 }
