@@ -1,77 +1,82 @@
 var express = require('express');
 var router = express.Router();
-
-
-
 const Products = require('../models/Products');
 module.exports = router;
 
 router.get("/get-list-product", async (req, res) => {
-      try {
-        //lấy ds sản phẩm
-        const data = await Products.find().sort({ createdAt: -1 });
-        if (data) {
-          res.json({
-            status: 200,
-            messenger: "Lấy danh sách thành công",
-            data: data,
-          });
-        } else {
-          res.json({
-            status: 400,
-            messenger: "lấy danh sách thất bại",
-            data: [],
-          });
-        }
-      } catch (error) {
-        console.log(error);
-      }
+  try {
+    //lấy ds sản phẩm
+    const data = await Products.find().sort({ createdAt: -1 });
+    if (data) {
+      res.json({
+        status: 200,
+        messenger: "Lấy danh sách thành công",
+        data: data,
+      });
+    } else {
+      res.json({
+        status: 400,
+        messenger: "lấy danh sách thất bại",
+        data: [],
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+
+router.post('/add-product', async (req, res) => {
+  try {
+    const data = req.body; // Lấy dữ liệu từ body 
+
+    const existingProduct = await Products.findOne({ TenSP: data.TenSP });
+    if (existingProduct) {
+      return res.status(400).json({
+        status: 400,
+        messenger: "Lỗi, sản phẩm đã tồn tại",
+      });
+    }
+
+    // Tạo một đối tượng sản phẩm mới với dữ liệu từ body
+    const newProducts = new Products({
+      MaSanPham: data.MaSanPham,
+      TenSP: data.TenSP,
+      ThuongHieu: data.ThuongHieu,
+      KichThuoc: data.KichThuoc,
+      GiaBan: data.GiaBan,
+      MoTa: data.MoTa,
+      HinhAnh: data.HinhAnh,
+      TrangThaiYeuThich: data.TrangThaiYeuThich
     });
 
+    // Lưu sản phẩm vào cơ sở dữ liệu
+    const result = await newProducts.save();
 
-    router.post('/add-product', async (req, res) => {
-      try {
-          const data = req.body; // Lấy dữ liệu từ body 
-  
-          // Tạo một đối tượng sản phẩm mới với dữ liệu từ body
-          const newProducts = new Products({
-              MaSanPham: data.MaSanPham,
-              TenSP: data.TenSP,
-              ThuongHieu: data.ThuongHieu,
-              KichThuoc: data.KichThuoc,
-              GiaBan: data.GiaBan,
-              MoTa: data.MoTa,
-              HinhAnh: data.HinhAnh,
-              TrangThaiYeuThich: data.TrangThaiYeuThich
-          });
-  
-          // Lưu sản phẩm vào cơ sở dữ liệu
-          const result = await newProducts.save();
-  
-          // Nếu thêm thành công, trả về dữ liệu
-          if (result) {
-              res.json({
-                  status: 200,
-                  messenger: "Thêm thành công",
-                  data: result
-              });
-          } else {
-              // Nếu thêm không thành công, thông báo lỗi
-              res.json({
-                  status: 400,
-                  messenger: "Lỗi, thêm không thành công",
-                  data: []
-              });
-          }
-      } catch (error) {
-          console.error(error);
-          res.status(500).json({
-              status: 500,
-              messenger: "Lỗi server",
-              error: error.message
-          });
-      }
-  });
+    // Nếu thêm thành công, trả về dữ liệu
+    if (result) {
+      res.json({
+        status: 200,
+        messenger: "Thêm thành công",
+        data: result
+      });
+    } else {
+      // Nếu thêm không thành công, thông báo lỗi
+      res.json({
+        status: 400,
+        messenger: "Lỗi, thêm không thành công",
+        data: []
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: 500,
+      messenger: "Lỗi server",
+      error: error.message
+    });
+  }
+});
 
 // router.post('/add', async(req,res) =>{
 //     try{
@@ -92,31 +97,32 @@ router.get("/get-list-product", async (req, res) => {
 //       }
 //     }catch(error){
 //       console.log('Error:' +error);
-      
+
 //     }
 // })
 
-  router.delete("/delete-product-by-id/:id", async (req, res) => {
-    try {
-      const { id } = req.params;
-      const result = await Products.findByIdAndDelete(id);
-      if (result) {
-        res.json({
-          status: 200,
-          messenger: "tìm và xóa theo id thành công",
-          data: result,
-        });
-      } else {
-        res.json({
-          status: 400,
-          messenger: "tìm và xóa thất bại",
-          data: [],
-        });
-      }
-    } catch (error) {
-      console.log(error);
+router.delete("/delete-product-by-id/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await Products.findByIdAndDelete(id);
+    if (result) {
+      res.json({
+        status: 200,
+        messenger: "tìm và xóa theo id thành công",
+        data: result,
+      });
+    } else {
+      res.json({
+        status: 400,
+        messenger: "tìm và xóa thất bại",
+        data: [],
+      });
     }
-  });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 
   router.put('/update-product-by-id/:id', async (req, res) => {
     try {
@@ -154,34 +160,34 @@ router.get("/get-list-product", async (req, res) => {
     } catch (error) {
         console.log(error);
     }
-});
+  });
 
 
 router.get('/get-product-by-id/:id', async (req, res) => {
   try {
-      const { id } = req.params; // Lấy id từ params
-      const product = await Products.findById(id); // Tìm sản phẩm theo id
+    const { id } = req.params; // Lấy id từ params
+    const product = await Products.findById(id); // Tìm sản phẩm theo id
 
-      if (product) {
-          res.status(200).json({
-              status: 200,
-              message: 'Lấy thông tin sản phẩm thành công',
-              data: product
-          });
-      } else {
-          res.status(404).json({
-              status: 404,
-              message: 'Không tìm thấy sản phẩm',
-              data: null
-          });
-      }
-  } catch (error) {
-      console.error('Lỗi:', error);
-      res.status(500).json({
-          status: 500,
-          message: 'Lỗi server',
-          error: error.message
+    if (product) {
+      res.status(200).json({
+        status: 200,
+        message: 'Lấy thông tin sản phẩm thành công',
+        data: product
       });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: 'Không tìm thấy sản phẩm',
+        data: null
+      });
+    }
+  } catch (error) {
+    console.error('Lỗi:', error);
+    res.status(500).json({
+      status: 500,
+      message: 'Lỗi server',
+      error: error.message
+    });
   }
 });
 
