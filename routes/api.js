@@ -125,9 +125,9 @@ router.get("/get-list-product", async (req, res) => {
         const updateProduct = await Products.findById(id)
         let result = null;
         if(updateProduct){
-          updateProduct.Masanpham = data.Masanpham ?? updateProduct.Masanpham;
+          updateProduct.MaSanPham = data.MaSanPham ?? updateProduct.MaSanPham;
           updateProduct.TenSP = data.TenSP ?? updateProduct.TenSP,
-          updateProduct.Thuonghieu = data.Thuonghieu ?? updateProduct.Thuonghieu,
+          updateProduct.ThuongHieu = data.ThuongHieu ?? updateProduct.ThuongHieu,
           updateProduct.KichThuoc = data.KichThuoc ?? updateProduct.KichThuoc,
           updateProduct.GiaBan = data.GiaBan ?? updateProduct.GiaBan,
           updateProduct.MoTa = data.MoTa ?? updateProduct.MoTa,

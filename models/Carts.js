@@ -7,8 +7,10 @@ const ProductItemSchema = new Schema({
   TenSP: { type: String, required: true }, // Tên sản phẩm để hiển thị
   SoLuongGioHang: { type: Number, required: true }, // Số lượng sản phẩm trong giỏ hàng
   Size: { type: Number, required: true }, // Kích cỡ của sản phẩm
-  Gia: { type: Number, required: true }, // Giá của sản phẩm
-  TongTien: { type: Number, required: true } // Tổng tiền = Giá x Số lượng
+  Gia: { type: Number, required: true },
+  TongTien: { type: Number, required: true }, // Tổng tiền = Giá x Số lượng
+  HinhAnh: [String], 
+  soLuongTon: { type: Number, required: true } 
 });
 
 // Định nghĩa Schema cho GioHang
