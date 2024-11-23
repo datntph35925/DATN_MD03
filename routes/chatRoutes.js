@@ -57,28 +57,30 @@ router.post('/admin-gui-tin-nhan', async (req, res) => {
 });
 // lịch sự tin nhắn
 router.get('/lich-su-tin-nhan', async (req, res) => {
-  const { TentaiKhoan } = req.body; // Đổi từ req.query thành req.body
+    const { TentaiKhoan } = req.body; // Sử dụng req.body thay cho req.query
 
-  if (!TentaiKhoan) {
-      return res.status(400).json({ error: 'Thiếu thông tin TentaiKhoan' });
-  }
+    console.log('TentaiKhoan:', TentaiKhoan); // Kiểm tra giá trị
 
-  try {
-      const messages = await Chat.find({
-          $or: [
-              { senderId: TentaiKhoan, receiverId: 'admin' },
-              { senderId: 'admin', receiverId: TentaiKhoan },
-          ],
-      }).sort({ timestamp: 1 }); // Sắp xếp theo thứ tự thời gian
+    if (!TentaiKhoan) {
+        return res.status(401).json({ error: 'Thiếu thông tin TentaiKhoan' });
+    }
 
-      res.status(200).json({
-          success: true,
-          messages,
-      });
-  } catch (err) {
-      res.status(500).json({ error: 'Lỗi máy chủ', details: err.message });
-  }
+    try {
+        const messages = await Chat.find({
+            $or: [
+                { senderId: TentaiKhoan, receiverId: 'admin' },
+                { senderId: 'admin', receiverId: TentaiKhoan },
+            ],
+        }).sort({ timestamp: 1 });
+
+        res.status(200).json(messages); // Trả về mảng trực tiếp
+    } catch (err) {
+        res.status(500).json({ error: 'Lỗi máy chủ', details: err.message });
+    }
 });
+
+
+  
 //admin thu hồi tin nhắn
 router.delete('/admin-xoa-tin-nhan/:id', async (req, res) => {
   const { id } = req.params; // Lấy ID tin nhắn từ URL

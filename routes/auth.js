@@ -9,6 +9,7 @@ const path = require("path");
 const nodemailer = require('nodemailer');
 const Admin = require('../models/Admin'); 
 
+//nam anh test git
 // Cấu hình tài khoản Gmail của bạn để gửi email
 const transporter = nodemailer.createTransport({
     service: 'gmail',
