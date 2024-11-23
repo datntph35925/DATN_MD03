@@ -73,7 +73,6 @@ public class manguimaemailmoi extends AppCompatActivity {
                 .setTentaikhoan(tentaikhoan)
                 .setEmailMoi(emailMoi)
                 .build();
-        Log.d("Debug", "Sending data: " + customerAccount.getTentaikhoan() + ", " + customerAccount.getEmailMoi());
 
         // Gửi yêu cầu API
         Call<ApiResponse> call = apiService.sendVerificationCodeToNewEmail(customerAccount);

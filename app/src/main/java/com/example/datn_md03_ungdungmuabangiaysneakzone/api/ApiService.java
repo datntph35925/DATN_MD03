@@ -1,6 +1,8 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.api;
 
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Cart;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.CustomerAccount;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.DeleteCartRequest;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Product;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ResetPasswordRequest;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response;
@@ -14,7 +16,11 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -25,7 +31,6 @@ import retrofit2.http.Query;
 public interface ApiService {
     @POST("/auth/register")
     Call<ApiResponse> register(@Body TemporaryVerificationCode tempCode);
-
 
     @POST("/auth/guimataotk")
     Call<ApiResponse> sendVerificationCodee(@Body TemporaryVerificationCode tempCode);
@@ -69,7 +74,6 @@ public interface ApiService {
     @POST("/auth/xacthucma-doi-matkhau")
     Call<ApiResponse> confirmCodeAndChangePassword(@Body CustomerAccount CustomerAccount);
 
-
     @PUT("/auth/doi-hoten")
     Call<ApiResponse> changeNameWithBody(@Body Map<String, String> params);
 
@@ -79,4 +83,17 @@ public interface ApiService {
             @Part("Tentaikhoan") RequestBody tentaikhoan, // Truyền tên tài khoản
             @Part MultipartBody.Part image // Truyền file ảnh
     );
+
+    @POST("/cart/add-cart/{userId}")
+    Call<Response<ArrayList<Cart>>> addListCart(@Path("userId") String userId, @Body Cart cart);
+
+    @GET("/cart/get-list-cart-by-id/{id}")
+    Call<Response<Cart>> getListCartById(@Path("id") String userId);
+
+    @HTTP(method = "DELETE", path = "/cart/remove-item/{userId}", hasBody = true)
+    Call<Response<DeleteCartRequest>> removeCartItem(
+            @Path("userId") String userId,
+            @Body DeleteCartRequest request
+    );
+
 }

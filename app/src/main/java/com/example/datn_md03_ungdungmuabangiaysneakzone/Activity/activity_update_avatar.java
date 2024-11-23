@@ -31,6 +31,7 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.model.CustomerAccount;
 
 import java.io.File;
 
+
 import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -180,7 +181,7 @@ public class activity_update_avatar extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     Toast.makeText(activity_update_avatar.this, "Cập nhật ảnh thành công!", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(activity_update_avatar.this, Manhinhthanhconganimation.class);
-                  startActivity(intent);
+                    startActivity(intent);
 //                    finish(); // Kết thúc Activity hiện tại nếu muốn
                 } else {
                     Toast.makeText(activity_update_avatar.this, "Lỗi khi cập nhật ảnh", Toast.LENGTH_SHORT).show();

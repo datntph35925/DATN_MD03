@@ -1,5 +1,7 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.model;
 
+import android.net.Uri;
+
 public class CustomerAccount {
     private String Matk;
     private String Tentaikhoan;
@@ -11,7 +13,28 @@ public class CustomerAccount {
     private String EmailMoi;
     private String MatkhauMoi; // Thêm trường MatkhauMoi
 
-    // Constructor private để chỉ Builder có thể tạo đối tượng
+
+    // Constructor
+//    public CustomerAccount(String matk, String tentaikhoan, String hoten, String matkhau, String anhtk, int seq) {
+//        this.Matk = matk;
+//        this.Tentaikhoan = tentaikhoan;
+//        this.Hoten = hoten;
+//        this.Matkhau = matkhau;
+//        this.Anhtk = anhtk;
+//        this.seq = seq;
+//    }
+//    public CustomerAccount(String hoten, String email, String password) {
+//        this.Hoten = hoten;
+//        this.Tentaikhoan = email;
+//        this.Matkhau = password;
+//    }
+//    public CustomerAccount( String email, String password) {
+//        this.Tentaikhoan = email;
+//        this.Matkhau = password;
+//    }
+//    public CustomerAccount() {
+//    }
+
     private CustomerAccount(Builder builder) {
         this.Matk = builder.matk;
         this.Tentaikhoan = builder.tentaikhoan;
@@ -23,6 +46,7 @@ public class CustomerAccount {
         this.EmailMoi = builder.emailMoi;
         this.MatkhauMoi = builder.matkhauMoi; // Thêm MatkhauMoi từ Builder
     }
+
 
     // Getters
     public String getMatk() {
@@ -49,12 +73,29 @@ public class CustomerAccount {
         return seq;
     }
 
-    public String getVerificationCode() {
-        return verificationCode;
+    // Setters
+    public void setMatk(String matk) {
+        this.Matk = matk;
     }
 
-    public String getEmailMoi() {
-        return EmailMoi;
+    public void setTentaikhoan(String tentaikhoan) {
+        this.Tentaikhoan = tentaikhoan;
+    }
+
+    public void setHoten(String hoten) {
+        this.Hoten = hoten;
+    }
+
+    public void setMatkhau(String matkhau) {
+        this.Matkhau = matkhau;
+    }
+
+    public void setAnhtk(String anhtk) {
+        this.Anhtk = anhtk;
+    }
+
+    public void setSeq(int seq) {
+        this.seq = seq;
     }
 
     public String getMatkhauMoi() {
@@ -66,7 +107,6 @@ public class CustomerAccount {
         this.MatkhauMoi = matkhauMoi;
     }
 
-    // Builder class
     public static class Builder {
         private String matk;
         private String tentaikhoan;
@@ -129,3 +169,4 @@ public class CustomerAccount {
         }
     }
 }
+

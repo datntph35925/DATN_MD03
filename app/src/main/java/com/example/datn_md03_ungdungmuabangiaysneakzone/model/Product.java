@@ -11,22 +11,21 @@ public class Product {
     private String TenSP;
     private String Thuonghieu;
     private List<KichThuoc> KichThuoc;
-    private String MauSac;
     private double GiaBan;
     private String MoTa;
     private List<String> HinhAnh;
-    private boolean TrangThaiYeuThich;
+    private Boolean TrangThaiYeuThich;
 
     public Product() {
     }
 
-    public Product(double giaBan, List<String> hinhAnh, String id, List<com.example.datn_md03_ungdungmuabangiaysneakzone.model.KichThuoc> kichThuoc, String masanpham, String mauSac, String moTa, String tenSP, String thuonghieu, boolean trangThaiYeuThich) {
+
+    public Product(double giaBan, List<String> hinhAnh, String id, List<com.example.datn_md03_ungdungmuabangiaysneakzone.model.KichThuoc> kichThuoc, String masanpham, String moTa, String tenSP, String thuonghieu, boolean trangThaiYeuThich) {
         GiaBan = giaBan;
         HinhAnh = hinhAnh;
         this.id = id;
         KichThuoc = kichThuoc;
         Masanpham = masanpham;
-        MauSac = mauSac;
         MoTa = moTa;
         TenSP = tenSP;
         Thuonghieu = thuonghieu;
@@ -73,13 +72,6 @@ public class Product {
         Masanpham = masanpham;
     }
 
-    public String getMauSac() {
-        return MauSac;
-    }
-
-    public void setMauSac(String mauSac) {
-        MauSac = mauSac;
-    }
 
     public String getMoTa() {
         return MoTa;
@@ -106,11 +98,11 @@ public class Product {
         Thuonghieu = thuonghieu;
     }
 
-    public boolean isTrangThaiYeuThich() {
+    public Boolean isTrangThaiYeuThich() {
         return TrangThaiYeuThich;
     }
 
-    public void setTrangThaiYeuThich(boolean trangThaiYeuThich) {
+    public void setTrangThaiYeuThich(Boolean trangThaiYeuThich) {
         TrangThaiYeuThich = trangThaiYeuThich;
     }
 }

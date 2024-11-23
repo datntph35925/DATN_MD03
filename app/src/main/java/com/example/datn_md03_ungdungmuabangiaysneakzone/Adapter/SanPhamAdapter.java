@@ -60,6 +60,7 @@
                     in.putExtra("price", product.getGiaBan());
                     in.putExtra("image", product.getHinhAnh().get(0));
                     in.putExtra("description", product.getMoTa());
+                    in.putExtra("yeuthich", false);
                     context.startActivity(in);
                 }
             });

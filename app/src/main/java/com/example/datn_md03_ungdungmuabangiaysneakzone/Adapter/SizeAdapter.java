@@ -13,12 +13,18 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.KichThuoc;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SizeAdapter extends RecyclerView.Adapter<SizeAdapter.SizeViewHolder> {
     private Context context;
     private ArrayList<KichThuoc> kichThuocArrayList;
     private int selectedPosition = -1; // Theo dõi vị trí đã chọn
     private OnSizeClickListener listener;
+
+
+    public ArrayList<KichThuoc> getKichThuocArrayList() {
+        return kichThuocArrayList;
+    }
 
     SizeAdapterListener sizeAdapterListener;
 
@@ -97,4 +103,6 @@ public class SizeAdapter extends RecyclerView.Adapter<SizeAdapter.SizeViewHolder
     public interface SizeAdapterListener {
         void onSizeSelected(KichThuoc kichThuoc);
     }
+
+
 }
