@@ -14,14 +14,14 @@ public class ProductItemCart implements Serializable {
 
     private boolean isChecked;
 
-    private int soLuongTon; // Số lượng tối đa có sẵn trong kho
+   private int SoLuongTon;
 
     public int getSoLuongTon() {
-        return soLuongTon;
+        return SoLuongTon;
     }
 
     public void setSoLuongTon(int soLuongTon) {
-        soLuongTon = soLuongTon;
+        SoLuongTon = soLuongTon;
     }
 
     // Trạng thái checkbox
