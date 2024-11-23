@@ -10,7 +10,7 @@ const ProductItemSchema = new Schema({
   Gia: { type: Number, required: true },
   TongTien: { type: Number, required: true }, // Tổng tiền = Giá x Số lượng
   HinhAnh: [String], 
-  // soLuongTon: { type: Number, required: true } 
+  SoLuongTon: { type: Number}
 });
 
 // Định nghĩa Schema cho GioHang

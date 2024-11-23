@@ -8,9 +8,9 @@ router.get('/get-list-cart-by-id/:id', async (req, res) => {
     try {
         const { id } = req.params; // Lấy id từ params
         const userAccount = await CustomerAccounts.findOne({ Tentaikhoan: id });
-// Tìm sản phẩm theo id
-  
-        const data = await Carts.findOne({Tentaikhoan : userAccount.Tentaikhoan});
+        // Tìm sản phẩm theo id
+
+        const data = await Carts.findOne({ Tentaikhoan: userAccount.Tentaikhoan });
         if (data) {
             res.json({
                 status: 200,
@@ -32,8 +32,8 @@ router.get('/get-list-cart-by-id/:id', async (req, res) => {
             error: error.message
         });
     }
-  });
-  
+});
+
 
 router.get("/get-list-cart", async (req, res) => {
     try {
@@ -102,6 +102,11 @@ router.post('/add-cart/:userId', async (req, res) => {
             });
         }
 
+        // Đảm bảo `soLuongTon` được lấy đúng
+        if (!sizeItem.soLuongTon && sizeItem.soLuongTon !== 0) {
+            return res.status(400).json({ message: 'Số lượng tồn kho không xác định cho kích thước này' });
+        }
+
         // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
         const productIndex = cart.SanPham.findIndex(
             item => item.MaSanPham.toString() === productId && item.Size === size
@@ -124,7 +129,7 @@ router.post('/add-cart/:userId', async (req, res) => {
                 Gia: product.GiaBan,
                 TongTien: product.GiaBan * quantity,
                 HinhAnh: product.HinhAnh[0],
-                soLuongTon: sizeItem.soLuongTon
+                SoLuongTon: sizeItem.soLuongTon,
             };
             cart.SanPham.push(newProductItem);
         }
