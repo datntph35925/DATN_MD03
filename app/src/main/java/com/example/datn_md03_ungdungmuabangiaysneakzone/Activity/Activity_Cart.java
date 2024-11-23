@@ -72,7 +72,7 @@
             imgBack_cart = findViewById(R.id.imgBack_cart);
 
             SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-            email = sharedPreferences.getString("Email", ""); // Retrieve the email
+            email = sharedPreferences.getString("Tentaikhoan", ""); // Retrieve the email
 
             apiService = RetrofitClient.getClient().create(ApiService.class);
             productItemCarts = new ArrayList<>();
