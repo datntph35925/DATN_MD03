@@ -97,7 +97,7 @@ public class Activity_ChiTietSP extends AppCompatActivity {
         product = new Product();
         productItem = new ProductItemCart();
         SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-        email = sharedPreferences.getString("Email", ""); // Retrieve the email
+        email = sharedPreferences.getString("Tentaikhoan", ""); // Retrieve the email
 
         if (!email.isEmpty()) {
             // Email found, use it
