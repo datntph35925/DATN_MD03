@@ -107,7 +107,7 @@ public class Activity_ChiTietSP extends AppCompatActivity {
             Toast.makeText(this, "Email not found. Please register or log in.", Toast.LENGTH_SHORT).show();
             Log.d("SharedPreferences", "Email not found");
         }
-
+// hieuaddd
 
         imgBack = findViewById(R.id.imgBack);
         tvName = findViewById(R.id.tvTen_SPCT);
