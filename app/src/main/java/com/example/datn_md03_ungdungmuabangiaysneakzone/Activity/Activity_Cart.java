@@ -209,7 +209,14 @@
         }
 
         private void ThanhToanActivity() {
+            if (selectedItems.isEmpty()) {
+                Toast.makeText(this, "Vui lòng chọn sản phẩm để thanh toán!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             Intent intent = new Intent(Activity_Cart.this, Activity_ThanhToan.class);
+            ArrayList<ProductItemCart> selectedCartItems = new ArrayList<>(selectedItems); // Convert Set to ArrayList
+            intent.putExtra("selectedCartItems", (Serializable) selectedCartItems);
             startActivity(intent);
         }
     }

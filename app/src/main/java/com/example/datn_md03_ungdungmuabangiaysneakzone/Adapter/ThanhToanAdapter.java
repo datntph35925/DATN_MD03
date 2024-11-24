@@ -13,19 +13,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Product;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ProductItemCart;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ThanhToanAdapter extends RecyclerView.Adapter<ThanhToanAdapter.ViewHolder> {
 
-    private ArrayList<Product> productArrayList;
-    Context context;
-    private int size;
-    private int quantity;
+    private Context context;
+    private List<ProductItemCart> productItemList;
 
-    public ThanhToanAdapter(){
-        this.productArrayList = productArrayList;
+    public ThanhToanAdapter(Context context, List<ProductItemCart> productItemList) {
+        this.context = context;
+        this.productItemList = productItemList;
     }
     @NonNull
     @Override
@@ -36,45 +36,30 @@ public class ThanhToanAdapter extends RecyclerView.Adapter<ThanhToanAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ThanhToanAdapter.ViewHolder holder, int position) {
-        Product product = productArrayList.get(position);
+        ProductItemCart item = productItemList.get(position);
+        holder.tvProductName.setText(item.getTenSP());
+        holder.tvProductQuantity.setText(String.format("Số lượng: %d", item.getSoLuongGioHang()));
+        holder.tvProductPrice.setText(String.format("$%.2f", item.getGia()));
+        holder.tvProductSize.setText(String.format("Size: %d", item.getSize()));
 
-        holder.tvProductName.setText(product.getTenSP());
-        holder.tvPrice.setText("$ " + product.getGiaBan());
-        Glide.with(context).load(product.getHinhAnh().get(0)).into(holder.imgProduct);
-
-        holder.tvSize.setText("Size: " + size); // Display the selected size
-        holder.tvSL.setText("Quantity: " + quantity); // Display the quantity
+        Glide.with(context).load(item.getHinhAnh().get(0)).into(holder.imgProduct);
     }
 
     @Override
     public int getItemCount() {
-        return productArrayList != null ? productArrayList.size() : 0;
+        return productItemList != null ? productItemList.size() : 0;
     }
 
-    public Product getProduct(int position) {
-        if (position >= 0 && position < productArrayList.size()) {
-            return productArrayList.get(position);
-        }
-        return null;
-    }
-
-    public void setProductList(ArrayList<Product> productArrayList) {
-        this.productArrayList = productArrayList;
-        notifyDataSetChanged();
-    }
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView imgProduct;
-        private TextView tvProductName, tvSize, tvPrice, tvSL, tvColor,idPR,idSl;
+        TextView tvProductName, tvProductQuantity, tvProductPrice, tvProductSize;
+        ImageView imgProduct;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imgProduct = itemView.findViewById(R.id.img_Order_Dt);
             tvProductName = itemView.findViewById(R.id.NameProduct_dt);
-            tvSize = itemView.findViewById(R.id.tvSize_dt);
-            tvColor = itemView.findViewById(R.id.tvColor_dt);
-            tvPrice = itemView.findViewById(R.id.priceOrder_dt);
-            tvSL = itemView.findViewById(R.id.tvSL_dt);
-            idPR = itemView.findViewById(R.id.idPR);
-            idSl = itemView.findViewById(R.id.idSL);
+            tvProductQuantity = itemView.findViewById(R.id.tvSL_dt);
+            tvProductPrice = itemView.findViewById(R.id.priceOrder_dt);
+            tvProductSize = itemView.findViewById(R.id.tvSize_dt);
+            imgProduct = itemView.findViewById(R.id.img_Order_Dt);
         }
     }
 }

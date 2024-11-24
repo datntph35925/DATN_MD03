@@ -16,16 +16,18 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DATN_MD03_UngDungMuaBanGiaySneakZone"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".Activity.Manhinhthanhconganimation"
+            android:name=".Activity.ActivityCTSP_To_ThanhToan"
             android:exported="false" />
-        <!-- Khai báo các Activity -->
+        <activity
+            android:name=".Activity.Manhinhthanhconganimation"
+            android:exported="false" /> <!-- Khai báo các Activity -->
         <activity
             android:name=".Activity.activity_update_avatar"
             android:exported="false" />

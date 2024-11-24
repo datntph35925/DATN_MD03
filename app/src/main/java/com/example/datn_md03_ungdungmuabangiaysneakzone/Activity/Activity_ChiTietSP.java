@@ -251,6 +251,36 @@ public class Activity_ChiTietSP extends AppCompatActivity {
                     Toast.makeText(Activity_ChiTietSP.this, "Sản phẩm chỉ có " + soLuongTon + " đôi", Toast.LENGTH_SHORT).show();
                 }
             });
+
+            btnBuy.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (selectSize == -1) {
+                        Toast.makeText(Activity_ChiTietSP.this, "Vui lòng chọn kích thước", Toast.LENGTH_SHORT).show();
+                        return;
+                    } else if (soLuongTon == 0) {
+                        Toast.makeText(Activity_ChiTietSP.this, "Kích cỡ hiện tại đã hết hàng. Vui lòng chọn kích cỡ khác!", Toast.LENGTH_SHORT).show();
+                        return;
+                    } else {
+                        // Prepare product data to send
+                        productItem.setMaSanPham(maSP);
+                        productItem.setTenSP(tenSP);
+                        productItem.setSoLuongGioHang(num);
+                        productItem.setSize(selectSize);
+                        productItem.setGia(giaSP);
+                        productItem.setTongTien(giaSP * num);
+                        productItem.setHinhAnh(Collections.singletonList(hinh));
+                        productItem.setSoLuongTon(soLuongTon);
+
+                        // Pass data to Activity_ThanhToan
+                        Intent intent = new Intent(Activity_ChiTietSP.this, ActivityCTSP_To_ThanhToan.class);
+                        intent.putExtra("selectedProduct", (Serializable) productItem);
+                        startActivity(intent);
+
+                        dialog.dismiss();
+                    }
+                }
+            });
         } else {
           btnBuy.setText("Thêm giỏ hàng");
             // Gọi API để lấy thông tin sản phẩm và kích thước
