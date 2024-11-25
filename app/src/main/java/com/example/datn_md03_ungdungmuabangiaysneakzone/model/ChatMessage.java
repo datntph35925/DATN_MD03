@@ -1,25 +1,13 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.model;
 
 public class ChatMessage {
-    private String _id; // ID của tin nhắn
+    private String _id; // ID của tin nhắn từ MongoDB
     private String senderId; // ID người gửi
     private String receiverId; // ID người nhận
     private String message; // Nội dung tin nhắn
     private String timestamp; // Thời gian gửi tin nhắn
 
-    // Constructor mặc định
-    public ChatMessage() {}
-
-    // Constructor đầy đủ
-    public ChatMessage(String _id, String senderId, String receiverId, String message, String timestamp) {
-        this._id = _id;
-        this.senderId = senderId;
-        this.receiverId = receiverId;
-        this.message = message;
-        this.timestamp = timestamp;
-    }
-
-    // Getter và Setter
+    // Getter và Setter cho các trường
     public String getId() {
         return _id;
     }
@@ -58,5 +46,10 @@ public class ChatMessage {
 
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
+    }
+
+    // Phương thức xác định tin nhắn từ admin
+    public boolean isAdminMessage() {
+        return "admin".equals(senderId); // Xác định nếu senderId là "admin"
     }
 }
