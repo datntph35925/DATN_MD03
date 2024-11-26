@@ -1,5 +1,5 @@
 import React from "react";
-import { Menu } from "antd";
+import { Menu, Modal } from "antd";
 import {
   UserOutlined,
   HomeOutlined,
@@ -34,7 +34,15 @@ const Dashboard = () => {
   };
 
   const handleLogout = () => {
-    navigate("/login");
+    Modal.confirm({
+      title: "Xác nhận đăng xuất",
+      content: "Bạn có chắc chắn muốn đăng xuất không?",
+      okText: "Đăng xuất",
+      cancelText: "Hủy",
+      onOk: () => {
+        navigate("/login"); // Điều hướng đến trang đăng nhập
+      },
+    });
   };
 
   return (
@@ -53,7 +61,7 @@ const Dashboard = () => {
         <Link to="/products">Sản phẩm</Link>
       </Menu.Item>
       <Menu.Item key="4" icon={<BarChartOutlined />}>
-        <Link to="/thongke"> Thống kê</Link>
+        <Link to="/thongke">Thống kê</Link>
       </Menu.Item>
       <Menu.Item key="5" icon={<OrderedListOutlined />}>
         <Link to="/Quanlydonhang">Quản lý đơn hàng</Link>

@@ -1,137 +1,89 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "../../Image/backgroup_nike.jpg";
-import LoginAPI from "../../Server/Auth"; // Adjust the path based on your project structure
+import { LoginAPI, VerifyCodeAPI } from "../../Server/Auth";
+import LoginModal from "../../Modal/LoginModal";
 import "./index.scss";
-
-const Imgae = [backgroundImage];
 
 const Login = () => {
   const [showModal, setShowModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [verificationEmailSent, setVerificationEmailSent] = useState(false); // State to control verification flow
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [verificationCode, setVerificationCode] = useState("");
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isVerified, setIsVerified] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [inputCode, setInputCode] = useState(""); // Code for verification
   const navigate = useNavigate();
 
-  // Generate a random verification code (can be replaced with actual backend logic if required)
-  const generateCode = () => Math.floor(1000 + Math.random() * 9000).toString();
-  const [expectedCode] = useState(generateCode);
-
-  const handleLoginClick = () => {
-    setShowModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setIsSubmitted(false);
-    setIsVerified(false);
-    setVerificationCode("");
-    setErrorMessage("");
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  // Handle login logic
+  const handleLogin = async () => {
     try {
       // Call the login API
-      const response = await LoginAPI({ username, password });
-      if (response.success) {
-        setIsSubmitted(true); // Show the verification step
-        // Optionally, fetch the verification code from the backend
+      const loginResponse = await LoginAPI({ username, password });
+      console.log(loginResponse);
+
+      if (loginResponse.status) {
+        // If login successful, move to verification phase
+        setVerificationEmailSent(true);
+        setErrorMessage("");
       } else {
-        setErrorMessage("Invalid username or password.");
+        // Handle login failure
+        setErrorMessage("Tên đăng nhập hoặc mật khẩu không đúng.");
       }
     } catch (error) {
-      setErrorMessage(error.message);
+      setErrorMessage(error.message || "Đăng nhập thất bại. Vui lòng thử lại.");
     }
   };
 
-  const handleVerify = (e) => {
-    e.preventDefault();
-    if (verificationCode === expectedCode) {
-      setIsVerified(true);
-      alert("Verification successful!");
-      navigate("/Home");
-    } else {
-      setErrorMessage("Invalid verification code.");
+  // Handle code verification logic
+  const handleVerify = async () => {
+    try {
+      // Call the VerifyCodeAPI and pass username and inputCode
+      const verifyResponse = await VerifyCodeAPI({
+        username,
+        verificationCode: inputCode, // Pass the code entered in the modal
+      });
+
+      console.log("Verification response:", verifyResponse);
+
+      if (verifyResponse.success) {
+        // Navigate to home if verification is successful
+        navigate("/Home");
+      } else {
+        setErrorMessage("Mã xác minh không hợp lệ."); // Display error if verification fails
+      }
+    } catch (error) {
+      setErrorMessage(error.message || "Xác minh thất bại. Vui lòng thử lại.");
     }
   };
 
   return (
     <div className="container_login">
       <div className="img_background">
-        <img src={Imgae[0]} alt="background" />
-        <button className="btn_login" onClick={handleLoginClick}>
-          Login
+        <img src={backgroundImage} alt="background" />
+        <button
+          type="button"
+          className="btn_login"
+          onClick={() => setShowModal(true)}
+        >
+          Đăng nhập
         </button>
-        {showModal && (
-          <div className="modal">
-            <div className="modal_content">
-              <span className="close" onClick={handleCloseModal}>
-                &times;
-              </span>
-              <h2>Login</h2>
-              {!isSubmitted ? (
-                <form onSubmit={handleSubmit}>
-                  <div className="form_group">
-                    <label htmlFor="username">Username</label>
-                    <input
-                      type="text"
-                      id="username"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      placeholder="Enter your username"
-                    />
-                  </div>
-                  <div className="form_group">
-                    <label htmlFor="password">Password</label>
-                    <input
-                      type="password"
-                      id="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Enter your password"
-                    />
-                  </div>
-                  {errorMessage && (
-                    <p className="error_message">{errorMessage}</p>
-                  )}
-                  <button type="submit" className="btn_submit">
-                    Submit
-                  </button>
-                </form>
-              ) : (
-                <form onSubmit={handleVerify}>
-                  <div className="verification_section">
-                    <h3>Verification Required</h3>
-                    <p className="verification_instruction">
-                      Please enter the 4-digit verification code sent to you:{" "}
-                      <strong>{expectedCode}</strong>
-                    </p>
-                    <div className="verification_input_group">
-                      <input
-                        type="text"
-                        className="verification_input"
-                        value={verificationCode}
-                        onChange={(e) => setVerificationCode(e.target.value)}
-                        placeholder="Enter verification code"
-                      />
-                      <button type="submit" className="btn_verify">
-                        Verify
-                      </button>
-                    </div>
-                  </div>
-                  {errorMessage && (
-                    <p className="error_message">{errorMessage}</p>
-                  )}
-                </form>
-              )}
-            </div>
-          </div>
-        )}
+        <LoginModal
+          showModal={showModal}
+          onClose={() => {
+            setShowModal(false);
+            setVerificationEmailSent(false); // Reset state when closing modal
+          }}
+          username={username}
+          setUsername={setUsername}
+          password={password}
+          setPassword={setPassword}
+          inputCode={inputCode}
+          setInputCode={setInputCode}
+          onLogin={handleLogin}
+          onVerify={handleVerify}
+          errorMessage={errorMessage}
+          verificationEmailSent={verificationEmailSent}
+        />
       </div>
     </div>
   );
