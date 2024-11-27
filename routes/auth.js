@@ -7,7 +7,9 @@ const TemporaryVerificationCodes = require('../models/TemporaryVerificationCodes
 const multer = require('multer');
 const path = require("path");
 const nodemailer = require('nodemailer');
+const Admin = require('../models/Admin'); 
 
+//nam anh test git
 // Cấu hình tài khoản Gmail của bạn để gửi email
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -17,6 +19,205 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+// Gửi mã OTP khi đăng nhập
+router.post('/dang-nhap-admin', async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        const admin = await Admin.findOne({ username });
+        if (!admin) {
+            return res.status(404).json({ message: 'Tài khoản không tồn tại!' });
+        }
+
+        // Kiểm tra mật khẩu
+        if (admin.password !== password) {
+            return res.status(401).json({ message: 'Mật khẩu không chính xác!' });
+        }
+
+        // Tạo mã OTP
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const codeExpiry = new Date(Date.now() + 3 * 60 * 1000); // Hết hạn sau 3 phút
+
+        // Lưu mã OTP và thời gian hết hạn
+        admin.verificationCode = verificationCode;
+        admin.codeExpiry = codeExpiry;
+        await admin.save();
+
+        // Gửi email chứa mã OTP
+        await transporter.sendMail({
+            from: 'datnmd03@gmail.com',
+            to: username,
+            subject: 'Mã xác thực đăng nhập',
+            text: `Mã xác thực của bạn là: ${verificationCode}. Mã này có hiệu lực trong 10 phút.`
+        });
+
+        res.json({ message: 'Mã xác thực đã được gửi tới email!' });
+    } catch (err) {
+        res.status(500).json({ message: 'Có lỗi xảy ra khi gửi mã xác thực!', error: err.message });
+    }
+});
+
+// Xác thực mã OTP để hoàn tất đăng nhập
+router.post('/xac-thuc-ma-dang-nhap-admin', async (req, res) => {
+    const { username, verificationCode } = req.body;
+
+    try {
+        const admin = await Admin.findOne({ username });
+        if (!admin) {
+            return res.status(404).json({ message: 'Tài khoản không tồn tại!' });
+        }
+
+        // Kiểm tra mã OTP và thời gian hết hạn
+        if (admin.verificationCode !== verificationCode) {
+            return res.status(401).json({ message: 'Mã xác thực không chính xác!' });
+        }
+        if (admin.codeExpiry < Date.now()) {
+            return res.status(401).json({ message: 'Mã xác thực đã hết hạn!' });
+        }
+
+        // Xác thực thành công
+        admin.verificationCode = null; // Xóa mã OTP sau khi sử dụng
+        admin.codeExpiry = null;
+        await admin.save();
+
+        res.json({ message: 'Đăng nhập thành công!' });
+    } catch (err) {
+        res.status(500).json({ message: 'Có lỗi xảy ra khi xác thực mã!', error: err.message });
+    }
+});
+
+
+// Gửi mã OTP để đổi mật khẩu
+router.post('/gui-ma-doi-mat-khau-admin', async (req, res) => {
+    const { username, oldPassword } = req.body;
+
+    try {
+        const admin = await Admin.findOne({ username });
+        if (!admin) {
+            return res.status(404).json({ message: 'Tài khoản không tồn tại!' });
+        }
+
+        // Kiểm tra mật khẩu cũ
+        if (admin.password !== oldPassword) {
+            return res.status(401).json({ message: 'Mật khẩu cũ không chính xác!' });
+        }
+
+        // Tạo mã OTP
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const codeExpiry = new Date(Date.now() + 3 * 60 * 1000); // Hết hạn sau 3 phút
+
+        // Lưu mã OTP và thời gian hết hạn
+        admin.verificationCode = verificationCode;
+        admin.codeExpiry = codeExpiry;
+        await admin.save();
+
+        // Gửi email chứa mã OTP
+        await transporter.sendMail({
+            from: 'datnmd03@gmail.com',
+            to: username,
+            subject: 'Mã xác thực đổi mật khẩu',
+            text: `Mã xác thực của bạn là: ${verificationCode}. Mã này có hiệu lực trong 3 phút.`
+        });
+
+        res.json({ message: 'Mã xác thực đã được gửi tới email!' });
+    } catch (err) {
+        res.status(500).json({ message: 'Có lỗi xảy ra khi gửi mã xác thực!', error: err.message });
+    }
+});
+
+// Xác thực OTP và đổi mật khẩu
+router.post('/xac-thuc-ma-doi-mat-khau-admin', async (req, res) => {
+    const { username, verificationCode, newPassword } = req.body;
+
+    try {
+        const admin = await Admin.findOne({ username });
+        if (!admin) {
+            return res.status(404).json({ message: 'Tài khoản không tồn tại!' });
+        }
+
+        // Kiểm tra mã OTP và thời gian hết hạn
+        if (admin.verificationCode !== verificationCode) {
+            return res.status(401).json({ message: 'Mã xác thực không chính xác!' });
+        }
+        if (admin.codeExpiry < Date.now()) {
+            return res.status(401).json({ message: 'Mã xác thực đã hết hạn!' });
+        }
+
+        // Cập nhật mật khẩu mới
+        admin.password = newPassword;
+        admin.verificationCode = null;
+        admin.codeExpiry = null;
+        await admin.save();
+
+        res.json({ message: 'Đổi mật khẩu thành công!' });
+    } catch (err) {
+        res.status(500).json({ message: 'Có lỗi xảy ra khi đổi mật khẩu!', error: err.message });
+    }
+});
+
+
+// Gửi mã OTP để đặt lại mật khẩu
+router.post('/gui-ma-dat-lai-mat-khau-admin', async (req, res) => {
+    const { username } = req.body;
+
+    try {
+        const admin = await Admin.findOne({ username });
+        if (!admin) {
+            return res.status(404).json({ message: 'Tài khoản không tồn tại!' });
+        }
+
+        // Tạo mã OTP
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const codeExpiry = new Date(Date.now() + 3 * 60 * 1000); // Hết hạn sau 3 phút
+
+        // Lưu mã OTP và thời gian hết hạn
+        admin.verificationCode = verificationCode;
+        admin.codeExpiry = codeExpiry;
+        await admin.save();
+
+        // Gửi email chứa mã OTP
+        await transporter.sendMail({
+            from: 'datnmd03@gmail.com',
+            to: username,
+            subject: 'Mã xác thực đặt lại mật khẩu',
+            text: `Mã xác thực của bạn là: ${verificationCode}. Mã này có hiệu lực trong 3 phút.`
+        });
+
+        res.json({ message: 'Mã xác thực đã được gửi tới email!' });
+    } catch (err) {
+        res.status(500).json({ message: 'Có lỗi xảy ra khi gửi mã xác thực!', error: err.message });
+    }
+});
+
+// Xác thực OTP và đặt lại mật khẩu
+router.post('/xac-thuc-ma-doi-mat-khau-admin', async (req, res) => {
+    const { username, verificationCode, newPassword } = req.body;
+
+    try {
+        const admin = await Admin.findOne({ username });
+        if (!admin) {
+            return res.status(404).json({ message: 'Tài khoản không tồn tại!' });
+        }
+
+        // Kiểm tra mã OTP và thời gian hết hạn
+        if (admin.verificationCode !== verificationCode) {
+            return res.status(401).json({ message: 'Mã xác thực không chính xác!' });
+        }
+        if (admin.codeExpiry < Date.now()) {
+            return res.status(401).json({ message: 'Mã xác thực đã hết hạn!' });
+        }
+
+        // Đặt mật khẩu mới
+        admin.password = newPassword;
+        admin.verificationCode = null;
+        admin.codeExpiry = null;
+        await admin.save();
+
+        res.json({ message: 'Đặt lại mật khẩu thành công!' });
+    } catch (err) {
+        res.status(500).json({ message: 'Có lỗi xảy ra khi đặt lại mật khẩu!', error: err.message });
+    }
+});
 
 //  Route đăng ký (Kiểm tra thông tin và gửi mã xác thực)
 router.post('/register', async (req, res) => {

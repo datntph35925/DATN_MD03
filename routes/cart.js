@@ -4,6 +4,37 @@ const Carts = require('../models/Carts');
 const Products = require('../models/Products');
 const CustomerAccounts = require('../models/CustomerAccounts');
 
+router.get('/get-list-cart-by-id/:id', async (req, res) => {
+    try {
+        const { id } = req.params; // Lấy id từ params
+        const userAccount = await CustomerAccounts.findOne({ Tentaikhoan: id });
+        // Tìm sản phẩm theo id
+
+        const data = await Carts.findOne({ Tentaikhoan: userAccount.Tentaikhoan });
+        if (data) {
+            res.json({
+                status: 200,
+                messenger: "Lấy danh sách thành công",
+                data: data,
+            });
+        } else {
+            res.json({
+                status: 400,
+                messenger: "lấy danh sách thất bại",
+                data: [],
+            });
+        }
+    } catch (error) {
+        console.error('Lỗi:', error);
+        res.status(500).json({
+            status: 500,
+            message: 'Lỗi server',
+            error: error.message
+        });
+    }
+});
+
+
 router.get("/get-list-cart", async (req, res) => {
     try {
         //lấy ds sản phẩm
@@ -71,6 +102,11 @@ router.post('/add-cart/:userId', async (req, res) => {
             });
         }
 
+        // Đảm bảo `soLuongTon` được lấy đúng
+        if (!sizeItem.soLuongTon && sizeItem.soLuongTon !== 0) {
+            return res.status(400).json({ message: 'Số lượng tồn kho không xác định cho kích thước này' });
+        }
+
         // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
         const productIndex = cart.SanPham.findIndex(
             item => item.MaSanPham.toString() === productId && item.Size === size
@@ -81,6 +117,9 @@ router.post('/add-cart/:userId', async (req, res) => {
             cart.SanPham[productIndex].SoLuongGioHang += quantity;
             cart.SanPham[productIndex].TongTien = cart.SanPham[productIndex].Gia * cart.SanPham[productIndex].SoLuongGioHang;
         } else {
+            if (!product.HinhAnh || product.HinhAnh.length === 0) {
+                return res.status(400).json({ message: "Sản phẩm không có hình ảnh" });
+            }
             // Nếu sản phẩm chưa tồn tại, thêm sản phẩm mới
             const newProductItem = {
                 MaSanPham: productId,
@@ -88,7 +127,9 @@ router.post('/add-cart/:userId', async (req, res) => {
                 SoLuongGioHang: quantity,
                 Size: size,
                 Gia: product.GiaBan,
-                TongTien: product.GiaBan * quantity
+                TongTien: product.GiaBan * quantity,
+                HinhAnh: product.HinhAnh[0],
+                SoLuongTon: sizeItem.soLuongTon,
             };
             cart.SanPham.push(newProductItem);
         }

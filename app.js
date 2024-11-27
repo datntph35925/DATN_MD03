@@ -15,6 +15,8 @@ const cartRouter = require("./routes/cart");
 const orderRouter = require("./routes/order");
 const database = require("./config/db");
 const cors = require("cors");
+const Admin = require("./models/Admin"); // Import model Admin
+
 const app = express();
 const server = http.createServer(app); // Tạo server từ app
 const io = socketIo(server); // Gắn socket.io vào server
@@ -51,6 +53,7 @@ app.use(
     credentials: true, // Specify allowed headers
   })
 );
+
 // Định nghĩa các route
 app.use("/", indexRouter);
 app.use("/api", apiRouter);
@@ -72,10 +75,53 @@ io.on("connection", (socket) => {
   });
 });
 
-// Kết nối đến MongoDB
-database.connect().catch(() => {
-  process.exit(1); // Thoát ứng dụng nếu không kết nối được
+// Hàm tạo tài khoản admin mặc định
+async function createDefaultAdmin() {
+  const defaultAdmin = {
+    username: "doantotnghiepmd03@gmail.com", // Email mặc định
+    password: "123456", // Mật khẩu mặc định
+  };
+
+  try {
+    const adminExists = await Admin.findOne({ username: defaultAdmin.username });
+
+    if (!adminExists) {
+      const admin = new Admin(defaultAdmin);
+      await admin.save();
+      console.log("Tài khoản admin mặc định đã được tạo!");
+    } else {
+      console.log("Tài khoản admin mặc định đã tồn tại!");
+    }
+  } catch (err) {
+    console.error("Lỗi khi tạo admin mặc định:", err);
+  }
+}
+
+// Socket.IO xử lý chat thời gian thực
+io.on("connection", (socket) => {
+  console.log(`Người dùng kết nối: ${socket.id}`);
+
+  // Lắng nghe sự kiện gửi tin nhắn từ client
+  socket.on("sendMessage", (data) => {
+    console.log(`Tin nhắn từ ${data.sender}: ${data.message}`);
+    io.emit("receiveMessage", data); // Phát tin nhắn đến tất cả client
+  });
+
+  // Lắng nghe sự kiện ngắt kết nối
+  socket.on("disconnect", () => {
+    console.log(`Người dùng ngắt kết nối: ${socket.id}`);
+  });
 });
+// Kết nối đến MongoDB và tạo tài khoản admin mặc định
+database.connect()
+  .then(() => {
+    console.log("Kết nối MongoDB thành công!");
+    createDefaultAdmin(); // Gọi hàm tạo tài khoản admin mặc định
+  })
+  .catch(() => {
+    console.error("Kết nối MongoDB thất bại!");
+    process.exit(1); // Thoát ứng dụng nếu không kết nối được
+  });
 
 // Xử lý lỗi 404
 app.use(function (req, res, next) {

@@ -1,8 +1,5 @@
 var express = require('express');
 var router = express.Router();
-
-
-
 const Products = require('../models/Products');
 module.exports = router;
 
@@ -126,42 +123,44 @@ router.delete("/delete-product-by-id/:id", async (req, res) => {
   }
 });
 
-router.put('/update-product-by-id/:id', async (req, res) => {
-  try {
-    const { id } = req.params
-    const data = req.body; // lấy dữ liệu từ body
-    const updateProduct = await Products.findById(id)
-    let result = null;
-    if (updateProduct) {
-      updateProduct.Masanpham = data.Masanpham ?? updateProduct.Masanpham;
-      updateProduct.TenSP = data.TenSP ?? updateProduct.TenSP,
-        updateProduct.Thuonghieu = data.Thuonghieu ?? updateProduct.Thuonghieu,
-        updateProduct.KichThuoc = data.KichThuoc ?? updateProduct.KichThuoc,
-        updateProduct.GiaBan = data.GiaBan ?? updateProduct.GiaBan,
-        updateProduct.MoTa = data.MoTa ?? updateProduct.MoTa,
-        updateProduct.HinhAnh = data.HinhAnh ?? updateProduct.HinhAnh,
-        updateProduct.TrangThaiYeuThich = data.TrangThaiYeuThich ?? updateProduct.TrangThaiYeuThich,
-        result = await updateProduct.save();
+
+  router.put('/update-product-by-id/:id', async (req, res) => {
+    try {
+        const {id} = req.params
+        const data = req.body; // lấy dữ liệu từ body
+        const updateProduct = await Products.findById(id)
+        let result = null;
+        if(updateProduct){
+          updateProduct.MaSanPham = data.MaSanPham ?? updateProduct.MaSanPham;
+          updateProduct.TenSP = data.TenSP ?? updateProduct.TenSP,
+          updateProduct.ThuongHieu = data.ThuongHieu ?? updateProduct.ThuongHieu,
+          updateProduct.KichThuoc = data.KichThuoc ?? updateProduct.KichThuoc,
+          updateProduct.GiaBan = data.GiaBan ?? updateProduct.GiaBan,
+          updateProduct.MoTa = data.MoTa ?? updateProduct.MoTa,
+          updateProduct.HinhAnh = data.HinhAnh ?? updateProduct.HinhAnh,
+          updateProduct.TrangThaiYeuThich = data.TrangThaiYeuThich ?? updateProduct.TrangThaiYeuThich,
+            result = await updateProduct.save();
+        }
+        if(result)
+        {
+        // Nếu thêm thành công result Inull trở về dữ liệu
+            res.json({
+                "status": 200,
+                "messenger": "Cập nhật thành công",
+                "data": result
+            })
+        }else{
+            // Nếu thêm không thành công result null, thông báo không thành công
+            res.json({
+                "status": 400,
+                "messenger": "Lỗi, Cập nhật không thành công",
+                "data":[]
+            })
+        }
+    } catch (error) {
+        console.log(error);
     }
-    if (result) {
-      // Nếu thêm thành công result Inull trở về dữ liệu
-      res.json({
-        "status": 200,
-        "messenger": "Cập nhật thành công",
-        "data": result
-      })
-    } else {
-      // Nếu thêm không thành công result null, thông báo không thành công
-      res.json({
-        "status": 400,
-        "messenger": "Lỗi, Cập nhật không thành công",
-        "data": []
-      })
-    }
-  } catch (error) {
-    console.log(error);
-  }
-});
+  });
 
 
 router.get('/get-product-by-id/:id', async (req, res) => {
