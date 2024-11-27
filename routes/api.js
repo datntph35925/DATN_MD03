@@ -35,8 +35,8 @@ router.post('/add-product', async (req, res) => {
 
     const existingProduct = await Products.findOne({ TenSP: data.TenSP });
     if (existingProduct) {
-      return res.status(400).json({
-        status: 400,
+      return res.status(401).json({
+        status: 401,
         messenger: "Lỗi, sản phẩm đã tồn tại",
       });
     }

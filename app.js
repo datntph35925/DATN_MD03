@@ -12,6 +12,7 @@ const indexRouter = require("./routes/index");
 const apiRouter = require("./routes/api");
 const authRouter = require("./routes/auth");
 const cartRouter = require("./routes/cart");
+const orderRouter = require("./routes/order");
 const database = require("./config/db");
 const cors = require("cors");
 const app = express();
@@ -56,6 +57,7 @@ app.use("/api", apiRouter);
 app.use("/auth", authRouter);
 app.use("/cart", cartRouter);
 app.use("/chatRouter", chatRoutes);
+app.use("/order", orderRouter);
 
 // Socket.io để xử lý chat thời gian thực
 io.on("connection", (socket) => {
