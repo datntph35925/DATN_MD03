@@ -140,6 +140,111 @@ router.get("/get-list-order/:Tentaikhoan", async (req, res) => {
 //     }
 // });
 
+router.post('/add-order-from-cart/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params; // Lấy userId từ URL params
+
+        // Lấy dữ liệu từ body của request (địa chỉ, phương thức thanh toán, v.v.)
+        const {
+            TenNguoiNhan,
+            DiaChiGiaoHang,
+            SoDienThoai,
+            PhuongThucThanhToan,
+            selectedProducts // Các sản phẩm đã chọn từ giỏ hàng (danh sách ID sản phẩm)
+        } = req.body;
+
+        console.log('Received data:', {
+            TenNguoiNhan,
+            DiaChiGiaoHang,
+            SoDienThoai,
+            PhuongThucThanhToan,
+            selectedProducts
+        });
+
+        // Kiểm tra xem tài khoản người dùng có tồn tại không
+        const userAccount = await CustomerAccounts.findOne({ Tentaikhoan: userId });
+        if (!userAccount) {
+            return res.status(404).json({ message: 'Tài khoản người dùng không tồn tại!' });
+        }
+
+        // Kiểm tra giỏ hàng của người dùng
+        const cart = await Carts.findOne({ Tentaikhoan: userAccount.Tentaikhoan });
+        if (!cart || cart.SanPham.length === 0) {
+            return res.status(400).json({ message: 'Giỏ hàng trống hoặc không tồn tại!' });
+        }
+
+        // Lọc ra các sản phẩm được chọn từ giỏ hàng
+        const cartProducts = cart.SanPham.filter(item => selectedProducts.includes(item.MaSanPham.toString()));
+        if (cartProducts.length === 0) {
+            return res.status(400).json({ message: 'Không có sản phẩm nào được chọn cho đơn hàng!' });
+        }
+
+        // Kiểm tra giỏ hàng có đủ số lượng sản phẩm không
+        const productIds = cartProducts.map(item => item.MaSanPham); // Lấy tất cả IDs của sản phẩm
+        const productsInDb = await Products.find({ _id: { $in: productIds } });
+
+        // Kiểm tra xem tất cả sản phẩm trong giỏ hàng có tồn tại không
+        const invalidProducts = cartProducts.filter(item =>
+            !productsInDb.some(product => product._id.toString() === item.MaSanPham.toString())
+        );
+        if (invalidProducts.length > 0) {
+            return res.status(400).json({
+                message: `Các sản phẩm sau không tồn tại trong cơ sở dữ liệu: ${invalidProducts.map(item => item.TenSP).join(", ")}`
+            });
+        }
+
+        // Kiểm tra số lượng sản phẩm trong giỏ hàng có hợp lệ không
+        const invalidQuantityProducts = cartProducts.filter(item => !item.SoLuongGioHang || item.SoLuongGioHang <= 0);
+        if (invalidQuantityProducts.length > 0) {
+            return res.status(400).json({
+                message: `Sản phẩm sau không có số lượng hợp lệ: ${invalidQuantityProducts.map(item => item.TenSP).join(", ")}`
+            });
+        }
+
+        // Cập nhật lại các sản phẩm trong giỏ hàng với trường SoLuong (nếu cần)
+        const updatedProducts = cartProducts.map(item => {
+            // Kiểm tra và gán giá trị SoLuong nếu không có
+            if (!item.SoLuong) {
+                item.SoLuong = item.SoLuongGioHang || 1; // Giả sử gán số lượng từ giỏ hàng hoặc mặc định là 1
+            }
+            return item;
+        });
+
+        // Tính tổng số lượng và tổng tiền cho các sản phẩm đã chọn
+        const TongSoLuong = updatedProducts.reduce((total, item) => total + item.SoLuong, 0);
+        const TongTien = updatedProducts.reduce((total, item) => total + item.TongTien, 0);
+
+        // Tạo đơn hàng mới
+        const newOrder = new Orders({
+            Tentaikhoan: userAccount.Tentaikhoan,
+            SanPham: updatedProducts,
+            TenNguoiNhan,
+            DiaChiGiaoHang,
+            SoDienThoai,
+            TrangThai: 'Chờ xử lý',
+            TongSoLuong,
+            TongTien,
+            PhuongThucThanhToan
+        });
+
+        // Lưu đơn hàng vào cơ sở dữ liệu
+        const savedOrder = await newOrder.save();
+
+        console.log('Order created successfully:', savedOrder);
+
+        // Trả về kết quả
+        res.status(201).json({
+            message: 'Đơn hàng đã được tạo thành công từ giỏ hàng!',
+            order: savedOrder
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Lỗi khi tạo đơn hàng từ giỏ hàng!' });
+    }
+});
+
+
 
 
 router.post('/add-order-directly/:userId', async (req, res) => {
@@ -196,15 +301,8 @@ router.post('/add-order-directly/:userId', async (req, res) => {
 
             if (!productInDb) {
                 // Nếu không tìm thấy sản phẩm trong cơ sở dữ liệu
-                console.log(`Không tìm thấy sản phẩm với mã ${item.MaSanPham}`);
                 return true; // Đánh dấu sản phẩm này là không hợp lệ
             }
-
-            console.log(`Kiểm tra sản phẩm: ${productInDb.TenSP}`);
-            console.log(`Số lượng người dùng nhập vào: ${item.SoLuong}`);
-            console.log(`Giá người dùng nhập vào: ${item.Gia}`);
-            console.log(`Số lượng tồn kho: ${productInDb.KichThuoc.find(size => size.size === item.Size)?.soLuongTon}`);
-            console.log(`Giá trong CSDL: ${productInDb.GiaBan}`);
 
             // Kiểm tra thông tin sản phẩm và số lượng tồn kho theo kích cỡ
             const sizeInfo = productInDb.KichThuoc.find(size => size.size === item.Size); // Tìm thông tin kích cỡ sản phẩm
@@ -220,6 +318,11 @@ router.post('/add-order-directly/:userId', async (req, res) => {
             // Kiểm tra giá sản phẩm có hợp lệ không
             if (productInDb.GiaBan !== item.Gia) {
                 return true; // Giá sản phẩm không hợp lệ
+            }
+
+            // Cập nhật hình ảnh cho sản phẩm nếu chưa có
+            if (!item.HinhAnh) {
+                item.HinhAnh = productInDb.HinhAnh || []; // Đảm bảo HinhAnh là mảng (có thể là mảng rỗng)
             }
 
             return false;
@@ -238,7 +341,15 @@ router.post('/add-order-directly/:userId', async (req, res) => {
         // Tạo đơn hàng mới
         const newOrder = new Orders({
             Tentaikhoan: userAccount.Tentaikhoan,
-            SanPham: SanPham,
+            SanPham: SanPham.map(item => ({
+                MaSanPham: item.MaSanPham,
+                TenSP: item.TenSP,
+                SoLuong: item.SoLuong,
+                Size: item.Size,
+                Gia: item.Gia,
+                TongTien: item.TongTien,
+                HinhAnh: item.HinhAnh || [] // Đảm bảo HinhAnh là một mảng
+            })),
             TenNguoiNhan,
             DiaChiGiaoHang,
             SoDienThoai,
@@ -262,9 +373,5 @@ router.post('/add-order-directly/:userId', async (req, res) => {
         res.status(500).json({ message: 'Lỗi khi tạo đơn hàng từ sản phẩm trực tiếp!' });
     }
 });
-
-
-
-
 
 module.exports = router;

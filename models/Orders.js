@@ -8,7 +8,8 @@ const ProductItemSchema = new Schema({
   SoLuong: { type: Number, required: true }, // Số lượng sản phẩm trong đơn hàng
   Size: { type: Number, required: true }, // Kích cỡ của sản phẩm
   Gia: { type: Number, required: true }, // Giá của sản phẩm
-  TongTien: { type: Number, required: true } // Tổng tiền = Giá x Số lượng
+  TongTien: { type: Number, required: true }, // Tổng tiền = Giá x Số lượng
+  HinhAnh: [String], 
 });
 
 // Định nghĩa Schema cho đơn hàng (Order)
