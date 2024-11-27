@@ -2,6 +2,7 @@ package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,21 +27,25 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import android.os.Handler;
+
 public class activity_chat extends AppCompatActivity {
 
     private RecyclerView recyclerViewChat;
     private ChatAdapter chatAdapter;
     private List<ChatMessage> chatMessages = new ArrayList<>();
-    private String currentUserId; // Tên tài khoản người dùng hiện tại
+    private String currentUserId;
     private EditText editTextMessage;
     private Button buttonSend;
+
+    private Handler handler = new Handler();  // Khai báo handler
+    private Runnable fetchMessagesRunnable;   // Khai báo runnable
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        // Lấy tài khoản từ SharedPreferences
         currentUserId = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
                 .getString("Tentaikhoan", null);
 
@@ -50,17 +55,15 @@ public class activity_chat extends AppCompatActivity {
             return;
         }
 
-        // Ánh xạ view
         recyclerViewChat = findViewById(R.id.recyclerViewChat);
         editTextMessage = findViewById(R.id.editTextMessage);
         buttonSend = findViewById(R.id.buttonSend);
 
-        // Thiết lập RecyclerView
         chatAdapter = new ChatAdapter(chatMessages, position -> deleteMessage(position));
         recyclerViewChat.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewChat.setAdapter(chatAdapter);
 
-        // Lấy danh sách tin nhắn
+        // Lấy danh sách tin nhắn ngay khi vào Activity
         fetchChatMessages();
 
         // Xử lý nút gửi tin nhắn
@@ -72,14 +75,31 @@ public class activity_chat extends AppCompatActivity {
                 Toast.makeText(this, "Tin nhắn không được để trống!", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // Khởi tạo Runnable để gọi fetchChatMessages liên tục
+        fetchMessagesRunnable = new Runnable() {
+            @Override
+            public void run() {
+                fetchChatMessages();
+                handler.postDelayed(this, 100); // Lặp lại sau 3 giây
+            }
+        };
     }
 
-    /**
-     * Lấy danh sách tin nhắn từ server.
-     */
+    @Override
+    protected void onStart() {
+        super.onStart();
+        handler.post(fetchMessagesRunnable); // Bắt đầu vòng lặp khi Activity hiển thị
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        handler.removeCallbacks(fetchMessagesRunnable); // Dừng vòng lặp khi Activity không còn hiển thị
+    }
+
     private void fetchChatMessages() {
         ApiService apiService = RetrofitClient.getApiService();
-
         Log.d("DEBUG", "Fetching messages for TentaiKhoan: " + currentUserId);
 
         apiService.getMessages(currentUserId).enqueue(new Callback<List<ChatMessage>>() {
@@ -101,18 +121,13 @@ public class activity_chat extends AppCompatActivity {
         });
     }
 
-    /**
-     * Gửi tin nhắn tới server.
-     */
     private void sendMessage(String content) {
         ApiService apiService = RetrofitClient.getApiService();
 
-        // Tạo Map chứa dữ liệu tin nhắn
         Map<String, String> messageData = new HashMap<>();
-        messageData.put("TentaiKhoan", currentUserId); // Gán tài khoản hiện tại làm người gửi
-        messageData.put("message", content); // Gán nội dung tin nhắn
+        messageData.put("TentaiKhoan", currentUserId);
+        messageData.put("message", content);
 
-        // Gửi tin nhắn qua API
         apiService.sendMessage(messageData).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
@@ -131,13 +146,9 @@ public class activity_chat extends AppCompatActivity {
         });
     }
 
-    /**
-     * Xóa tin nhắn.
-     */
     private void deleteMessage(int position) {
         ChatMessage message = chatMessages.get(position);
 
-        // Debug log để kiểm tra giá trị
         Log.d("DEBUG", "Message ID: " + message.getId());
         Log.d("DEBUG", "TentaiKhoan: " + currentUserId);
 
@@ -160,5 +171,4 @@ public class activity_chat extends AppCompatActivity {
             }
         });
     }
-
 }
