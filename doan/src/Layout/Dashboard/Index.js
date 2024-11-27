@@ -18,13 +18,15 @@ const Dashboard = () => {
   // Xác định mục menu nào đang hoạt động dựa trên pathname
   const selectedKey = () => {
     switch (location.pathname) {
-      case "/Home":
+      case "/home":
         return "1";
       case "/profile":
         return "2";
       case "/products":
         return "3";
-      case "/Quanlydonhang":
+      case "/chat":
+        return "4";
+      case "/quanlydonhang":
         return "5";
       case "/settings":
         return "6";
@@ -52,7 +54,7 @@ const Dashboard = () => {
       className="custom-menu"
     >
       <Menu.Item key="1" icon={<HomeOutlined />}>
-        <Link to="/Home">Home</Link>
+        <Link to="/home">Home</Link>
       </Menu.Item>
       <Menu.Item key="2" icon={<UserOutlined />}>
         <Link to="/profile">Quản lí tài khoản</Link>
@@ -61,10 +63,10 @@ const Dashboard = () => {
         <Link to="/products">Sản phẩm</Link>
       </Menu.Item>
       <Menu.Item key="4" icon={<BarChartOutlined />}>
-        <Link to="/thongke">Thống kê</Link>
+        <Link to="/chat">Hỗ trợ khách hành</Link>
       </Menu.Item>
       <Menu.Item key="5" icon={<OrderedListOutlined />}>
-        <Link to="/Quanlydonhang">Quản lý đơn hàng</Link>
+        <Link to="/quanlydonhang">Quản lý đơn hàng</Link>
       </Menu.Item>
       <Menu.Item key="6" icon={<SettingOutlined />}>
         <Link to="/settings">Settings</Link>

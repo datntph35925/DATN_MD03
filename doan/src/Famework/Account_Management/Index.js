@@ -10,7 +10,6 @@ import {
 } from "antd";
 import { getListAccount, deleteAccounts } from "../../Server/account_api"; // Adjust the path to your API functions
 
-// quản lý tài khoản
 const Account_Management = () => {
   const [customers, setCustomers] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -30,7 +29,10 @@ const Account_Management = () => {
             Matk: customer.Matk,
             Tentaikhoan: customer.Tentaikhoan,
             Hoten: customer.Hoten,
-            Anhtk: customer.Anhtk,
+            // Append .jpg to image filenames
+            Anhtk: customer.Anhtk
+              ? `/uploads/${customer.Anhtk}.jpg`
+              : "/uploads/default-avatar.jpg", // Default fallback image
           }))
         );
       } catch (error) {
@@ -68,7 +70,7 @@ const Account_Management = () => {
         <img
           src={text}
           alt="avatar"
-          style={{ width: 50, borderRadius: "50%" }}
+          style={{ width: 50, height: 50, borderRadius: "50%" }}
         />
       ),
     },
@@ -99,9 +101,7 @@ const Account_Management = () => {
   const handleDelete = async (accountId) => {
     setLoading(true); // Set loading state to true during API call
     try {
-      // Call the delete API
       await deleteAccounts(accountId);
-      // Remove the deleted account from the local state
       setCustomers(customers.filter((customer) => customer.key !== accountId));
       message.success("Customer deleted successfully");
     } catch (error) {

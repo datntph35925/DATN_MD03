@@ -6,15 +6,13 @@ import "./index.scss";
 
 const ForgotPassword = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState(1); // Bước xử lý (1: nhập email và tài khoản, 2: đặt lại mật khẩu)
+  const [step, setStep] = useState(1);
 
-  // Xử lý bước 1: Gửi tài khoản và email để nhận mã xác nhận
   const onFinishStep1 = async (values) => {
     try {
       setLoading(true);
       const response = await ForgotPasswordAPI({
         username: values.username,
-        account: values.account, // Gửi thêm tài khoản
       });
       console.log("ForgotPasswordAPI Response:", response); // Debug phản hồi
       message.success("Mã xác nhận đã được gửi đến email của bạn!");
@@ -29,24 +27,35 @@ const ForgotPassword = ({ onClose }) => {
 
   // Xử lý bước 2: Nhập mã xác nhận và mật khẩu mới
   const onFinishStep2 = async (values) => {
+    // Check if the new password and confirmation match
     if (values.newPassword !== values.confirmPassword) {
-      message.error("Mật khẩu xác nhận không khớp!");
+      message.error("Mật khẩu xác nhận không khớp!"); // Show error if passwords don't match
       return;
     }
+
     try {
+      // Set loading state to true while waiting for API response
       setLoading(true);
+
+      // Call the resetPasswordAPI with the verification code, new password, and username
       const response = await resetPasswordAPI({
+        username: values.username, // Include the username here
         verificationCode: values.verificationCode,
         newPassword: values.newPassword,
       });
-      console.log("resetPasswordAPI Response:", response); // Debug phản hồi
+
+      console.log("resetPasswordAPI Response:", response); // Log the API response
+
+      // Show success message
       message.success("Mật khẩu đã được đặt lại thành công!");
-      if (onClose) onClose(); // Đóng modal sau khi thành công
+
+      // Close the modal after success
+      if (onClose) onClose();
     } catch (error) {
-      console.error("onFinishStep2 Error:", error.message); // Log lỗi chi tiết
-      message.error(error.message || "Đặt lại mật khẩu thất bại!");
+      console.error("onFinishStep2 Error:", error.message); // Log any error during API call
+      message.error(error.message || "Đặt lại mật khẩu thất bại!"); // Show error message
     } finally {
-      setLoading(false);
+      setLoading(false); // Set loading state to false after API call
     }
   };
 

@@ -8,7 +8,7 @@ import Homes from "./Famework/Home";
 import Products from "./Famework/Product";
 import QlDonHang from "./Famework/Order_Management/index";
 import Profile from "./Famework/Account_Management/Index";
-
+import Chat from "./Famework/chat";
 import store from "./Router/store";
 
 const App = () => {
@@ -19,9 +19,10 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<Home />}>
             <Route path="products" element={<Products />} />
-            <Route path="/Home" element={<Homes />} />
-            <Route path="/Quanlydonhang" element={<QlDonHang />} />
+            <Route path="/home" element={<Homes />} />
+            <Route path="/quanlydonhang" element={<QlDonHang />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/chat" element={<Chat />} />
           </Route>
         </Routes>
       </Router>

@@ -1,0 +1,118 @@
+.chat-container {
+    display: flex;
+    height: 100vh;
+    max-width: 800px;
+    margin: auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  
+    .user-list {
+      width: 30%;
+      background-color: #f5f5f5;
+      border-right: 1px solid #ddd;
+      padding: 10px;
+  
+      h3 {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+  
+      .user-item {
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+  
+        &:hover {
+          background-color: #e0e0e0;
+        }
+  
+        &.active {
+          background-color: #0078ff;
+          color: white;
+        }
+      }
+    }
+  
+    .chat-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+  
+      .chat-header {
+        padding: 10px;
+        background-color: #0078ff;
+        color: white;
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+      }
+  
+      .chat-body {
+        flex: 1;
+        padding: 10px;
+        overflow-y: auto;
+        background-color: #f7f7f7;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+  
+        .chat-message {
+          max-width: 70%;
+          padding: 10px;
+          border-radius: 20px;
+          font-size: 14px;
+          word-wrap: break-word;
+  
+          &-sent {
+            background-color: #0078ff;
+            color: white;
+            align-self: flex-end;
+            text-align: right;
+          }
+  
+          &-received {
+            background-color: #e4e6eb;
+            color: #000;
+            align-self: flex-start;
+            text-align: left;
+          }
+        }
+      }
+  
+      .chat-footer {
+        display: flex;
+        padding: 10px;
+        background-color: #fff;
+        border-top: 1px solid #ddd;
+  
+        input {
+          flex: 1;
+          padding: 10px;
+          border: 1px solid #ccc;
+          border-radius: 20px;
+          outline: none;
+          margin-right: 10px;
+          font-size: 14px;
+        }
+  
+        button {
+          padding: 10px 15px;
+          background-color: #0078ff;
+          color: white;
+          border: none;
+          border-radius: 20px;
+          cursor: pointer;
+          font-size: 14px;
+  
+          &:hover {
+            background-color: darken(#0078ff, 10%);
+          }
+        }
+      }
+    }
+  }
+  

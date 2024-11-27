@@ -8,25 +8,19 @@ import "./index.scss";
 const Login = () => {
   const [showModal, setShowModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [verificationEmailSent, setVerificationEmailSent] = useState(false); // State to control verification flow
+  const [verificationEmailSent, setVerificationEmailSent] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [inputCode, setInputCode] = useState(""); // Code for verification
+  const [inputCode, setInputCode] = useState("");
   const navigate = useNavigate();
-
-  // Handle login logic
   const handleLogin = async () => {
     try {
-      // Call the login API
       const loginResponse = await LoginAPI({ username, password });
-      console.log(loginResponse);
 
       if (loginResponse.status) {
-        // If login successful, move to verification phase
-        setVerificationEmailSent(true);
+        setVerificationEmailSent(true); // Hiển thị modal xác minh
         setErrorMessage("");
       } else {
-        // Handle login failure
         setErrorMessage("Tên đăng nhập hoặc mật khẩu không đúng.");
       }
     } catch (error) {
@@ -34,24 +28,23 @@ const Login = () => {
     }
   };
 
-  // Handle code verification logic
   const handleVerify = async () => {
     try {
-      // Call the VerifyCodeAPI and pass username and inputCode
       const verifyResponse = await VerifyCodeAPI({
         username,
-        verificationCode: inputCode, // Pass the code entered in the modal
+        verificationCode: inputCode,
       });
 
-      console.log("Verification response:", verifyResponse);
+      console.log("Verify Response:", verifyResponse);
 
-      if (verifyResponse.success) {
-        // Navigate to home if verification is successful
-        navigate("/Home");
+      if (verifyResponse?.message) {
+        setErrorMessage("");
+        navigate("/home");
       } else {
-        setErrorMessage("Mã xác minh không hợp lệ."); // Display error if verification fails
+        setErrorMessage(verifyResponse?.message || "Mã xác minh không hợp lệ.");
       }
     } catch (error) {
+      console.error("handleVerify Error:", error);
       setErrorMessage(error.message || "Xác minh thất bại. Vui lòng thử lại.");
     }
   };
@@ -71,7 +64,7 @@ const Login = () => {
           showModal={showModal}
           onClose={() => {
             setShowModal(false);
-            setVerificationEmailSent(false); // Reset state when closing modal
+            setVerificationEmailSent(false);
           }}
           username={username}
           setUsername={setUsername}

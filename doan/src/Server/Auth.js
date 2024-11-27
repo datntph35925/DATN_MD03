@@ -23,16 +23,22 @@ const LoginAPI = async (payload) => {
 const VerifyCodeAPI = async (payload) => {
   try {
     const response = await axios.post("/auth/xac-thuc-ma-dang-nhap-admin", {
-      email: payload.username, // Truyền tài khoản email
-      verificationCode: payload.verificationCode, // Mã xác minh nhập từ modal
+      username: payload.username,
+      verificationCode: payload.verificationCode,
     });
+
+    return response.data;
   } catch (error) {
-    throw new Error(
-      error.response?.data?.message ||
-        "Không thể xác minh mã. Vui lòng thử lại."
-    );
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        "Không thể xác minh mã. Vui lòng thử lại.",
+    };
   }
 };
+
+export default VerifyCodeAPI;
 
 const ForgotPasswordAPI = async (payload) => {
   try {

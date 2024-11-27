@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import ForgotPassword from "../ModalForgot"; // Import ForgotPassword component
 import "./index.scss";
 
 const LoginModal = ({
@@ -15,7 +16,17 @@ const LoginModal = ({
   errorMessage,
   verificationEmailSent,
 }) => {
+  const [showForgotPassword, setShowForgotPassword] = useState(false); // State to toggle ForgotPassword modal
+
   if (!showModal) return null;
+
+  const handleForgotPassword = () => {
+    setShowForgotPassword(true); // Show ForgotPassword modal
+  };
+
+  const handleCloseForgotPassword = () => {
+    setShowForgotPassword(false); // Close ForgotPassword modal
+  };
 
   return (
     <div className="modal_overlay">
@@ -41,12 +52,17 @@ const LoginModal = ({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+            <div className="forgot-password-link">
+              <a type="button" onClick={handleForgotPassword}>
+                Quên mật khẩu?
+              </a>
+            </div>
             <button onClick={onLogin}>Đăng nhập</button>
           </>
         ) : (
-          // Verification code form
           <>
             <p>Mã xác minh đã được gửi tới email của bạn.</p>
+
             <input
               type="text"
               placeholder="Nhập mã xác minh"
@@ -57,6 +73,9 @@ const LoginModal = ({
           </>
         )}
       </div>
+      {showForgotPassword && (
+        <ForgotPassword onClose={handleCloseForgotPassword} />
+      )}{" "}
     </div>
   );
 };
