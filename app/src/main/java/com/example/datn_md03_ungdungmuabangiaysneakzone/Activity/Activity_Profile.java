@@ -33,7 +33,7 @@ public class Activity_Profile extends AppCompatActivity {
     // Khai báo các view
     private ImageView imgAvatarProfile;
     private TextView tvNameProduct, tvEmail, tvChinhSuaThongTin;
-    private CardView cvAdddiachi, cvOderForShop, cvChatBox;
+    private CardView cvAdddiachi, cvOderForShop, cvChatBox , cvOut;
     private BottomNavigationView bottomNavigationView;
 
     @Override
@@ -63,6 +63,7 @@ public class Activity_Profile extends AppCompatActivity {
         cvOderForShop = findViewById(R.id.cvOderForShop);
         cvChatBox = findViewById(R.id.cvChatBox);
         bottomNavigationView = findViewById(R.id.bottomnavigation);
+        cvOut = findViewById(R.id.cvOut);
     }
 
     private void loadUserData() {
@@ -144,6 +145,20 @@ public class Activity_Profile extends AppCompatActivity {
         cvChatBox.setOnClickListener(view -> {
             startActivity(new Intent(Activity_Profile.this,activity_chat.class));
         });
+        cvOut.setOnClickListener(view -> {
+            // Xóa thông tin đăng nhập khỏi SharedPreferences
+            SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.remove("Tentaikhoan");  // Xóa tên tài khoản
+            editor.putBoolean("is_logged_in", false);  // Đặt trạng thái đăng nhập thành false
+            editor.apply();
+
+            // Quay lại màn hình đăng nhập
+            Intent intent = new Intent(Activity_Profile.this, DangNhap.class);
+            startActivity(intent);
+            finish();  // Đảm bảo không thể quay lại màn hình Profile sau khi đăng xuất
+        });
+
         // Uncomment nếu cần sử dụng chức năng nhắn tin
         /*
         cvChatBox.setOnClickListener(view -> {
