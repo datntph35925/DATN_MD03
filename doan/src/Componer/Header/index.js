@@ -17,9 +17,6 @@ const Header = () => {
       <Menu.Item key="1" icon={<UserOutlined />}>
         Profile
       </Menu.Item>
-      <Menu.Item key="2" icon={<LogoutOutlined />} onClick={handleLogout}>
-        Logout
-      </Menu.Item>
     </Menu>
   );
 
@@ -45,14 +42,10 @@ const Header = () => {
         color: "#fff",
       }}
     >
-      {/* Logo or Title */}
       <div
         style={{ fontSize: "20px", color: "#fff", fontWeight: "bold" }}
       ></div>
-
-      {/* Notifications and User Info */}
       <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-        {/* Notifications Dropdown */}
         <Dropdown
           overlay={notificationsMenu}
           trigger={["click"]}
@@ -69,8 +62,6 @@ const Header = () => {
             />
           </Badge>
         </Dropdown>
-
-        {/* User Info Dropdown */}
         <Dropdown overlay={userMenu} placement="bottomRight" arrow>
           <div
             style={{
@@ -80,7 +71,6 @@ const Header = () => {
               color: "#fff",
             }}
           >
-            {/* User Avatar */}
             <Avatar
               src={user.avatar || null}
               icon={!user.avatar && <UserOutlined />}
@@ -89,7 +79,6 @@ const Header = () => {
                 marginRight: "8px",
               }}
             />
-            {/* User Name */}
             <span>{user.name}</span>
           </div>
         </Dropdown>
