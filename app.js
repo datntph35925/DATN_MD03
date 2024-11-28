@@ -88,9 +88,9 @@ async function createDefaultAdmin() {
     if (!adminExists) {
       const admin = new Admin(defaultAdmin);
       await admin.save();
-      console.log("Tài khoản admin mặc định đã được tạo!");
+      // console.log("Tài khoản admin mặc định đã được tạo!");
     } else {
-      console.log("Tài khoản admin mặc định đã tồn tại!");
+      // console.log("Tài khoản admin mặc định đã tồn tại!");
     }
   } catch (err) {
     console.error("Lỗi khi tạo admin mặc định:", err);
@@ -98,24 +98,24 @@ async function createDefaultAdmin() {
 }
 
 // Socket.IO xử lý chat thời gian thực
-io.on("connection", (socket) => {
-  console.log(`Người dùng kết nối: ${socket.id}`);
+// io.on("connection", (socket) => {
+//   console.log(`Người dùng kết nối: ${socket.id}`);
 
-  // Lắng nghe sự kiện gửi tin nhắn từ client
-  socket.on("sendMessage", (data) => {
-    console.log(`Tin nhắn từ ${data.sender}: ${data.message}`);
-    io.emit("receiveMessage", data); // Phát tin nhắn đến tất cả client
-  });
+//   // Lắng nghe sự kiện gửi tin nhắn từ client
+//   socket.on("sendMessage", (data) => {
+//     console.log(`Tin nhắn từ ${data.sender}: ${data.message}`);
+//     io.emit("receiveMessage", data); // Phát tin nhắn đến tất cả client
+//   });
 
-  // Lắng nghe sự kiện ngắt kết nối
-  socket.on("disconnect", () => {
-    console.log(`Người dùng ngắt kết nối: ${socket.id}`);
-  });
-});
+//   // Lắng nghe sự kiện ngắt kết nối
+//   socket.on("disconnect", () => {
+//     console.log(`Người dùng ngắt kết nối: ${socket.id}`);
+//   });
+// });
 // Kết nối đến MongoDB và tạo tài khoản admin mặc định
 database.connect()
   .then(() => {
-    console.log("Kết nối MongoDB thành công!");
+    // console.log("Kết nối MongoDB thành công!");
     createDefaultAdmin(); // Gọi hàm tạo tài khoản admin mặc định
   })
   .catch(() => {
