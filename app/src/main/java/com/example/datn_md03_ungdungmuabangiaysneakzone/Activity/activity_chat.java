@@ -1,11 +1,13 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,6 +39,7 @@ public class activity_chat extends AppCompatActivity {
     private String currentUserId;
     private EditText editTextMessage;
     private Button buttonSend;
+    private ImageButton buttonBack ;
 
     private Handler handler = new Handler();  // Khai báo handler
     private Runnable fetchMessagesRunnable;   // Khai báo runnable
@@ -58,6 +61,7 @@ public class activity_chat extends AppCompatActivity {
         recyclerViewChat = findViewById(R.id.recyclerViewChat);
         editTextMessage = findViewById(R.id.editTextMessage);
         buttonSend = findViewById(R.id.buttonSend);
+        buttonBack = findViewById(R.id.buttonBack);
 
         chatAdapter = new ChatAdapter(chatMessages, position -> deleteMessage(position));
         recyclerViewChat.setLayoutManager(new LinearLayoutManager(this));
@@ -75,15 +79,22 @@ public class activity_chat extends AppCompatActivity {
                 Toast.makeText(this, "Tin nhắn không được để trống!", Toast.LENGTH_SHORT).show();
             }
         });
+        // Xử lý thoat
+        buttonBack.setOnClickListener(v -> {
+            Intent intent = new Intent(activity_chat.this,Activity_Profile.class);
+            startActivity(intent);
+            finish();
+        });
 
         // Khởi tạo Runnable để gọi fetchChatMessages liên tục
         fetchMessagesRunnable = new Runnable() {
             @Override
             public void run() {
                 fetchChatMessages();
-                handler.postDelayed(this, 100); // Lặp lại sau 3 giây
+                handler.postDelayed(this, 1000);
             }
         };
+
     }
 
     @Override
@@ -160,15 +171,19 @@ public class activity_chat extends AppCompatActivity {
                     chatMessages.remove(position);
                     chatAdapter.notifyItemRemoved(position);
                     Toast.makeText(activity_chat.this, "Đã xóa tin nhắn!", Toast.LENGTH_SHORT).show();
+                    Log.d("DEBUG", "Message successfully deleted!");
                 } else {
                     Toast.makeText(activity_chat.this, "Không thể xóa tin nhắn!", Toast.LENGTH_SHORT).show();
+                    Log.d("DEBUG", "Failed to delete message: " + response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 Toast.makeText(activity_chat.this, "Lỗi mạng: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.d("DEBUG", "Error while deleting message: " + t.getMessage());
             }
         });
     }
+
 }
