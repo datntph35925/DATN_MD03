@@ -84,20 +84,50 @@
                     android:textSize="16sp" />
             </LinearLayout>
 
-            <!-- Slideshow Section -->
+            <!-- Slideshow Section with buttons -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="230dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp">
 
-                <ImageView
-                    android:id="@+id/imageViewSlider"
+                <!-- FrameLayout để chồng các nút lên ảnh -->
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:contentDescription="Slideshow Image" />
+                    android:layout_height="match_parent">
+
+                    <!-- ImageView cho slideshow -->
+                    <ImageView
+                        android:id="@+id/imageViewSlider"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:contentDescription="Slideshow Image"/>
+
+                    <!-- Nút "Trước đó" -->
+                    <ImageButton
+                        android:id="@+id/btnPrev"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/ic_prev"
+                        android:layout_gravity="start|center_vertical"
+                        android:background="@android:color/transparent"
+                        android:contentDescription="Previous Image"/>
+
+                    <!-- Nút "Tiếp theo" -->
+                    <ImageButton
+                        android:id="@+id/btnNext"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/ic_next"
+                        android:layout_gravity="end|center_vertical"
+                        android:background="@android:color/transparent"
+                        android:contentDescription="Next Image"/>
+
+                </FrameLayout>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 
             <LinearLayout

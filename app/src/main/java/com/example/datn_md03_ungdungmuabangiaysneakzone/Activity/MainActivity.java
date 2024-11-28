@@ -1,9 +1,13 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
     TextView tvXemThem;
     ImageView imageViewSlider; // ImageView cho slideshow
+    ImageButton btnPrev, btnNext; // Nút điều khiển ảnh
     int[] imageList = {R.drawable.banner1, R.drawable.banner2, R.drawable.banner3}; // Danh sách ảnh slideshow
     int currentImageIndex = 0; // Chỉ mục ảnh hiện tại
     Handler handler = new Handler(); // Handler để quản lý thời gian trễ cho slideshow
@@ -48,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
         // Khởi tạo các view
         bottomNavigationView = findViewById(R.id.bottomnavigation);
         imageViewSlider = findViewById(R.id.imageViewSlider); // ImageView cho slideshow
+        btnPrev = findViewById(R.id.btnPrev); // Nút "Trước đó"
+        btnNext = findViewById(R.id.btnNext); // Nút "Tiếp theo"
         setBottomNavigationView();
 
         tvXemThem = findViewById(R.id.tvXemThem);
@@ -63,9 +70,29 @@ public class MainActivity extends AppCompatActivity {
 
         // Bắt đầu slideshow
         startSlideshow();
+
+        // Nút "Trước đó"
+        btnPrev.setOnClickListener(v -> {
+            // Giảm chỉ mục và cập nhật ảnh
+            currentImageIndex--;
+            if (currentImageIndex < 0) {
+                currentImageIndex = imageList.length - 1; // Quay lại ảnh cuối cùng
+            }
+            showImage();
+        });
+
+        // Nút "Tiếp theo"
+        btnNext.setOnClickListener(v -> {
+            // Tăng chỉ mục và cập nhật ảnh
+            currentImageIndex++;
+            if (currentImageIndex >= imageList.length) {
+                currentImageIndex = 0; // Quay lại ảnh đầu tiên
+            }
+            showImage();
+        });
     }
 
-    private void loadDuLieu(ArrayList<Product> list){
+    private void loadDuLieu(ArrayList<Product> list) {
         productAdapter = new SanPhamAdapter(this, list);
         spRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         spRecyclerView.setAdapter(productAdapter);
@@ -77,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Response<ArrayList<Product>>> call, retrofit2.Response<Response<ArrayList<Product>>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    if(response.body().getStatus() == 200) {
+                    if (response.body().getStatus() == 200) {
                         productArrayList = response.body().getData();
                         loadDuLieu(productArrayList);
                     } else {
@@ -96,17 +123,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startSlideshow() {
-        // Runnable để thay đổi hình ảnh mỗi 3 giây
         Runnable slideshowRunnable = new Runnable() {
             @Override
             public void run() {
-                // Đổi ảnh trong ImageView
-                imageViewSlider.setImageResource(imageList[currentImageIndex]);
+                // Tạo hiệu ứng chuyển đổi mượt mà
+                ObjectAnimator fadeOut = ObjectAnimator.ofFloat(imageViewSlider, "alpha", 1f, 0f);
+                fadeOut.setDuration(500); // Thời gian fade-out
+
+                fadeOut.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        // Đổi ảnh sau khi fade-out
+                        imageViewSlider.setImageResource(imageList[currentImageIndex]);
+
+                        // Tạo hiệu ứng fade-in khi ảnh mới được hiển thị
+                        ObjectAnimator fadeIn = ObjectAnimator.ofFloat(imageViewSlider, "alpha", 0f, 1f);
+                        fadeIn.setDuration(200); // Thời gian fade-in
+                        fadeIn.start();
+                    }
+                });
+
+                fadeOut.start();
 
                 // Cập nhật chỉ mục ảnh
                 currentImageIndex++;
                 if (currentImageIndex >= imageList.length) {
-                    currentImageIndex = 0; // Nếu đến ảnh cuối cùng thì quay lại ảnh đầu tiên
+                    currentImageIndex = 0; // Quay lại ảnh đầu tiên nếu đến ảnh cuối cùng
                 }
 
                 // Lặp lại sau 3 giây
@@ -114,8 +156,14 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        // Bắt đầu slideshow
+        // Bắt đầu slideshow ngay khi Activity bắt đầu
         handler.post(slideshowRunnable);
+    }
+
+
+    // Hàm để hiển thị ảnh mà không dùng animation
+    private void showImage() {
+        imageViewSlider.setImageResource(imageList[currentImageIndex]);
     }
 
     @Override
@@ -129,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                if(item.getItemId() == R.id.yeuthich){
+                if (item.getItemId() == R.id.yeuthich) {
                     startActivity(new Intent(MainActivity.this, Activity_YeuThich.class));
                 } else if (item.getItemId() == R.id.giohang) {
                     startActivity(new Intent(MainActivity.this, Activity_Cart.class));
