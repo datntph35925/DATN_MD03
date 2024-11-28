@@ -58,87 +58,9 @@ router.get("/get-list-order/:Tentaikhoan", async (req, res) => {
     }
 });
 
-// router.post('/add-order/:userId', async (req, res) => {
-//     try {
-//         const { userId } = req.params; // Lấy userId từ URL params
 
-//         // Lấy dữ liệu từ body của request
-//         const {
-//             SanPham, // Mảng sản phẩm từ người dùng gửi (nếu có)
-//             TenNguoiNhan,
-//             DiaChiGiaoHang,
-//             SoDienThoai,
-//             PhuongThucThanhToan
-//         } = req.body;
 
-//         // Kiểm tra xem tài khoản người dùng có tồn tại không
-//         const userAccount = await CustomerAccounts.findOne({ Tentaikhoan: userId });
 
-//         if (!userAccount) {
-//             return res.status(404).json({ message: 'Tài khoản người dùng không tồn tại!' });
-//         }
-
-//         let cartProducts = [];
-
-//         // Kiểm tra giỏ hàng của người dùng
-//         const cart = await Carts.findOne({ Tentaikhoan: userAccount.Tentaikhoan });
-
-//         if (cart) {
-//             // Nếu giỏ hàng có sản phẩm, lấy thông tin sản phẩm từ giỏ hàng
-//             cartProducts = cart.SanPham;
-//         } else if (SanPham && SanPham.length > 0) {
-//             // Nếu giỏ hàng không có, lấy thông tin sản phẩm từ request body (SanPham)
-//             cartProducts = SanPham;
-//         } else {
-//             return res.status(400).json({ message: 'Không có sản phẩm trong giỏ hàng hoặc đơn hàng!' });
-//         }
-
-//         // Lấy thông tin sản phẩm từ cơ sở dữ liệu (kiểm tra mỗi sản phẩm có tồn tại không)
-//         const productIds = cartProducts.map(item => item.MaSanPham); // Lấy tất cả IDs của sản phẩm
-//         const productsInDb = await Products.find({ _id: { $in: productIds } });
-
-//         // Kiểm tra xem tất cả sản phẩm trong đơn hàng có tồn tại không
-//         const invalidProducts = cartProducts.filter(item => 
-//             !productsInDb.some(product => product._id.toString() === item.MaSanPham.toString())
-//         );
-
-//         if (invalidProducts.length > 0) {
-//             return res.status(400).json({
-//                 message: `Các sản phẩm sau không tồn tại trong cơ sở dữ liệu: ${invalidProducts.map(item => item.TenSP).join(", ")}`
-//             });
-//         }
-
-//         // Tính tổng số lượng và tổng tiền
-//         const TongSoLuong = cartProducts.reduce((total, item) => total + item.SoLuongGioHang, 0);
-//         const TongTien = cartProducts.reduce((total, item) => total + item.TongTien, 0);
-
-//         // Tạo đơn hàng mới
-//         const newOrder = new Orders({
-//             Tentaikhoan: userAccount.Tentaikhoan, // Lưu tên tài khoản người dùng
-//             SanPham: cartProducts,
-//             TenNguoiNhan,
-//             DiaChiGiaoHang,
-//             SoDienThoai,
-//             TrangThai: 'Chờ xử lý', // Trạng thái đơn hàng ban đầu
-//             TongSoLuong,
-//             TongTien,
-//             PhuongThucThanhToan
-//         });
-
-//         // Lưu đơn hàng vào cơ sở dữ liệu
-//         const savedOrder = await newOrder.save();
-
-//         // Trả về kết quả
-//         res.status(201).json({
-//             message: 'Đơn hàng đã được tạo thành công!',
-//             order: savedOrder
-//         });
-
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ message: 'Lỗi khi tạo đơn hàng!' });
-//     }
-// });
 
 router.post('/add-order-from-cart/:userId', async (req, res) => {
     try {
@@ -152,14 +74,6 @@ router.post('/add-order-from-cart/:userId', async (req, res) => {
             PhuongThucThanhToan,
             selectedProducts // Các sản phẩm đã chọn từ giỏ hàng (danh sách ID sản phẩm)
         } = req.body;
-
-        console.log('Received data:', {
-            TenNguoiNhan,
-            DiaChiGiaoHang,
-            SoDienThoai,
-            PhuongThucThanhToan,
-            selectedProducts
-        });
 
         // Kiểm tra xem tài khoản người dùng có tồn tại không
         const userAccount = await CustomerAccounts.findOne({ Tentaikhoan: userId });
@@ -175,6 +89,8 @@ router.post('/add-order-from-cart/:userId', async (req, res) => {
 
         // Lọc ra các sản phẩm được chọn từ giỏ hàng
         const cartProducts = cart.SanPham.filter(item => selectedProducts.includes(item.MaSanPham.toString()));
+
+        // Kiểm tra nếu không có sản phẩm nào được chọn từ giỏ hàng
         if (cartProducts.length === 0) {
             return res.status(400).json({ message: 'Không có sản phẩm nào được chọn cho đơn hàng!' });
         }
@@ -201,23 +117,35 @@ router.post('/add-order-from-cart/:userId', async (req, res) => {
             });
         }
 
-        // Cập nhật lại các sản phẩm trong giỏ hàng với trường SoLuong (nếu cần)
+        // Cập nhật lại các sản phẩm trong giỏ hàng với trường SoLuongGioHang và Size (nếu cần)
         const updatedProducts = cartProducts.map(item => {
-            // Kiểm tra và gán giá trị SoLuong nếu không có
-            if (!item.SoLuong) {
-                item.SoLuong = item.SoLuongGioHang || 1; // Giả sử gán số lượng từ giỏ hàng hoặc mặc định là 1
+            if (!item.SoLuongGioHang) {
+                item.SoLuongGioHang = 1; // Gán số lượng mặc định nếu không có
             }
+
+            // Lấy thông tin sản phẩm từ cơ sở dữ liệu (bao gồm cả Size)
+            const productDetails = productsInDb.find(product => product._id.toString() === item.MaSanPham.toString());
+
+            if (productDetails) {
+                // Lấy thông tin hình ảnh và size từ sản phẩm trong cơ sở dữ liệu
+                item.HinhAnh = productDetails.HinhAnh;
+
+                // Nếu sản phẩm có nhiều size, thì bạn cần kiểm tra và gán size từ giỏ hàng vào sản phẩm
+                const productSize = item.Size || productDetails.Size; // Gán size từ giỏ hàng hoặc cơ sở dữ liệu
+                item.Size = productSize;
+            }
+
             return item;
         });
 
         // Tính tổng số lượng và tổng tiền cho các sản phẩm đã chọn
-        const TongSoLuong = updatedProducts.reduce((total, item) => total + item.SoLuong, 0);
+        const TongSoLuong = updatedProducts.reduce((total, item) => total + item.SoLuongGioHang, 0);
         const TongTien = updatedProducts.reduce((total, item) => total + item.TongTien, 0);
 
         // Tạo đơn hàng mới
         const newOrder = new Orders({
             Tentaikhoan: userAccount.Tentaikhoan,
-            SanPham: updatedProducts,
+            SanPham: updatedProducts,  // Các sản phẩm đã được cập nhật
             TenNguoiNhan,
             DiaChiGiaoHang,
             SoDienThoai,
@@ -230,8 +158,6 @@ router.post('/add-order-from-cart/:userId', async (req, res) => {
         // Lưu đơn hàng vào cơ sở dữ liệu
         const savedOrder = await newOrder.save();
 
-        console.log('Order created successfully:', savedOrder);
-
         // Trả về kết quả
         res.status(201).json({
             message: 'Đơn hàng đã được tạo thành công từ giỏ hàng!',
@@ -243,9 +169,6 @@ router.post('/add-order-from-cart/:userId', async (req, res) => {
         res.status(500).json({ message: 'Lỗi khi tạo đơn hàng từ giỏ hàng!' });
     }
 });
-
-
-
 
 router.post('/add-order-directly/:userId', async (req, res) => {
     try {
@@ -311,7 +234,7 @@ router.post('/add-order-directly/:userId', async (req, res) => {
             }
 
             // Kiểm tra xem sản phẩm có đủ tồn kho hay không
-            if (sizeInfo.soLuongTon < item.SoLuong) {
+            if (sizeInfo.soLuongTon < item.SoLuongGioHang) {
                 return true; // Không đủ tồn kho
             }
 
@@ -335,7 +258,7 @@ router.post('/add-order-directly/:userId', async (req, res) => {
         }
 
         // Tính tổng số lượng và tổng tiền
-        const TongSoLuong = SanPham.reduce((total, item) => total + item.SoLuong, 0);
+        const TongSoLuong = SanPham.reduce((total, item) => total + item.SoLuongGioHang, 0);
         const TongTien = SanPham.reduce((total, item) => total + item.TongTien, 0);
 
         // Tạo đơn hàng mới
@@ -344,7 +267,7 @@ router.post('/add-order-directly/:userId', async (req, res) => {
             SanPham: SanPham.map(item => ({
                 MaSanPham: item.MaSanPham,
                 TenSP: item.TenSP,
-                SoLuong: item.SoLuong,
+                SoLuongGioHang: item.SoLuongGioHang,
                 Size: item.Size,
                 Gia: item.Gia,
                 TongTien: item.TongTien,

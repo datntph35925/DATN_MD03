@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 const Products = require('../models/Products');
-module.exports = router;
 
 router.get("/get-list-product", async (req, res) => {
   try {
@@ -77,29 +76,6 @@ router.post('/add-product', async (req, res) => {
     });
   }
 });
-
-// router.post('/add', async(req,res) =>{
-//     try{
-//       const model = new Products(req.body)
-//       const result = await model.save()
-//       if (result) {
-//         res.json({
-//           "status":200,
-//           "message":"Thêm thành công",
-//           "data": resultzzz
-//         })
-//       }else{
-//         res.json({
-//           "status":400,
-//           "message":"Thêm thất bại",
-//           "data": []
-//         })
-//       }
-//     }catch(error){
-//       console.log('Error:' +error);
-
-//     }
-// })
 
 router.delete("/delete-product-by-id/:id", async (req, res) => {
   try {
@@ -230,6 +206,7 @@ router.get('/get-so-luong-ton/:id/:size', async (req, res) => {
   }
 });
 
+module.exports = router;
 
 
 

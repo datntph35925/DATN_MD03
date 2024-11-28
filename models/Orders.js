@@ -5,11 +5,11 @@ const Schema = mongoose.Schema;
 const ProductItemSchema = new Schema({
   MaSanPham: { type: Schema.Types.ObjectId, ref: 'Product', required: true }, // Tham chiếu đến Product
   TenSP: { type: String, required: true }, // Tên sản phẩm
-  SoLuong: { type: Number, required: true }, // Số lượng sản phẩm trong đơn hàng
+  SoLuongGioHang: { type: Number, required: true }, // Số lượng sản phẩm trong đơn hàng
   Size: { type: Number, required: true }, // Kích cỡ của sản phẩm
   Gia: { type: Number, required: true }, // Giá của sản phẩm
   TongTien: { type: Number, required: true }, // Tổng tiền = Giá x Số lượng
-  HinhAnh: [String], 
+    HinhAnh: [String], 
 });
 
 // Định nghĩa Schema cho đơn hàng (Order)
