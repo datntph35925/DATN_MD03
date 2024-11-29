@@ -341,4 +341,32 @@ router.put('/update-order-status/:id', async (req, res) => {
     }
   });
 
+  router.get('/get-order-by-id/:id', async (req, res) => {
+    try {
+      const { id } = req.params; // Lấy id từ params
+      const order = await Orders.findById(id); // Tìm sản phẩm theo id
+  
+      if (order) {
+        res.status(200).json({
+          status: 200,
+          message: 'Lấy thông tin sản phẩm thành công',
+          data: order
+        });
+      } else {
+        res.status(404).json({
+          status: 404,
+          message: 'Không tìm thấy sản phẩm',
+          data: null
+        });
+      }
+    } catch (error) {
+      console.error('Lỗi:', error);
+      res.status(500).json({
+        status: 500,
+        message: 'Lỗi server',
+        error: error.message
+      });
+    }
+  });
+
 module.exports = router;
