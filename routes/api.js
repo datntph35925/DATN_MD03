@@ -4,25 +4,36 @@ const Products = require('../models/Products');
 
 router.get("/get-list-product", async (req, res) => {
   try {
-    //lấy ds sản phẩm
-    const data = await Products.find().sort({ createdAt: -1 });
+    // Lấy tất cả sản phẩm và đếm tổng số sản phẩm
+    const data = await Products.find().sort({ createdAt: -1 }); // Lấy tất cả sản phẩm
+    const totalCount = await Products.countDocuments(); // Đếm tổng số sản phẩm
+
     if (data) {
       res.json({
         status: 200,
         messenger: "Lấy danh sách thành công",
-        data: data,
+        data: data, // Danh sách sản phẩm
+        totalCount: totalCount // Tổng số sản phẩm
       });
     } else {
       res.json({
         status: 400,
-        messenger: "lấy danh sách thất bại",
+        messenger: "Lấy danh sách thất bại",
         data: [],
+        totalCount: 0 // Nếu không có sản phẩm thì tổng số là 0
       });
     }
   } catch (error) {
     console.log(error);
+    res.json({
+      status: 500,
+      messenger: "Lỗi server",
+      data: [],
+      totalCount: 0
+    });
   }
 });
+
 
 
 router.post('/add-product', async (req, res) => {
