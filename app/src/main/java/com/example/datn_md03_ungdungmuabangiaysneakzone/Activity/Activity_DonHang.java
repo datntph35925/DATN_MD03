@@ -17,9 +17,13 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter.Adapter_ViewPage2_DonHang;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Order;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Activity_DonHang extends AppCompatActivity {
 
@@ -31,6 +35,9 @@ public class Activity_DonHang extends AppCompatActivity {
     private TabItem tab4;
     private TabItem tab5;
     private ViewPager2 viewpagerTablayout;
+    private List<Order> dangGiaoOrders = new ArrayList<>();
+    private List<Order> choXacNhanOrders = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,25 +67,21 @@ public class Activity_DonHang extends AppCompatActivity {
         Adapter_ViewPage2_DonHang adapterViewPage2DonHang = new Adapter_ViewPage2_DonHang(this);
         viewpagerTablayout.setAdapter(adapterViewPage2DonHang);
 
-        TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tablayout, viewpagerTablayout, new TabLayoutMediator.TabConfigurationStrategy() {
-            @Override
-            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
-              switch (position){
-                  case 0:
-                      tab.setText("Chờ xác nhận");
-                      break;
-                  case 1:
-                      tab.setText("Đang giao");
-                      break;
-                  case 2:
-                      tab.setText("Đã hoàn thành");
-                      break;
-                  case 3:
-                      tab.setText("Đã hủy");
-                      break;
-              }
+        new TabLayoutMediator(tablayout, viewpagerTablayout, (tab, position) -> {
+            switch (position) {
+                case 0:
+                    tab.setText("Chờ Xác Nhận");
+                    break;
+                case 1:
+                    tab.setText("Đang Giao");
+                    break;
+                case 2:
+                    tab.setText("Đã Hoàn Thành");
+                    break;
+                case 3:
+                    tab.setText("Đã Hủy");
+                    break;
             }
-        });
-        tabLayoutMediator.attach();
+        }).attach();
     }
 }

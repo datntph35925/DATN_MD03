@@ -6,6 +6,7 @@
     android:padding="10dp">
 
     <LinearLayout
+        android:id="@+id/layoutChooseLocation"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:background="@drawable/bg_dialog"

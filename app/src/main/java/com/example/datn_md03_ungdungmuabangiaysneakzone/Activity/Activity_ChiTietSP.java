@@ -35,6 +35,7 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Cart;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.CustomerAccount;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.KichThuoc;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Product;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ProductItem;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ProductItemCart;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.untils.untils;
@@ -75,6 +76,8 @@ public class Activity_ChiTietSP extends AppCompatActivity {
 
     ProductItemCart productItem;
 
+    ProductItem proitem;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +97,7 @@ public class Activity_ChiTietSP extends AppCompatActivity {
         giaSP =i.getDoubleExtra("price",0);
         hinh =i.getStringExtra("image");
 
+        proitem = new ProductItem();
         product = new Product();
         productItem = new ProductItemCart();
         SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
@@ -272,9 +276,18 @@ public class Activity_ChiTietSP extends AppCompatActivity {
                         productItem.setHinhAnh(Collections.singletonList(hinh));
                         productItem.setSoLuongTon(soLuongTon);
 
+                        proitem.setMaSanPham(maSP);
+                        proitem.setTenSP(tenSP);
+                        proitem.setGia(giaSP);
+                        proitem.setSoLuong(num);
+                        proitem.setSize(selectSize);
+                        proitem.setTongTien(giaSP * num);
+                        proitem.setHinhAnh(Collections.singletonList(hinh));
+
                         // Pass data to Activity_ThanhToan
                         Intent intent = new Intent(Activity_ChiTietSP.this, ActivityCTSP_To_ThanhToan.class);
-                        intent.putExtra("selectedProduct", (Serializable) productItem);
+                        intent.putExtra("selectedProduct", (Serializable) proitem);
+                        intent.putExtra("productItem", (Serializable) productItem);
                         startActivity(intent);
 
                         dialog.dismiss();

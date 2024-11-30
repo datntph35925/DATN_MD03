@@ -134,7 +134,7 @@ public class Activity_Profile extends AppCompatActivity {
         });
 
         cvAdddiachi.setOnClickListener(view -> {
-            startActivity(new Intent(Activity_Profile.this, ShowListLocationActivity.class));
+            startActivity(new Intent(Activity_Profile.this, ActivityLocation.class));
         });
 
         cvOderForShop.setOnClickListener(view -> {

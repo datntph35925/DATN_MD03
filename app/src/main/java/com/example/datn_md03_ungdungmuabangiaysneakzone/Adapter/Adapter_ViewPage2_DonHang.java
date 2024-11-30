@@ -11,33 +11,36 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.Fragment.Fragment_ChoXac
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Fragment.Fragment_DaGiao;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Fragment.Fragment_DaHuy;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Fragment.Fragment_DangGiao;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Order;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Adapter_ViewPage2_DonHang extends FragmentStateAdapter {
 
+    private List<Order> dangGiaoOrders;
+    private List<Order> choXacNhanOrders;
 
     public Adapter_ViewPage2_DonHang(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
+
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        Fragment fragment = null;
-        switch (position){
+        switch (position) {
             case 0:
-                fragment = new Fragment_ChoXacNhan();
-                break;
+                return new Fragment_ChoXacNhan(); // "Chờ xác nhận"
             case 1:
-                fragment = new Fragment_DangGiao();
-                break;
+                return new Fragment_DangGiao(); // "Đang giao"
             case 2:
-                fragment = new Fragment_DaGiao();
-                break;
+                return new Fragment_DaGiao(); // "Đã hoàn thành"
             case 3:
-                fragment = new Fragment_DaHuy();
-                break;
+                return new Fragment_DaHuy(); // "Đã hủy"
+            default:
+                return new Fragment_ChoXacNhan(); // Default to "Chờ xác nhận"
         }
-        return fragment;
     }
 
     @Override

@@ -1,5 +1,8 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 
+import android.app.AlertDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -7,162 +10,152 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter.DiaChiAdapter;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter.LocationAdapter;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Domain.DiaChi;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiService;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.api.RetrofitClient;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Location;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.LocationRequest;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+
 public class ShowListLocationActivity extends AppCompatActivity {
     private RecyclerView rcvDiaChi;
     private DiaChiAdapter diaChiAdapter;
-    private List<DiaChi> diaChiList;
     private FloatingActionButton btnAdd;
     private GestureDetector gestureDetector;
+    ApiService apiService;
+    private String currentUserId ; // ID người dùng hiện tại
+    ArrayList<Location> locationArrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_list_location);
 
-        rcvDiaChi = findViewById(R.id.rcv_sp);
-        btnAdd = findViewById(R.id.btn_add);
-        diaChiList = new ArrayList<>();
-        setupDiaChiList();
-        setupRecyclerView();
-        setupGestureDetector();
-
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showAddDiaChiDialog();
-            }
-        });
-    }
-
-    private void setupRecyclerView() {
-        diaChiAdapter = new DiaChiAdapter(this, diaChiList);
+        rcvDiaChi = findViewById(R.id.rcv_diachi);
+        locationArrayList = new ArrayList<>();
         rcvDiaChi.setLayoutManager(new LinearLayoutManager(this));
-        rcvDiaChi.setAdapter(diaChiAdapter);
+
+        apiService = RetrofitClient.getClient().create(ApiService.class);
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        currentUserId = sharedPreferences.getString("Tentaikhoan", ""); // Retrieve the email
+        getListLocationById();
+//        setupRecyclerView();
+       // setupGestureDetector();
+
+//        btnAdd.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                showAddDiaChiDialog();
+//            }
+//        });
     }
 
-    private void setupGestureDetector() {
-        gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onDown(MotionEvent e) {
-                return true;
-            }
+//    private void setupRecyclerView() {
+//        diaChiAdapter = new DiaChiAdapter(ShowListLocationActivity.this, diaChiList, new DiaChiAdapter.Callback() {
+//            @Override
+//            public void clickItem(Location address) {
+//                Intent intent = new Intent(ShowListLocationActivity.this, MainActivity.class);
+//                Bundle bundle = new Bundle();
+//                bundle.putString("nameLocation", address.getTenNguoiNhan());
+//                bundle.putString("location", address.getDiaChi());
+//                bundle.putString("phoneLocation", address.getSdt());
+//
+//                intent.putExtras(bundle);
+//                setResult(RESULT_OK, intent);
+//                finish();
+//            }
+//
+//            @Override
+//            public void deleteAddress(Location address) {
+//
+//            }
+//        });
+//        rcvDiaChi.setLayoutManager(new LinearLayoutManager(this));
+//        rcvDiaChi.setAdapter(diaChiAdapter);
+//    }
 
+    private void getListLocationById() {
+        // Gọi API để lấy danh sách địa chỉ từ server
+        Call<Response<ArrayList<Location>>> call = apiService.getListLocationById(currentUserId);
+        call.enqueue(new Callback<Response<ArrayList<Location>>>() {
             @Override
-            public void onLongPress(MotionEvent e) {
-                View childView = rcvDiaChi.findChildViewUnder(e.getX(), e.getY());
-                if (childView != null) {
-                    int position = rcvDiaChi.getChildAdapterPosition(childView);
-                    showEditDiaChiDialog(position);
+            public void onResponse(Call<Response<ArrayList<Location>>> call, retrofit2.Response<Response<ArrayList<Location>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    locationArrayList = response.body().getData();
+                    diaChiAdapter =  new DiaChiAdapter(ShowListLocationActivity.this, locationArrayList, new DiaChiAdapter.Callback() {
+                        @Override
+                        public void clickItem(Location Address) {
+                            Intent intent = new Intent(ShowListLocationActivity.this, MainActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putString("nameLocation", Address.getTenNguoiNhan());
+                            bundle.putString("location", Address.getDiaChi());
+                            bundle.putString("phoneLocation", Address.getSdt());
+
+                            intent.putExtras(bundle);
+                            setResult(RESULT_OK, intent);
+                            finish();
+                        }
+
+                        @Override
+                        public void deleteAddress(Location address) {
+
+                        }
+
+                        @Override
+                        public void editAddress(Location address) {
+
+                        }
+                    });
+                    rcvDiaChi.setAdapter(diaChiAdapter);
+                } else {
+                    Toast.makeText(ShowListLocationActivity.this, "Không thể lấy địa chỉ", Toast.LENGTH_SHORT).show();
                 }
             }
-        });
 
-        rcvDiaChi.addOnItemTouchListener(new RecyclerView.SimpleOnItemTouchListener() {
             @Override
-            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                return gestureDetector.onTouchEvent(e);
+            public void onFailure(Call<Response<ArrayList<Location>>> call, Throwable t) {
+                Toast.makeText(ShowListLocationActivity.this, "Looi", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void showEditDiaChiDialog(int position) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = this.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_diachi, null);
-        builder.setView(dialogView);
-
-        final EditText edtTenDiaChi = dialogView.findViewById(R.id.edt_tendiachi);
-        final EditText edtDiaChi = dialogView.findViewById(R.id.edt_diachi);
-        final EditText edtSoDT = dialogView.findViewById(R.id.edt_sodienthoai);
-        Button btnCancel = dialogView.findViewById(R.id.btn_cancel_diaSp);
-        Button btnSave = dialogView.findViewById(R.id.btn_save_diaSp);
-
-        DiaChi currentDiaChi = diaChiList.get(position);
-        edtTenDiaChi.setText(currentDiaChi.getTen());
-        edtDiaChi.setText(currentDiaChi.getDiaChi());
-        edtSoDT.setText(String.valueOf(currentDiaChi.getSoDT()));
-
-        AlertDialog dialog = builder.create();
-        btnCancel.setOnClickListener(v -> dialog.dismiss());
-        btnSave.setOnClickListener(v -> {
-            String ten = edtTenDiaChi.getText().toString();
-            String diaChi = edtDiaChi.getText().toString();
-            String soDTStr = edtSoDT.getText().toString();
-
-            if (ten.isEmpty() || diaChi.isEmpty() || soDTStr.isEmpty()) {
-                Toast.makeText(ShowListLocationActivity.this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
-                return;
+    private void deleteLocation(Location location){
+        LocationRequest request = new LocationRequest(location.get_id());
+        Call<Response<LocationRequest>> call = apiService.removeLocation(currentUserId, request);
+        call.enqueue(new Callback<Response<LocationRequest>>() {
+            @Override
+            public void onResponse(Call<Response<LocationRequest>> call, retrofit2.Response<Response<LocationRequest>> response) {
+                if(response.isSuccessful() && response.body() != null){
+                    locationArrayList.remove(location);
+                    diaChiAdapter.notifyDataSetChanged();
+                    Toast.makeText(ShowListLocationActivity.this, "Địa chỉ đã được xóa", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(ShowListLocationActivity.this, "Không thể xóa địa chỉ", Toast.LENGTH_SHORT).show();
+                }
             }
 
-            try {
-                int soDT = Integer.parseInt(soDTStr);
-                DiaChi newDiaChi = new DiaChi(ten, diaChi, soDT);
-                diaChiList.set(position, newDiaChi);
-                diaChiAdapter.notifyItemChanged(position);
-                dialog.dismiss();
-            } catch (NumberFormatException e) {
-                Toast.makeText(ShowListLocationActivity.this, "Số điện thoại không hợp lệ", Toast.LENGTH_SHORT).show();
+            @Override
+            public void onFailure(Call<Response<LocationRequest>> call, Throwable t) {
+                Toast.makeText(ShowListLocationActivity.this, "Lỗi xóa địa chỉ", Toast.LENGTH_SHORT).show();
             }
         });
-
-        dialog.show();
     }
 
-    private void showAddDiaChiDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = this.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_diachi, null);
-        builder.setView(dialogView);
-
-        final EditText edtTenDiaChi = dialogView.findViewById(R.id.edt_tendiachi);
-        final EditText edtDiaChi = dialogView.findViewById(R.id.edt_diachi);
-        final EditText edtSoDT = dialogView.findViewById(R.id.edt_sodienthoai);
-        Button btnCancel = dialogView.findViewById(R.id.btn_cancel_diaSp);
-        Button btnSave = dialogView.findViewById(R.id.btn_save_diaSp);
-
-        AlertDialog dialog = builder.create();
-        btnCancel.setOnClickListener(v -> dialog.dismiss());
-        btnSave.setOnClickListener(v -> {
-            String ten = edtTenDiaChi.getText().toString();
-            String diaChi = edtDiaChi.getText().toString();
-            String soDTStr = edtSoDT.getText().toString();
-
-            if (ten.isEmpty() || diaChi.isEmpty() || soDTStr.isEmpty()) {
-                Toast.makeText(ShowListLocationActivity.this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            try {
-                int soDT = Integer.parseInt(soDTStr);
-                DiaChi newDiaChi = new DiaChi(ten, diaChi, soDT);
-                diaChiList.add(newDiaChi);
-                diaChiAdapter.notifyItemInserted(diaChiList.size() - 1);
-                dialog.dismiss();
-            } catch (NumberFormatException e) {
-                Toast.makeText(ShowListLocationActivity.this, "Số điện thoại không hợp lệ", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        dialog.show();
-    }
-
-    private void setupDiaChiList() {
-        diaChiList.add(new DiaChi("Nguyen Van A", "123 Đường ABC", 123456789));
-        diaChiList.add(new DiaChi("Nguyen Van B", "456 Đường XYZ", 987654321));
-    }
 }

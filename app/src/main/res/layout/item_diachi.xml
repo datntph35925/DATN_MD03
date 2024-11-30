@@ -1,62 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:id="@+id/cv_itemLocation"
     android:padding="12dp">
-
-
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="12dp">
-        <LinearLayout
-            android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:padding="20dp"
+        >
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:textStyle="bold"
-                android:id="@+id/tenDiaChi"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tên người nhận:  "
-                android:textSize="16sp"
-                android:textColor="@color/black"
-                android:layout_margin="5dp"/>
-
-
-            <TextView
-                android:id="@+id/diachi"
-                android:layout_width="390dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:text="Địa chỉ: "
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_margin="5dp"/>
-
-            <TextView
-                android:textStyle="bold"
-                android:id="@+id/sdtdiachi"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Số điện thoại:         "
-                android:textSize="16sp"
-                android:textColor="@color/black"
-                android:layout_margin="5dp"/>
-
-
-        </LinearLayout>
-        <ImageButton
-            android:id="@+id/btn_delete_diachi"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_alignParentTop="true"
+            android:text="Nguyễn Văn A"
+            android:textSize="23sp"
+            android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/tv_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0987654321"
+            android:textSize="17sp"
+            android:layout_marginTop="7dp"/>
+        <TextView
+            android:id="@+id/tv_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cầu Giấy, Hà Nội"
+            android:textSize="17sp"
+            android:layout_marginTop="3dp"
+            android:maxLines="1"
+            android:ellipsize="end"/>
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:layout_alignParentRight="true"
-            android:background="@drawable/img_delete" />
-
+            android:layout_centerVertical="true"
+            android:gravity="center_horizontal"
+            android:layout_marginRight="20dp">
+            <ImageView
+                android:id="@+id/img_deleteAddress"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/img_delete" />
+            <ImageView
+                android:id="@+id/img_updateAddress"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/edit"
+                android:layout_marginTop="10dp"/>
+        </LinearLayout>
     </RelativeLayout>
-</RelativeLayout>
+</androidx.cardview.widget.CardView>

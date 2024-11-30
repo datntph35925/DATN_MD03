@@ -229,24 +229,38 @@
                         />
                     <LinearLayout
                         android:visibility="gone"
-                        android:id="@+id/idlr"
+                        android:id="@+id/idlr_gone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
+
                         <TextView
+                            android:id="@+id/txtName_TT"
                             android:layout_marginTop="8dp"
                             android:textStyle="italic"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Address: "/>
+                            android:textColor="@color/black"
+                            android:text="Name: "/>
                         <TextView
+                            android:id="@+id/txtAddress_TT"
                             android:layout_marginTop="8dp"
                             android:textStyle="italic"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Address: "/>
+                        <TextView
+                            android:id="@+id/txtPhone_TT"
+                            android:layout_marginTop="8dp"
+                            android:textStyle="italic"
+                            android:textColor="@color/black"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Phone: "/>
                     </LinearLayout>
                     <LinearLayout
+                        android:id="@+id/lraddress"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">

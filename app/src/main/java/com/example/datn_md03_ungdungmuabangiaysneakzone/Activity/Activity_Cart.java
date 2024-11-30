@@ -59,6 +59,7 @@
         ImageView imgBack_cart;
 
         BottomNavigationView bottomNavigationView;
+
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -212,11 +213,20 @@
             if (selectedItems.isEmpty()) {
                 Toast.makeText(this, "Vui lòng chọn sản phẩm để thanh toán!", Toast.LENGTH_SHORT).show();
                 return;
-            }
+            } else {
+                ArrayList<String> maSPList = new ArrayList<>();
+                ArrayList<String> size = new ArrayList<>();
+                for (ProductItemCart item : selectedItems) {
+                    maSPList.add(item.getMaSanPham());
+                    size.add(String.valueOf(item.getSize()));
+                    Log.d("Activitycart", "Current masp: " + item.getMaSanPham());
+                }
 
-            Intent intent = new Intent(Activity_Cart.this, Activity_ThanhToan.class);
-            ArrayList<ProductItemCart> selectedCartItems = new ArrayList<>(selectedItems); // Convert Set to ArrayList
-            intent.putExtra("selectedCartItems", (Serializable) selectedCartItems);
-            startActivity(intent);
+                Intent intent = new Intent(Activity_Cart.this, Activity_ThanhToan.class);
+                ArrayList<ProductItemCart> selectedCartItems = new ArrayList<>(selectedItems); // Convert Set to ArrayList
+                intent.putExtra("selectedCartItems", (Serializable) selectedCartItems);
+                intent.putStringArrayListExtra("maSPList", maSPList); // Truyền maSPList
+                startActivity(intent);
+            }
         }
     }
