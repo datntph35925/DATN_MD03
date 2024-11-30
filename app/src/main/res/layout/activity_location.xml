@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:layout_margin="10dp"
-    >
+    tools:context=".Activity.ActivityLocation">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,32 +16,29 @@
         android:paddingTop="20dp"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
-
         >
         <ImageButton
-            android:id="@+id/img_back"
+            android:id="@+id/img_back_Location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_back"
             android:background="@color/white"
             android:layout_marginTop="10dp"/>
+
         <TextView
-            android:layout_marginLeft="30dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Chọn địa chỉ"
-            android:textSize="30dp"
-            android:textStyle="bold"
+            android:layout_marginLeft="100dp"
+            android:text="Địa chỉ"
             android:textColor="@color/black"
-
-            />
+            android:textSize="30dp"
+            android:textStyle="bold" />
 
     </LinearLayout>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -48,21 +47,20 @@
             >
         </LinearLayout>
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rcv_diachi"
+            android:id="@+id/rcv_location"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/top"
             />
-<!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--            android:layout_width="56dp"-->
-<!--            android:layout_height="56dp"-->
-<!--            android:layout_marginBottom="24dp"-->
-<!--            android:backgroundTint="@color/blue"-->
-<!--            android:layout_marginRight="24dp"-->
-<!--            android:src="@drawable/baseline_add"-->
-<!--            android:layout_alignParentBottom="true"-->
-<!--            android:layout_alignParentEnd="true"-->
-<!--            android:id="@+id/btn_add_diachi"/>-->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginBottom="24dp"
+            android:backgroundTint="@color/blue"
+            android:layout_marginRight="24dp"
+            android:src="@drawable/baseline_add"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/btn_add_location"/>
     </RelativeLayout>
-
 </LinearLayout>

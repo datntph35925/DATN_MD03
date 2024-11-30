@@ -3,12 +3,12 @@ package com.example.datn_md03_ungdungmuabangiaysneakzone.Domain;
 public class DiaChi {
     public String Ten;
     public String DiaChi;
-    public int soDT;
+    public String soDT;
 
     public DiaChi() {
     }
 
-    public DiaChi(String ten, String diaChi, int soDT) {
+    public DiaChi(String ten, String diaChi, String soDT) {
         Ten = ten;
         DiaChi = diaChi;
         this.soDT = soDT;
@@ -30,11 +30,11 @@ public class DiaChi {
         DiaChi = diaChi;
     }
 
-    public int getSoDT() {
+    public String getSoDT() {
         return soDT;
     }
 
-    public void setSoDT(int soDT) {
+    public void setSoDT(String soDT) {
         this.soDT = soDT;
     }
 }

@@ -1,66 +1,117 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.Fragment;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.example.datn_md03_ungdungmuabangiaysneakzone.Activity.Activity_CTDH_DaGiao;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.Activity.Activity_CTDH_HuyDH;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter.OrderAdapter;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.api.RetrofitClient;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Order;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link Fragment_DaHuy#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+
+
 public class Fragment_DaHuy extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private List<Order> huyList;
+    private RecyclerView rcvHuy;
+    private OrderAdapter hoaDonAdapter;
+    String email;
 
     public Fragment_DaHuy() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Fragment_DaHuy.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static Fragment_DaHuy newInstance(String param1, String param2) {
-        Fragment_DaHuy fragment = new Fragment_DaHuy();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_da_huy, container, false);
+        View view = inflater.inflate(R.layout.fragment_da_giao, container, false);
+
+        huyList = new ArrayList<>();
+        rcvHuy = view.findViewById(R.id.rcv_done);
+        rcvHuy.setLayoutManager(new LinearLayoutManager(getContext()));
+
+
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+        email = sharedPreferences.getString("Tentaikhoan", ""); // Retrieve the email
+
+        hoaDonAdapter = new OrderAdapter(getContext(),huyList);
+        rcvHuy.setAdapter(hoaDonAdapter);
+        hoaDonAdapter.setOnItemClickListener(new OrderAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                Order order = huyList.get(position);
+
+                Intent intent = new Intent(getContext(), Activity_CTDH_HuyDH.class);
+                intent.putExtra("order_sp", (Serializable) order.getSanPham());
+                intent.putExtra("order_ten", order.getTenNguoiNhan());
+                intent.putExtra("order_diachi", order.getDiaChiGiaoHang());
+                intent.putExtra("order_sdt", order.getSoDienThoai());
+                intent.putExtra("order_pttt", order.getPhuongThucThanhToan());
+                intent.putExtra("order_ttdh", order.getTrangThai());
+                intent.putExtra("order_tongTien", order.getTongTien());
+                startActivity(intent);
+            }
+        });
+
+        fetchHuyOrders();
+        return view;
+    }
+
+    private void fetchHuyOrders() {
+        RetrofitClient.getApiService().getOrderById(email).enqueue(new Callback<Response<ArrayList<Order>>>() {
+            @Override
+            public void onResponse(Call<Response<ArrayList<Order>>> call, retrofit2.Response<Response<ArrayList<Order>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Order> orders = response.body().getData();
+                    // Chắc chắn danh sách đã được khởi tạo
+                    if (huyList != null) {
+                        huyList.clear(); // Xóa tất cả các phần tử cũ
+                    } else {
+                        huyList = new ArrayList<>();  // Nếu danh sách vẫn null, khởi tạo lại
+                    }// Clear current list
+
+                    // Add only orders with "Đang giao" status
+                    for (Order order : orders) {
+                        if ("Hủy".equals(order.getTrangThai())) {
+                            huyList.add(order);
+                        }
+                    }
+
+                    if (huyList.isEmpty()) {
+                        Toast.makeText(getContext(), "No orders in 'Huy' status", Toast.LENGTH_SHORT).show();
+                    }
+
+                    hoaDonAdapter.notifyDataSetChanged(); // Update RecyclerView
+                } else {
+                    Toast.makeText(getContext(), "Failed to load data", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Response<ArrayList<Order>>> call, Throwable t) {
+                Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

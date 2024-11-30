@@ -3,6 +3,9 @@ package com.example.datn_md03_ungdungmuabangiaysneakzone.api;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Cart;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.CustomerAccount;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.DeleteCartRequest;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Location;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.LocationRequest;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Order;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Product;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ResetPasswordRequest;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response;
@@ -109,4 +112,33 @@ public interface ApiService {
             @Path("userId") String userId,
             @Body DeleteCartRequest request
     );
+
+    // Lấy danh sách địa chỉ của một người dùng
+    @GET("/locations/get-list-location-by-id/{id}")
+    Call<Response<ArrayList<Location>>> getListLocationById(@Path("id") String userId);
+
+    // Thêm địa chỉ
+    @POST("/locations/add-location/{userId}")
+    Call<Location> addLocation(@Path("userId") String userId, @Body Location location);
+
+    // Cập nhật địa chỉ
+    @PUT("/locations/update-location/{userId}")
+    Call<Response<Location>> updateLocation(@Path("userId") String userId, @Body Location location);
+
+    // Xóa địa chỉ
+    @HTTP(method = "DELETE", path = "/locations/remove-location/{userId}", hasBody = true)
+    Call<Response<LocationRequest>> removeLocation(@Path("userId") String userId, @Body LocationRequest location);
+
+    // Lấy đơn hàng
+    @GET("/order/get-list-order/{Tentaikhoan}")
+    Call<Response<ArrayList<Order>>> getOrderById(@Path("Tentaikhoan") String orderId);
+
+    @POST("/order/add-order-directly/{userId}")
+    Call<Order> createOrder( @Path("userId") String userId, @Body Order order);
+
+    @POST("/order/add-order-from-cart/{userId}")
+    Call<Order> createOrderFromCart( @Path("userId") String userId, @Body Order order);
+
+    @GET("/order/get-order-by-id/{id}")
+    Call<Response<ArrayList<Order>>> getOrderDetailById(@Path("id") String id);
 }

@@ -23,6 +23,9 @@
         android:theme="@style/Theme.DATN_MD03_UngDungMuaBanGiaySneakZone"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".Activity.ActivityLocation"
+            android:exported="false" />
+        <activity
             android:name=".Activity.ActivityCTSP_To_ThanhToan"
             android:exported="false" />
         <activity
