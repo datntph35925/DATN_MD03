@@ -91,14 +91,14 @@ public interface ApiService {
     Call<Response<Product>> getProductById(@Path("id") String id);
 
     // ------------------- Chat APIs ------------------------
-    @GET("chatRouter/lich-su-tin-nhan")
+    @POST("/chatRouter/khach-hang-gui-tin-nhan")
+    Call<Void> sendMessage(@Body Map<String, String> messageData);
+
+    @GET("/chatRouter/lich-su-tin-nhan")
     Call<List<ChatMessage>> getMessages(@Query("TentaiKhoan") String tentaiKhoan);
 
-    @POST("chatRouter/khach-hang-gui-tin-nhan")
-    Call<Void> sendMessage(@Body Map<String, String> message);
-
-    @DELETE("chatRouter/khach-hang-xoa-tin-nhan/{id}")
-    Call<Void> deleteMessage(@Path("id") String id, @Body Map<String, String> body);
+    @DELETE("/chatRouter/khach-hang-xoa-tin-nhan/{id}")
+    Call<Void> deleteMessage(@Path("id") String messageId, @Query("TentaiKhoan") String tentaiKhoan);
 
     // ------------------- Cart APIs ------------------------
     @POST("/cart/add-cart/{userId}")

@@ -116,6 +116,9 @@
             android:name=".Activity.MainActivity"
             android:exported="false" />
         <activity
+            android:name=".Activity.activity_chat"
+            android:exported="false" />
+        <activity
             android:name=".Activity.DangNhap"
             android:exported="true">
             <intent-filter>

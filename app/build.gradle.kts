@@ -64,6 +64,8 @@ dependencies {
     annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
     implementation ("de.hdodenhof:circleimageview:3.1.0")
     implementation ("com.airbnb.android:lottie:5.0.3")
+    implementation ("io.socket:socket.io-client:2.0.0")
+
 
 
 }

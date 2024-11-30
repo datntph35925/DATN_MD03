@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,8 +24,9 @@ import retrofit2.Response;
 
 public class DangKy extends AppCompatActivity {
     private EditText editTextTen, editTextEmail, editTextPassword, editTextRePassword;
-    private Button btnDangKy;
+    private Button btnDangKy ;
     private ApiService apiService;
+    private ImageButton backButton ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,7 @@ public class DangKy extends AppCompatActivity {
         editTextPassword = findViewById(R.id.editTextPassword2);
         editTextRePassword = findViewById(R.id.editTextRePassword);
         btnDangKy = findViewById(R.id.btnDangKy);
+        backButton = findViewById(R.id.backButton);
 
         // Khởi tạo ApiService
         apiService = RetrofitClient.getClient().create(ApiService.class);
@@ -101,6 +104,9 @@ public class DangKy extends AppCompatActivity {
                     Toast.makeText(DangKy.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
+        });
+        backButton.setOnClickListener(view -> {
+            startActivity(new Intent(DangKy.this, DangNhap.class));
         });
     }
 }
