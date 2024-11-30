@@ -368,6 +368,22 @@ router.get('/list-accounts', async (req, res) => {
     }
 });
 
+// tổng tài khoản
+router.get('/tong-tai-khoan', async (req, res) => {
+    try {
+        const totalAccounts = await CustomerAccounts.countDocuments();
+        res.status(200).json({
+            success: true,
+            totalAccounts: totalAccounts
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Lỗi khi lấy tổng số lượng tài khoản khách hàng',
+            error: error.message
+        });
+    }
+});
 // Route xóa tài khoản
 router.delete('/delete-account/:id', async (req, res) => {
     try {
