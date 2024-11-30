@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -72,7 +73,9 @@ public class Fragment_ChoXacNhan extends Fragment {
             public void onItemClick(View view, int position) {
                Order order = hoaDonList.get(position);
 
+
                Intent intent = new Intent(getContext(), Activity_CTDH_ChoXacNhan.class);
+               intent.putExtra("order_id", order.getId());
                intent.putExtra("order_sp", (Serializable) order.getSanPham());
                intent.putExtra("order_ten", order.getTenNguoiNhan());
                intent.putExtra("order_diachi", order.getDiaChiGiaoHang());

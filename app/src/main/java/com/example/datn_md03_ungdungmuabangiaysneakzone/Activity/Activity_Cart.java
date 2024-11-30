@@ -70,7 +70,7 @@
             cartRecyclerView = findViewById(R.id.rcv_cart);
             cartRecyclerView.setLayoutManager(new LinearLayoutManager(this));
             tvTotalCost = findViewById(R.id.cart_total_price);
-            imgBack_cart = findViewById(R.id.imgBack_cart);
+
 
             SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
             email = sharedPreferences.getString("Tentaikhoan", ""); // Retrieve the email

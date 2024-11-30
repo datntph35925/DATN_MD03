@@ -83,5 +83,8 @@ public class Activity_DonHang extends AppCompatActivity {
                     break;
             }
         }).attach();
+
+        int selectedTab = getIntent().getIntExtra("select_tab", 0);
+        viewpagerTablayout.setCurrentItem(selectedTab);
     }
 }

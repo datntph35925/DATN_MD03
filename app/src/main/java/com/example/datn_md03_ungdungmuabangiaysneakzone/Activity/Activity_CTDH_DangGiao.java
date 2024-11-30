@@ -60,7 +60,10 @@ public class Activity_CTDH_DangGiao extends AppCompatActivity {
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(Activity_CTDH_DangGiao.this, Activity_DonHang.class));
+                Intent intent = new Intent(Activity_CTDH_DangGiao.this, Activity_DonHang.class);
+                intent.putExtra("select_tab", 1);
+                startActivity(intent);
+                finish();
             }
         });
 

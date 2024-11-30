@@ -11,6 +11,7 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ResetPasswordReque
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.TemporaryVerificationCode;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ChatMessage;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.UpdateStatusRequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -141,4 +142,8 @@ public interface ApiService {
 
     @GET("/order/get-order-by-id/{id}")
     Call<Response<ArrayList<Order>>> getOrderDetailById(@Path("id") String id);
+
+    @PUT("/order/update-order-status/{id}")
+    Call<Response<Order>> updateOrderStatus(@Path("id") String orderId, @Body UpdateStatusRequest status);
+
 }
