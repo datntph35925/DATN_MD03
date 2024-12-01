@@ -2,7 +2,11 @@ package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -53,6 +57,8 @@ public class Activity_SP_PhoBien extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        edSearch = findViewById(R.id.edSearch);
         recyclerView = findViewById(R.id.rcvSPPhoBien_SPPB);
         imgBack = findViewById(R.id.imgBack_SPPB);
         imgBack.setOnClickListener(new View.OnClickListener() {
@@ -64,36 +70,64 @@ public class Activity_SP_PhoBien extends AppCompatActivity {
         apiService = RetrofitClient.getClient().create(ApiService.class);
         productArrayList = new ArrayList<>();
 
-        timKiem();
+        setupSearch();
         // Gọi API để lấy danh sách sản phẩm
         getListProducts();
 
     }
 
-    private void timKiem() {
-        ImageView imgSearch_SPPB = findViewById(R.id.imgSearch_SPPB);
-        ImageView imgBack_SPPB = findViewById(R.id.imgBack_SPPB);
-        TextView textView = findViewById(R.id.textView);
-        edSearch = findViewById(R.id.edSearch);
-        ConstraintLayout mainLayout = findViewById(R.id.main); // Layout chính để phát hiện nhấn ra ngoài
-
-        imgSearch_SPPB.setOnClickListener(new View.OnClickListener() {
+    private void setupSearch() {
+        edSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View view) {
-                imgBack_SPPB.setVisibility(View.GONE);
-                textView.setVisibility(View.GONE);
-                imgSearch_SPPB.setVisibility(View.GONE);
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                // Hiện TextInputLayout
-                edSearch.setVisibility(View.VISIBLE);
-                ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) recyclerView.getLayoutParams();
-//                layoutParams.topMargin = 30; // Thêm 30dp khoảng cách
-                layoutParams.bottomToTop = R.id.edSearch;
-                recyclerView.setLayoutParams(layoutParams);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+              String key = charSequence.toString();
+              if(!key.isEmpty()){
+                  searchProducts(key);
+              } else {
+                  getListProducts();
+              }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
             }
         });
+    }
 
+    private void searchProducts(String keyword) {
+        Log.d("Search API", "Từ khóa tìm kiếm: " + keyword);
 
+        Call<Response<ArrayList<Product>>> call = apiService.searchProducts(keyword);
+        call.enqueue(new Callback<Response<ArrayList<Product>>>() {
+            @Override
+            public void onResponse(Call<Response<ArrayList<Product>>> call, retrofit2.Response<Response<ArrayList<Product>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    if (response.body().getStatus() == 200) {
+                        ArrayList<Product> searchResults = response.body().getData();
+                        if (!searchResults.isEmpty()) {
+                            loadDuLieu(searchResults); // Hiển thị kết quả tìm kiếm
+                        } else {
+                            Toast.makeText(Activity_SP_PhoBien.this, "Không tìm thấy sản phẩm nào!", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(Activity_SP_PhoBien.this, "Không có kết quả!", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(Activity_SP_PhoBien.this, "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Response<ArrayList<Product>>> call, Throwable t) {
+                Toast.makeText(Activity_SP_PhoBien.this, "Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void loadDuLieu(ArrayList<Product> list){

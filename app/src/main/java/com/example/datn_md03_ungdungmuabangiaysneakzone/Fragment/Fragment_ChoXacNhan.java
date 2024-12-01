@@ -37,13 +37,6 @@ import retrofit2.Callback;
 
 public class Fragment_ChoXacNhan extends Fragment {
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
     public Fragment_ChoXacNhan() {
         // Required empty public constructor
     }
@@ -52,6 +45,7 @@ public class Fragment_ChoXacNhan extends Fragment {
     private OrderAdapter hoaDonAdapter;
     private List<Order> hoaDonList;
     String email;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

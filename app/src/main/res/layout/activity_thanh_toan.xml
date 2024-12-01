@@ -333,7 +333,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-            ><androidx.appcompat.widget.AppCompatButton
+            <androidx.appcompat.widget.AppCompatButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Order Now"
@@ -344,6 +344,7 @@
             android:layout_marginBottom="16dp"
             android:backgroundTint="@color/blue"
             />
+
         </LinearLayout>
     </ScrollView>
 
