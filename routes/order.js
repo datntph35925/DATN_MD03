@@ -300,73 +300,73 @@ router.post('/add-order-directly/:userId', async (req, res) => {
 router.put('/update-order-status/:id', async (req, res) => {
     const { id } = req.params; // Lấy id từ URL
     const { TrangThai } = req.body; // Lấy trạng thái mới từ request body
-  
-    try {
-      // Kiểm tra trạng thái hợp lệ
-      const validStatuses = ['Chờ xử lý', 'Đang giao', 'Đã giao', 'Hủy'];
-      if (!validStatuses.includes(TrangThai)) {
-        return res.status(400).json({
-          status: 400,
-          message: 'Trạng thái không hợp lệ.',
-        });
-      }
-  
-      // Tìm và cập nhật trạng thái đơn hàng
-      const updatedOrder = await Orders.findByIdAndUpdate(
-        id,
-        { TrangThai }, // Cập nhật trạng thái mới
-        { new: true } // Trả về tài liệu sau khi cập nhật
-      );
-  
-      // Kiểm tra nếu không tìm thấy đơn hàng
-      if (!updatedOrder) {
-        return res.status(404).json({
-          status: 404,
-          message: 'Không tìm thấy đơn hàng với ID đã cung cấp.',
-        });
-      }
-  
-      // Trả về kết quả thành công
-      res.status(200).json({
-        status: 200,
-        message: 'Cập nhật trạng thái đơn hàng thành công.',
-        data: updatedOrder, // Đơn hàng sau khi cập nhật
-      });
-    } catch (error) {
-      console.error('Lỗi khi cập nhật trạng thái đơn hàng:', error);
-      res.status(500).json({
-        status: 500,
-        message: 'Đã xảy ra lỗi khi cập nhật trạng thái đơn hàng.',
-      });
-    }
-  });
 
-  router.get('/get-order-by-id/:id', async (req, res) => {
     try {
-      const { id } = req.params; // Lấy id từ params
-      const order = await Orders.findById(id); // Tìm sản phẩm theo id
-  
-      if (order) {
+        // Kiểm tra trạng thái hợp lệ
+        const validStatuses = ['Chờ xử lý', 'Đang giao', 'Đã giao', 'Hủy'];
+        if (!validStatuses.includes(TrangThai)) {
+            return res.status(400).json({
+                status: 400,
+                message: 'Trạng thái không hợp lệ.',
+            });
+        }
+
+        // Tìm và cập nhật trạng thái đơn hàng
+        const updatedOrder = await Orders.findByIdAndUpdate(
+            id,
+            { TrangThai }, // Cập nhật trạng thái mới
+            { new: true } // Trả về tài liệu sau khi cập nhật
+        );
+
+        // Kiểm tra nếu không tìm thấy đơn hàng
+        if (!updatedOrder) {
+            return res.status(404).json({
+                status: 404,
+                message: 'Không tìm thấy đơn hàng với ID đã cung cấp.',
+            });
+        }
+
+        // Trả về kết quả thành công
         res.status(200).json({
-          status: 200,
-          message: 'Lấy thông tin sản phẩm thành công',
-          data: order
+            status: 200,
+            message: 'Cập nhật trạng thái đơn hàng thành công.',
+            data: updatedOrder, // Đơn hàng sau khi cập nhật
         });
-      } else {
-        res.status(404).json({
-          status: 404,
-          message: 'Không tìm thấy sản phẩm',
-          data: null
-        });
-      }
     } catch (error) {
-      console.error('Lỗi:', error);
-      res.status(500).json({
-        status: 500,
-        message: 'Lỗi server',
-        error: error.message
-      });
+        console.error('Lỗi khi cập nhật trạng thái đơn hàng:', error);
+        res.status(500).json({
+            status: 500,
+            message: 'Đã xảy ra lỗi khi cập nhật trạng thái đơn hàng.',
+        });
     }
-  });
+});
+
+router.get('/get-order-by-id/:id', async (req, res) => {
+    try {
+        const { id } = req.params; // Lấy id từ params
+        const order = await Orders.findById(id); // Tìm sản phẩm theo id
+
+        if (order) {
+            res.status(200).json({
+                status: 200,
+                message: 'Lấy thông tin sản phẩm thành công',
+                data: order
+            });
+        } else {
+            res.status(404).json({
+                status: 404,
+                message: 'Không tìm thấy sản phẩm',
+                data: null
+            });
+        }
+    } catch (error) {
+        console.error('Lỗi:', error);
+        res.status(500).json({
+            status: 500,
+            message: 'Lỗi server',
+            error: error.message
+        });
+    }
+});
 
 module.exports = router;

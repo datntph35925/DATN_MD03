@@ -197,5 +197,54 @@ router.delete('/remove-item/:userId', async (req, res) => {
     }
 });
 
+router.delete('/remove-items/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params; // Lấy userId từ URL
+        const { products } = req.body; // Lấy danh sách sản phẩm cần xóa từ body
+
+        // Kiểm tra xem tài khoản người dùng có tồn tại không
+        const userAccount = await CustomerAccounts.findOne({ Tentaikhoan: userId });
+        if (!userAccount) {
+            return res.status(404).json({ message: 'Tài khoản không tồn tại' });
+        }
+
+        // Tìm giỏ hàng của người dùng
+        const cart = await Carts.findOne({ Tentaikhoan: userAccount.Tentaikhoan });
+        if (!cart) {
+            return res.status(404).json({ message: 'Giỏ hàng không tồn tại' });
+        }
+
+        // Xóa từng sản phẩm từ danh sách gửi lên
+        products.forEach(({ productId, size }) => {
+            if (typeof size !== 'number' || size < 30 || size > 50) {
+                // Kiểm tra size giày hợp lệ (tùy thuộc vào phạm vi size thực tế)
+                throw new Error(`Size giày không hợp lệ: ${size}. Size phải từ 30 đến 50.`);
+            }
+
+            const productIndex = cart.SanPham.findIndex(
+                item => item.MaSanPham.toString() === productId && item.Size === size
+            );
+
+            if (productIndex !== -1) {
+                cart.SanPham.splice(productIndex, 1); // Xóa sản phẩm
+            }
+        });
+
+        // Cập nhật tổng số lượng và tổng giá trị của giỏ hàng
+        cart.TongSoLuong = cart.SanPham.reduce((total, item) => total + item.SoLuongGioHang, 0);
+        cart.TongGiaTri = cart.SanPham.reduce((total, item) => total + item.TongTien, 0);
+
+        // Lưu lại giỏ hàng sau khi xóa sản phẩm
+        await cart.save();
+
+        return res.status(200).json({
+            message: 'Các sản phẩm đã được xóa khỏi giỏ hàng thành công',
+            cart
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ message: error.message || 'Có lỗi xảy ra khi xóa sản phẩm khỏi giỏ hàng' });
+    }
+});
 
 module.exports = router;
