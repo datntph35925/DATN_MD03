@@ -215,19 +215,25 @@ router.delete('/remove-items/:userId', async (req, res) => {
         }
 
         // Xóa từng sản phẩm từ danh sách gửi lên
-        products.forEach(({ productId, size }) => {
-            if (typeof size !== 'number' || size < 30 || size > 50) {
-                // Kiểm tra size giày hợp lệ (tùy thuộc vào phạm vi size thực tế)
-                throw new Error(`Size giày không hợp lệ: ${size}. Size phải từ 30 đến 50.`);
-            }
+           // Duyệt qua danh sách sản phẩm cần xóa
+           products.forEach(({ productId, size }) => {
+            // Lặp qua từng sản phẩm và kích thước
+            productId.forEach((id) => {
+                size.forEach((singleSize) => {
+                    if (isNaN(singleSize) || singleSize < 30 || singleSize > 50) {
+                        throw new Error(`Size giày không hợp lệ: ${singleSize}. Size phải từ 30 đến 50.`);
+                    }
 
-            const productIndex = cart.SanPham.findIndex(
-                item => item.MaSanPham.toString() === productId && item.Size === size
-            );
+                    const productIndex = cart.SanPham.findIndex(
+                        (item) => item.MaSanPham.toString() === id && item.Size === singleSize
+                    );
 
-            if (productIndex !== -1) {
-                cart.SanPham.splice(productIndex, 1); // Xóa sản phẩm
-            }
+                    // Xóa sản phẩm nếu tồn tại
+                    if (productIndex !== -1) {
+                        cart.SanPham.splice(productIndex, 1);
+                    }
+                });
+            });
         });
 
         // Cập nhật tổng số lượng và tổng giá trị của giỏ hàng
