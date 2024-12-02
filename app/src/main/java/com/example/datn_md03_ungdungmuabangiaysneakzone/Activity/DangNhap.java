@@ -75,13 +75,18 @@ public class DangNhap extends AppCompatActivity {
                 String password = editTextPassword.getText().toString().trim();
 
                 // Kiểm tra thông tin đăng nhập
-                if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    Toast.makeText(DangNhap.this, "Vui lòng nhập email hợp lệ!", Toast.LENGTH_SHORT).show();
+                if (email.isEmpty() || password.isEmpty()) {
+                    Toast.makeText(DangNhap.this, "Vui lòng nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if (password.isEmpty()) {
-                    Toast.makeText(DangNhap.this, "Vui lòng nhập mật khẩu!", Toast.LENGTH_SHORT).show();
+                if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    Toast.makeText(DangNhap.this, "Email không hợp lệ!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (password.isEmpty() || password.length() < 6) {
+                    Toast.makeText(DangNhap.this, "Mật khẩu phải có ít nhất 6 ký tự!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
