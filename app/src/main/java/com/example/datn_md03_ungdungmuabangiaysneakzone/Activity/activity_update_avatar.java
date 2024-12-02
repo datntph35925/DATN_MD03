@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -48,6 +49,7 @@ public class activity_update_avatar extends AppCompatActivity {
     private Button btnSelectImage, btnUploadImage;
     private Uri selectedImageUri;
     private SharedPreferences sharedPreferences;
+    private ImageView imgBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +71,7 @@ public class activity_update_avatar extends AppCompatActivity {
         });
 
         // Ánh xạ các thành phần giao diện
+        imgBack = findViewById(R.id.imgBack);
         imgAvatar = findViewById(R.id.imgAvatar);
         btnSelectImage = findViewById(R.id.btnSelectImage);
         btnUploadImage = findViewById(R.id.btnUploadImage);
@@ -86,6 +89,10 @@ public class activity_update_avatar extends AppCompatActivity {
             } else {
                 Toast.makeText(this, "Vui lòng chọn ảnh", Toast.LENGTH_SHORT).show();
             }
+        });
+        imgBack.setOnClickListener(v -> {
+            Intent intent = new Intent(activity_update_avatar.this, Activity_FixInfor.class);
+            startActivity(intent);
         });
     }
 

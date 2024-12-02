@@ -65,6 +65,7 @@ dependencies {
     implementation ("de.hdodenhof:circleimageview:3.1.0")
     implementation ("com.airbnb.android:lottie:5.0.3")
     implementation ("io.socket:socket.io-client:2.0.0")
+    implementation ("com.google.android.material:material:1.9.0")
 
 
 

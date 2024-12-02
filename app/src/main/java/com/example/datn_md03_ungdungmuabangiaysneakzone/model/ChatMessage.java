@@ -1,19 +1,31 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.model;
 
 public class ChatMessage {
-    private String _id; // ID của tin nhắn từ MongoDB
-    private String senderId; // ID người gửi
-    private String receiverId; // ID người nhận
-    private String message; // Nội dung tin nhắn
-    private String timestamp; // Thời gian gửi tin nhắn
+    private String id;           // ID của tin nhắn (dùng để xóa)
+    private String senderId;     // ID của người gửi
+    private String receiverId;   // ID của người nhận
+    private String message;      // Nội dung văn bản
+    private String imageUrl;     // URL của ảnh (nếu có)
+    private String videoUrl;     // URL của video (nếu có)
 
-    // Getter và Setter cho các trường
-    public String getId() {
-        return _id;
+    // Constructor
+    public ChatMessage(String id, String senderId, String receiverId, String message,
+                       String imageUrl, String videoUrl) {
+        this.id = id;
+        this.senderId = senderId;
+        this.receiverId = receiverId;
+        this.message = message;
+        this.imageUrl = imageUrl;
+        this.videoUrl = videoUrl;
     }
 
-    public void setId(String _id) {
-        this._id = _id;
+    // Getter và Setter cho các thuộc tính
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getSenderId() {
@@ -40,16 +52,24 @@ public class ChatMessage {
         this.message = message;
     }
 
-    public String getTimestamp() {
-        return timestamp;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
-    // Phương thức xác định tin nhắn từ admin
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
+    }
+
+    // Xác định xem tin nhắn này có phải của admin không
     public boolean isAdminMessage() {
-        return "admin".equals(senderId); // Xác định nếu senderId là "admin"
+        return senderId != null && senderId.equalsIgnoreCase("admin");
     }
 }

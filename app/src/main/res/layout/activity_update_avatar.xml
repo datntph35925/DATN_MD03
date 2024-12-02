@@ -7,11 +7,30 @@
     android:layout_height="match_parent"
     tools:context=".Activity.activity_update_avatar">
 
+    <!-- Nút quay lại -->
+    <ImageView
+        android:id="@+id/imgBack"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/ic_back"
+        android:contentDescription="Back Button" />
+
+    <!-- Layout chứa ảnh và nút -->
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:id="@+id/contentLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@id/imgBack"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="0.5">
 
         <!-- Thay ImageView bằng CircleImageView để hiển thị ảnh dưới dạng hình tròn -->
         <de.hdodenhof.circleimageview.CircleImageView

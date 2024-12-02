@@ -16,4 +16,8 @@
     <color name="secondaryBlue">#5AC8FA</color> <!-- Màu xanh nhấn -->
     <color name="lightGrayBackground">#F5F5F5</color> <!-- Màu nền xám nhạt -->
     <color name="rippleEffect">#D1E9FF</color> <!-- Màu hiệu ứng chạm -->
+    <color name="primary">#FF6200EE</color> <!-- Bạn có thể thay đổi mã màu tùy thích -->
+    <color name="light_gray">#D3D3D3</color>
+
+
 </resources>
