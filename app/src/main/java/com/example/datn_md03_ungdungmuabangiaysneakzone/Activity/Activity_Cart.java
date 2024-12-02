@@ -70,7 +70,7 @@
             cartRecyclerView = findViewById(R.id.rcv_cart);
             cartRecyclerView.setLayoutManager(new LinearLayoutManager(this));
             tvTotalCost = findViewById(R.id.cart_total_price);
-            imgBack_cart = findViewById(R.id.imgBack_cart);
+
 
             SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
             email = sharedPreferences.getString("Tentaikhoan", ""); // Retrieve the email
@@ -215,10 +215,10 @@
                 return;
             } else {
                 ArrayList<String> maSPList = new ArrayList<>();
-                ArrayList<String> size = new ArrayList<>();
+                ArrayList<Integer> size = new ArrayList<>();
                 for (ProductItemCart item : selectedItems) {
                     maSPList.add(item.getMaSanPham());
-                    size.add(String.valueOf(item.getSize()));
+                    size.add(item.getSize());
                     Log.d("Activitycart", "Current masp: " + item.getMaSanPham());
                 }
 
@@ -226,6 +226,7 @@
                 ArrayList<ProductItemCart> selectedCartItems = new ArrayList<>(selectedItems); // Convert Set to ArrayList
                 intent.putExtra("selectedCartItems", (Serializable) selectedCartItems);
                 intent.putStringArrayListExtra("maSPList", maSPList); // Truyền maSPList
+                intent.putIntegerArrayListExtra("sizeList", size); // Truyền sizeSPList
                 startActivity(intent);
             }
         }

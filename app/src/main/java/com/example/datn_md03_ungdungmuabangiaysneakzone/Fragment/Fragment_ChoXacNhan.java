@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -36,13 +37,6 @@ import retrofit2.Callback;
 
 public class Fragment_ChoXacNhan extends Fragment {
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
     public Fragment_ChoXacNhan() {
         // Required empty public constructor
     }
@@ -51,6 +45,7 @@ public class Fragment_ChoXacNhan extends Fragment {
     private OrderAdapter hoaDonAdapter;
     private List<Order> hoaDonList;
     String email;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -72,7 +67,9 @@ public class Fragment_ChoXacNhan extends Fragment {
             public void onItemClick(View view, int position) {
                Order order = hoaDonList.get(position);
 
+
                Intent intent = new Intent(getContext(), Activity_CTDH_ChoXacNhan.class);
+               intent.putExtra("order_id", order.getId());
                intent.putExtra("order_sp", (Serializable) order.getSanPham());
                intent.putExtra("order_ten", order.getTenNguoiNhan());
                intent.putExtra("order_diachi", order.getDiaChiGiaoHang());

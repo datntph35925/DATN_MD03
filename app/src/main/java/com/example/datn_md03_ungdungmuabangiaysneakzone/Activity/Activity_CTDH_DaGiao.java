@@ -2,6 +2,8 @@ package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -25,6 +27,8 @@ public class Activity_CTDH_DaGiao extends AppCompatActivity {
     ArrayList<ProductItemCart> sanPhamList;
     ThanhToanAdapter thanhToanAdapter;
     double tcp;
+
+    ImageView imgBack;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +56,17 @@ public class Activity_CTDH_DaGiao extends AppCompatActivity {
         payMent = intent.getStringExtra("order_pttt");
         tt = intent.getStringExtra("order_ttdh");
         tcp = intent.getDoubleExtra("order_tongTien", 0.0);
+        imgBack = findViewById(R.id.imageView4);
+
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Activity_CTDH_DaGiao.this, Activity_DonHang.class);
+                intent.putExtra("select_tab", 2);
+                startActivity(intent);
+                finish();
+            }
+        });
 
         tvName.setText(name);
         tvAdress.setText(address);

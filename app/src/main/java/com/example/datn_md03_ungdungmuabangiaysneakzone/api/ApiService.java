@@ -7,10 +7,12 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Location;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.LocationRequest;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Order;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Product;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.RemoveItemsRequest;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ResetPasswordRequest;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.TemporaryVerificationCode;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ChatMessage;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.UpdateStatusRequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -141,4 +143,16 @@ public interface ApiService {
 
     @GET("/order/get-order-by-id/{id}")
     Call<Response<ArrayList<Order>>> getOrderDetailById(@Path("id") String id);
+
+    @PUT("/order/update-order-status/{id}")
+    Call<Response<Order>> updateOrderStatus(@Path("id") String orderId, @Body UpdateStatusRequest status);
+
+    @GET("/api/search-products")
+    Call<Response<ArrayList<Product>>> searchProducts(@Query("keyword") String keyword);
+
+    @HTTP(method = "DELETE", path = "/cart/remove-items/{userId}", hasBody = true)
+    Call<Response<RemoveItemsRequest>> removeItems(
+            @Path("userId") String userId,
+            @Body RemoveItemsRequest request
+    );
 }

@@ -32,6 +32,7 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.model.KichThuoc;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Order;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Product;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ProductItemCart;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.RemoveItemsRequest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,8 +53,9 @@ public class Activity_ThanhToan extends AppCompatActivity {
     private TextView tvNameLocation, tvLocation, tvPhoneLocation;
     private ImageView imgProduct, imgAddress;
     LinearLayout lrlAddress, lraddressGone;
-    private ArrayList<String> maSPList; // Mảng chứa các maSP
-    Button btnOrder;
+    private ArrayList<String> maSPList;
+    private ArrayList<Integer> sizeList;// Mảng chứa các maSP
+    AppCompatButton btnOrder;
     String email, name, address, phone;
     ApiService apiService;
     Order order;
@@ -83,6 +85,9 @@ public class Activity_ThanhToan extends AppCompatActivity {
         email = sharedPreferences.getString("Tentaikhoan", ""); // Retrieve the email
 
         maSPList = new ArrayList<>();
+        sizeList = new ArrayList<>();
+
+        sizeList = getIntent().getIntegerArrayListExtra("sizeList");
         maSPList = getIntent().getStringArrayListExtra("maSPList");
 
         // Kiểm tra nếu maSPList không null và có ít nhất một sản phẩm
@@ -129,6 +134,7 @@ public class Activity_ThanhToan extends AppCompatActivity {
                     public void onResponse(Call<Order> call, Response<Order> response) {
                         if (response.isSuccessful()) {
                             // Đơn hàng được tạo thành công
+                            removeCartItem();
                             startActivity(new Intent(Activity_ThanhToan.this, MainActivity.class));
                             Toast.makeText(Activity_ThanhToan.this, "Order thành công", Toast.LENGTH_SHORT).show();
                         } else {
@@ -145,6 +151,36 @@ public class Activity_ThanhToan extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void removeCartItem(){
+        List<RemoveItemsRequest.products> productItems = new ArrayList<>();
+        for (int i = 0; i < maSPList.size(); i++) {
+            List<String> productIdList = Collections.singletonList(maSPList.get(i)); // Mã sản phẩm
+            List<Integer> sizeList = Collections.singletonList(this.sizeList.get(i)); // Kích thước
+
+            // Thêm vào danh sách yêu cầu
+            productItems.add(new RemoveItemsRequest.products(productIdList, sizeList));
+        }
+        RemoveItemsRequest request = new RemoveItemsRequest(productItems);
+        apiService.removeItems(email, request).enqueue(new Callback<com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response<RemoveItemsRequest>>() {
+            @Override
+            public void onResponse(Call<com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response<RemoveItemsRequest>> call, Response<com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response<RemoveItemsRequest>> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(Activity_ThanhToan.this, "Xóa sản phẩm thành công!", Toast.LENGTH_SHORT).show();
+                    Log.d("API_RESPONSE", "Success: " + response.code());
+                } else {
+                    Toast.makeText(Activity_ThanhToan.this, "Xóa sản phẩm thất bại!", Toast.LENGTH_SHORT).show();
+                    Log.e("API_RESPONSE", "Error: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response<RemoveItemsRequest>> call, Throwable t) {
+                Toast.makeText(Activity_ThanhToan.this, "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
+                Log.e("API_ERROR", t.getMessage());
+            }
+        });
     }
 
     @Override

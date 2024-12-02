@@ -1,10 +1,13 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Order {
-
+    @SerializedName("_id")
+    private String id;             // Mã đơn hàng
     private String Tentaikhoan;   // Tên tài khoản người dùng
     private List<ProductItemCart> SanPham; // Danh sách sản phẩm trong đơn hàng
     private String TenNguoiNhan;   // Tên người nhận
@@ -16,6 +19,14 @@ public class Order {
     private String PhuongThucThanhToan; // Phương thức thanh toán
     private String NgayDatHang;    // Ngày đặt hàng
     private String NgayGiaoHang;   // Ngày giao hàng (nếu có)
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     // Getter and Setter methods
     private List<String> selectedProducts;
