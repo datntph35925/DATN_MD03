@@ -22,7 +22,7 @@ const Account_Management = () => {
       setLoading(true);
       try {
         const data = await getListAccount();
-        console.log("account data", data);
+
         setCustomers(
           data.map((customer) => ({
             key: customer._id,

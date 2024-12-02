@@ -13,30 +13,29 @@ const addProduct = async (productData) => {
     throw error;
   }
 };
-const deleteProductById = async (productId) => {
+const deleteProductById = async (id) => {
   try {
-    const response = await axios.delete(`/api/delete-product-by-id`, {
-      data: { productId },
-    });
+    const response = await axios.delete(`/api/delete-product-by-id/${id}`);
 
     if (response.status === 200) {
       console.log("Product deleted successfully");
-      return response.data; // Return the response data (optional)
+      return response.data;
     } else {
       console.error("Failed to delete product");
       return null;
     }
   } catch (error) {
     console.error("Error deleting product:", error);
-    return null;
+    throw error;
   }
 };
-const updateProductById = async (productId, updatedData) => {
+
+const updateProductById = async (id, updatedData) => {
   try {
-    const response = await axios.put(`/api/update-product-by-id`, {
-      productId,
-      ...updatedData,
-    });
+    const response = await axios.put(
+      `/api/update-product-by-id/${id}`,
+      updatedData
+    );
 
     if (response.status === 200) {
       console.log("Product updated successfully");
@@ -47,7 +46,7 @@ const updateProductById = async (productId, updatedData) => {
     }
   } catch (error) {
     console.error("Error updating product:", error);
-    return null;
+    throw error; // Throw the error for better error handling in the calling code
   }
 };
 

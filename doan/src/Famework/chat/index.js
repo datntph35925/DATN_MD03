@@ -1,135 +1,148 @@
 import React, { useState, useEffect } from "react";
-import { fetchMessages, fetchChatHistory } from "../../Server/chat";
+import { sendMessage, getChatHistory } from "../../Server/chat";
 import { getListAccount } from "../../Server/account_api";
 import "./index.scss";
 
 const Chat = () => {
   const [users, setUsers] = useState([]);
   const [activeUser, setActiveUser] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [chatHistory, setChatHistory] = useState([]);
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState({ users: false, messages: false });
+  const [error, setError] = useState("");
 
-  // Lấy danh sách người dùng khi component được tải
+  // Fetch list of users on mount
   useEffect(() => {
-    const loadUsers = async () => {
-      setLoading(true);
+    const fetchUsers = async () => {
+      setLoading((prev) => ({ ...prev, users: true }));
       try {
-        const response = await getListAccount();
-        setUsers(response);
-        console.log("Users:", response);
-      } catch (error) {
-        console.error("Lỗi khi tải danh sách người dùng:", error);
+        const userList = await getListAccount();
+        setUsers(userList);
+      } catch (err) {
+        console.error("Error fetching users:", err);
+        setError("Không thể tải danh sách người dùng.");
       } finally {
-        setLoading(false);
+        setLoading((prev) => ({ ...prev, users: false }));
       }
     };
-
-    loadUsers();
+    fetchUsers();
   }, []);
 
-  // Hàm để chọn người dùng và tải lịch sử chat
-  const selectUser = async (user) => {
-    setActiveUser(user);
-    setLoading(true);
+  // Fetch chat history for active user
+  useEffect(() => {
+    if (!activeUser) return;
+
+    const fetchHistory = async () => {
+      setLoading((prev) => ({ ...prev, messages: true }));
+      try {
+        const history = await getChatHistory(activeUser.Tentaikhoan); // Lấy lịch sử tin nhắn của người dùng từ backend
+        setChatHistory(history);
+      } catch (err) {
+        console.error("Error fetching chat history:", err);
+        setError("Không thể tải lịch sử tin nhắn.");
+      } finally {
+        setLoading((prev) => ({ ...prev, messages: false }));
+      }
+    };
+    fetchHistory();
+  }, [activeUser]);
+
+  // Send a message to active user
+  const handleSendMessage = async () => {
+    if (!message.trim() || !activeUser) return;
     try {
-      const response = await fetchChatHistory(user.id); // Lấy lịch sử tin nhắn
-      setMessages(response.data || []);
-      console.log("Messages for user:", response.data);
-    } catch (error) {
-      console.error("Lỗi khi tải lịch sử chat:", error);
-    } finally {
-      setLoading(false);
+      const newMessage = await sendMessage(activeUser.Tentaikhoan, message); // Gửi tin nhắn đến backend
+      setChatHistory((prev) => [...prev, newMessage]);
+      setMessage("");
+    } catch (err) {
+      console.error("Error sending message:", err);
+      setError("Không thể gửi tin nhắn.");
     }
   };
 
-  // Hàm để gửi tin nhắn
-  const sendMessage = async () => {
-    if (!input.trim() || !activeUser) return;
-
-    const newMessage = {
-      TentaiKhoan: activeUser.email, // Gửi email người dùng
-      message: input.trim(),
-    };
-
-    // Cập nhật UI cục bộ
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { ...newMessage, sender: "me", userId: activeUser.id },
-    ]);
-    setInput("");
-
-    // Gửi tin nhắn lên server
-    try {
-      await fetchMessages(newMessage);
-      console.log("Tin nhắn đã được gửi:", newMessage);
-    } catch (error) {
-      console.error("Lỗi khi gửi tin nhắn:", error);
-    }
+  // Helper to get user name by ID
+  const getUserNameById = (id) => {
+    const user = users.find((u) => u.Tentaikhoan === id);
+    return user ? user.Hoten : id;
   };
 
   return (
     <div className="chat-container">
+      {/* User List */}
       <div className="user-list">
         <h3>Người dùng</h3>
-        {loading ? (
-          <p>Đang tải danh sách người dùng...</p>
-        ) : users.length > 0 ? (
+        {loading.users ? (
+          <p>Đang tải...</p>
+        ) : users.length ? (
           users.map((user) => (
             <div
-              key={user.id}
+              key={user.Tentaikhoan}
               className={`user-item ${
-                activeUser?.id === user.id ? "active" : ""
+                activeUser?.Tentaikhoan === user.Tentaikhoan ? "active" : ""
               }`}
-              onClick={() => selectUser(user)}
+              onClick={() => {
+                setActiveUser(user);
+                setChatHistory([]);
+                setError("");
+              }}
             >
-              {user.Hoten} {/* Changed from user.name to user.hoten */}
+              {user.Tentaikhoan}
             </div>
           ))
         ) : (
           <p>Không có người dùng.</p>
         )}
       </div>
+
+      {/* Chat Content */}
       <div className="chat-content">
         <div className="chat-header">
-          <h2>Chat với {activeUser?.hoten || "..."}</h2>{" "}
-          {/* Changed from user.name to user.hoten */}
+          <h2>Chat với {activeUser?.Tentaikhoan || "..."}</h2>
         </div>
+
+        {/* Chat Messages */}
         <div className="chat-body">
-          {loading ? (
+          {loading.messages ? (
             <p>Đang tải tin nhắn...</p>
-          ) : activeUser ? (
-            messages.length > 0 ? (
-              messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={`chat-message ${
-                    message.sender === "me"
-                      ? "chat-message-sent"
-                      : "chat-message-received"
-                  }`}
-                >
-                  {message.text || message.message}
-                </div>
-              ))
-            ) : (
-              <p>Không có tin nhắn nào.</p>
-            )
+          ) : chatHistory.length ? (
+            chatHistory.map((msg, index) => (
+              <div
+                key={index}
+                className={`chat-message ${
+                  msg.senderId === "admin" ? "sent" : "received"
+                }`}
+              >
+                <span className="sender-id">
+                  {msg.senderId === "admin"
+                    ? "Admin"
+                    : getUserNameById(msg.senderId)}
+                </span>
+                <p>{msg.message}</p>
+              </div>
+            ))
           ) : (
-            <p>Chọn một người dùng để bắt đầu chat.</p>
+            <p>Không có tin nhắn nào.</p>
           )}
         </div>
+
+        {/* Chat Input */}
         <div className="chat-footer">
           <input
             type="text"
             placeholder="Nhập tin nhắn..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+            disabled={!activeUser}
           />
-          <button onClick={sendMessage}>Gửi</button>
+          <button onClick={handleSendMessage} disabled={!activeUser}>
+            Gửi
+          </button>
         </div>
       </div>
+
+      {/* Error Message */}
+      {error && <div className="error-message">{error}</div>}
     </div>
   );
 };
