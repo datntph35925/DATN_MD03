@@ -50,10 +50,28 @@ const Chat = () => {
   // Send a message to active user
   const handleSendMessage = async () => {
     if (!message.trim() || !activeUser) return;
+
+    // Đưa tin nhắn "Đang gửi..." vào lịch sử trước khi gửi thật sự
+    const tempMessage = {
+      senderId: "admin",
+      message: "Đang gửi...",
+      temp: true, // Flag để phân biệt tin nhắn tạm thời
+    };
+
+    setChatHistory((prev) => [...prev, tempMessage]);
+
     try {
-      const newMessage = await sendMessage(activeUser.Tentaikhoan, message); // Gửi tin nhắn đến backend
-      setChatHistory((prev) => [...prev, newMessage]);
-      setMessage("");
+      // Gửi tin nhắn đến backend
+      const newMessage = await sendMessage(activeUser.Tentaikhoan, message);
+
+      setMessage(""); // Xóa nội dung trong input sau khi gửi
+
+      // Sau 10 giây, cập nhật tin nhắn từ "Đang gửi..." thành tin nhắn thật
+      setTimeout(() => {
+        setChatHistory((prev) =>
+          prev.map((msg) => (msg.temp ? { ...newMessage, temp: false } : msg))
+        );
+      }, 10000); // 10 giây
     } catch (err) {
       console.error("Error sending message:", err);
       setError("Không thể gửi tin nhắn.");
@@ -76,9 +94,9 @@ const Chat = () => {
         ) : users.length ? (
           users.map((user) => (
             <div
-              key={user.Tentaikhoan}
+              key={user.Hoten}
               className={`user-item ${
-                activeUser?.Tentaikhoan === user.Tentaikhoan ? "active" : ""
+                activeUser?.Hoten === user.Hoten ? "active" : ""
               }`}
               onClick={() => {
                 setActiveUser(user);
@@ -86,7 +104,7 @@ const Chat = () => {
                 setError("");
               }}
             >
-              {user.Tentaikhoan}
+              {user.Hoten}
             </div>
           ))
         ) : (
@@ -97,7 +115,7 @@ const Chat = () => {
       {/* Chat Content */}
       <div className="chat-content">
         <div className="chat-header">
-          <h2>Chat với {activeUser?.Tentaikhoan || "..."}</h2>
+          <h2>Chat với {activeUser?.Hoten || "..."}</h2>
         </div>
 
         {/* Chat Messages */}

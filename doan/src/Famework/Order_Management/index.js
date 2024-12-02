@@ -1,31 +1,33 @@
-// QuanLyDonHang.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Table, Tag, Button, Space, Popconfirm } from "antd";
 import OrderDetailModal from "../../Modal/MoldechitietDH";
+import { getListOrders } from "../../Server/Order"; // Import API
 
-//Quản lý đơn hàng
+// Quản lý đơn hàng
 const Order_Management = () => {
-  const [orders, setOrders] = useState([
-    {
-      key: "1",
-      orderId: "1001",
-      customerName: "Nguyễn Văn A",
-      orderDate: "2023-10-01",
-      status: "Chờ xử lý",
-      totalAmount: "4,500,000 VND",
-    },
-    {
-      key: "2",
-      orderId: "1002",
-      customerName: "Lê Thị B",
-      orderDate: "2023-10-05",
-      status: "Đã gửi",
-      totalAmount: "3,000,000 VND",
-    },
-  ]);
-
+  const [orders, setOrders] = useState([]); // Khởi tạo mảng đơn hàng trống
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+
+  // Fetch danh sách đơn hàng khi component mount
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const fetchedOrders = await getListOrders(); // Lấy danh sách đơn hàng từ API
+
+        // Kiểm tra nếu fetchedOrders là một mảng hợp lệ
+        if (Array.isArray(fetchedOrders)) {
+          setOrders(fetchedOrders); // Cập nhật đơn hàng từ API
+        } else {
+          console.error("Dữ liệu trả về không phải là mảng:", fetchedOrders);
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách đơn hàng:", error);
+      }
+    };
+
+    fetchOrders();
+  }, []); // Chạy chỉ khi component mount
 
   const columns = [
     {
