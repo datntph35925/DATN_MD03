@@ -119,7 +119,7 @@ public class Activity_ChiTietSP extends AppCompatActivity {
         tvMoTa = findViewById(R.id.tvMoTa_SPCT);
         imgSP = findViewById(R.id.img_SPCT);
         btnYeuThich = findViewById(R.id.btnYeuThich_CTSP);
-        btnYeuThichRed = findViewById(R.id.btnYeuThich_Red_CTSP);
+//        btnYeuThichRed = findViewById(R.id.btnYeuThich_Red_CTSP);
         btnGioHang = findViewById(R.id.btnGioHang_CTSP);
 
 
