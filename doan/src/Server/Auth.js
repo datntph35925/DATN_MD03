@@ -65,5 +65,21 @@ const resetPasswordAPI = async (payload) => {
     );
   }
 };
+const getTotalAccounts = async (payload) => {
+  try {
+    const response = await axios.get("/auth/tong-tai-khoan", payload);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "Lấy tổng số tài khoản thất bại"
+    );
+  }
+};
 
-export { LoginAPI, ForgotPasswordAPI, resetPasswordAPI, VerifyCodeAPI };
+export {
+  LoginAPI,
+  ForgotPasswordAPI,
+  resetPasswordAPI,
+  VerifyCodeAPI,
+  getTotalAccounts,
+};

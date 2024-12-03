@@ -1,5 +1,5 @@
-import React from "react";
-import { Row, Col, Card } from "antd";
+import React, { useEffect, useState } from "react";
+import { Row, Col, Card, message, Spin } from "antd";
 import {
   ShoppingOutlined,
   UserOutlined,
@@ -7,9 +7,32 @@ import {
   EuroCircleOutlined,
   ProductOutlined,
 } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import { getTotalAccounts } from "../../Server/Auth";
 import "./index.scss"; // Import the external SCSS file
 import Bieudo from "../../Componer/Bieudo";
+
 const Dashboard = () => {
+  const [accountCount, setAccountCount] = useState();
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate(); // Initialize useNavigate
+
+  useEffect(() => {
+    const fetchAccountCount = async () => {
+      try {
+        setLoading(true);
+        const response = await getTotalAccounts();
+        setAccountCount(response.totalAccounts || 0);
+      } catch (error) {
+        message.error(error.message || "Lấy số tài khoản thất bại");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAccountCount();
+  }, []);
+
   const data = [
     {
       count: 363,
@@ -22,9 +45,10 @@ const Dashboard = () => {
       icon: <EuroCircleOutlined />,
     },
     {
-      count: 5,
+      count: accountCount !== null ? accountCount : "Đang tải...",
       label: "Số người dùng",
       icon: <UserOutlined />,
+      onClick: () => navigate("/profile"), // Navigate to /users when clicked
     },
     {
       count: 5,
@@ -38,6 +62,14 @@ const Dashboard = () => {
     },
   ];
 
+  if (loading && accountCount === null) {
+    return (
+      <div className="dashboard-container">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
     <div className="dashboard-container">
       <div className="menu">
@@ -48,6 +80,7 @@ const Dashboard = () => {
                 className="dashboard-card"
                 style={{ backgroundColor: item.color }}
                 hoverable
+                onClick={item.onClick} // Handle click event
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = "scale(1.05)";
                 }}

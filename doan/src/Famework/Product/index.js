@@ -48,6 +48,10 @@ const Products = () => {
 
   // Hàm thêm hoặc sửa sản phẩm
   const handleAddOrEditProduct = async (product) => {
+    if (product.GiaBan < 1000) {
+      message.error("Giá bán phải lớn hơn hoặc bằng 1,000 VND!");
+      return;
+    }
     setIsAddModalVisible(false);
     if (editingProduct) {
       // Cập nhật sản phẩm
