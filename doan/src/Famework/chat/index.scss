@@ -1,0 +1,127 @@
+.chat-container {
+    display: flex;
+    height: 90vh;
+    max-width: 100%;
+    margin: auto;
+   
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  
+    .user-list {
+      width: 30%;
+      background-color: #f5f5f5;
+      border-right: 1px solid #ddd;
+      padding: 10px;
+      overflow: auto;
+      h3 {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+  
+      .user-item {
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+  
+        &:hover {
+          background-color: #e0e0e0;
+        }
+  
+        &.active {
+          background-color: #0078ff;
+          color: white;
+        }
+      }
+    }
+  
+    .chat-content {
+      width: 75%;
+      display: flex;
+      flex-direction: column;
+  
+      .chat-header {
+        padding: 1rem;
+        border-bottom: 1px solid #ddd;
+        background-color: #f5f5f5;
+        text-align: center;
+      }
+  
+      .chat-body {
+        flex: 1;
+        padding: 1rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+  
+      .chat-message {
+        display: flex;
+        flex-direction: column;
+        max-width: 60%;
+        padding: 0.5rem;
+        border-radius: 10px;
+        margin-bottom: 0.5rem;
+  
+        &.sent {
+          align-self: flex-end;
+          background-color: #daf1da; /* Light green for admin */
+          text-align: right;
+        }
+  
+        &.received {
+          align-self: flex-start;
+          background-color: #f1f1f1; /* Light gray for user */
+          text-align: left;
+        }
+  
+        .sender-id {
+          font-size: 0.85rem;
+          font-weight: bold;
+          margin-bottom: 0.25rem;
+        }
+  
+        p {
+          margin: 0;
+        }
+      }
+  
+      .chat-footer {
+        display: flex;
+        padding: 1rem;
+        border-top: 1px solid #ddd;
+        background-color: #f5f5f5;
+  
+        input {
+          flex: 1;
+          padding: 0.5rem;
+          border: 1px solid #ddd;
+          border-radius: 5px;
+          margin-right: 0.5rem;
+        }
+  
+        button {
+          padding: 0.5rem 1rem;
+          background-color: #007bff;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          transition: background-color 0.3s;
+  
+          &:disabled {
+            background-color: #ddd;
+            cursor: not-allowed;
+          }
+  
+          &:hover:not(:disabled) {
+            background-color: #0056b3;
+          }
+        }
+      }
+    }
+  }
+  

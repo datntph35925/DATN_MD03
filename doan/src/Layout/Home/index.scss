@@ -1,0 +1,62 @@
+// index.scss
+.custom-layout {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f0f2f5;
+
+  .custom-header {
+    height: 64px;
+    line-height: 64px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #001529;
+  }
+
+  .custom-sider {
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .custom-content {
+    padding: 20px;
+    background-color: #ffffff;
+    overflow-y: auto;
+
+    // Style the content of the Outlet
+    .outlet-container {
+      padding: 15px;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+
+      h1, h2, h3, h4, h5, h6 {
+        color: #333;
+        margin-bottom: 10px;
+      }
+
+      p {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 12px;
+      }
+
+      // Add responsiveness
+      @media (max-width: 768px) {
+        padding: 10px;
+      }
+    }
+  }
+
+  .custom-footer {
+    height: 64px;
+    line-height: 64px;
+    text-align: center;
+    font-size: 16px;
+    color: #888;
+    background-color: #f0f2f5;
+  }
+}
