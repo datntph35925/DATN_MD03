@@ -1,62 +1,98 @@
 import React, { useState, useEffect } from "react";
-import { Table, Tag, Button, Space, Popconfirm } from "antd";
+import { Table, Tag, Button, Space, message, Select } from "antd";
 import OrderDetailModal from "../../Modal/MoldechitietDH";
-import { getListOrders } from "../../Server/Order"; // Import API
+import { getListOrders, updateOrderList } from "../../Server/Order"; // Import API
 
-// Quản lý đơn hàng
 const Order_Management = () => {
-  const [orders, setOrders] = useState([]); // Khởi tạo mảng đơn hàng trống
+  const [orders, setOrders] = useState([]); // Initialize empty orders array
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [loading, setLoading] = useState(false); // Loading state
+  const { Option } = Select;
 
-  // Fetch danh sách đơn hàng khi component mount
+  // Fetch order list on component mount
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const fetchedOrders = await getListOrders(); // Lấy danh sách đơn hàng từ API
-
-        // Kiểm tra nếu fetchedOrders là một mảng hợp lệ
-        if (Array.isArray(fetchedOrders)) {
-          setOrders(fetchedOrders); // Cập nhật đơn hàng từ API
-        } else {
-          console.error("Dữ liệu trả về không phải là mảng:", fetchedOrders);
-        }
-      } catch (error) {
-        console.error("Lỗi khi lấy danh sách đơn hàng:", error);
-      }
-    };
-
     fetchOrders();
-  }, []); // Chạy chỉ khi component mount
+  }, []);
+
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      const fetchedOrders = await getListOrders();
+      if (Array.isArray(fetchedOrders)) {
+        setOrders(fetchedOrders);
+      } else {
+        console.error("The response data is not an array:", fetchedOrders);
+      }
+    } catch (error) {
+      console.error("Error fetching order list:", error);
+      message.error("Failed to fetch the order list.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateOrderStatus = async (_id, newStatus) => {
+    try {
+      setLoading(true);
+      await updateOrderList(_id, newStatus);
+      message.success("Order status updated successfully!");
+
+      // Refresh the order list to reflect the updated status
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order._id === _id ? { ...order, TrangThai: newStatus } : order
+        )
+      );
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      message.error("Failed to update the order status.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const columns = [
     {
-      title: "Mã Đơn hàng",
-      dataIndex: "orderId",
-      key: "orderId",
-    },
-    {
-      title: "Tên Khách hàng",
-      dataIndex: "customerName",
-      key: "customerName",
+      title: "Tên Người nhận",
+      dataIndex: "TenNguoiNhan",
+      key: "TenNguoiNhan",
     },
     {
       title: "Ngày Đặt hàng",
-      dataIndex: "orderDate",
-      key: "orderDate",
+      dataIndex: "NgayDatHang",
+      key: "NgayDatHang",
+      render: (date) => new Date(date).toLocaleString(),
+    },
+    {
+      title: "Phương thức thanh toán",
+      dataIndex: "PhuongThucThanhToan",
+      key: "PhuongThucThanhToan",
     },
     {
       title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => (
-        <Tag color={status === "Đã gửi" ? "green" : "orange"}>{status}</Tag>
-      ),
+      dataIndex: "TrangThai",
+      key: "TrangThai",
+      render: (status) => {
+        let color = "default";
+        if (status === "Chờ xử lý") color = "orange";
+        else if (status === "Đang giao") color = "blue";
+        else if (status === "Đã giao") color = "green";
+        else if (status === "Hủy") color = "red";
+
+        return <Tag color={color}>{status}</Tag>;
+      },
+    },
+    {
+      title: "Tổng số lượng",
+      dataIndex: "TongSoLuong",
+      key: "TongSoLuong",
     },
     {
       title: "Tổng tiền",
-      dataIndex: "totalAmount",
-      key: "totalAmount",
+      dataIndex: "TongTien",
+      key: "TongTien",
+      render: (amount) => `${amount.toLocaleString()} VND`,
     },
     {
       title: "Hành động",
@@ -66,17 +102,16 @@ const Order_Management = () => {
           <Button type="link" onClick={() => showModal(record)}>
             Xem Chi tiết
           </Button>
-          <Button type="link">Cập nhật Trạng thái</Button>
-          <Popconfirm
-            title="Bạn có chắc muốn hủy đơn hàng này không?"
-            onConfirm={() => handleCancelOrder(record.key)}
-            okText="Có"
-            cancelText="Không"
+          <Select
+            value={record.TrangThai} // Reflect the current status
+            onChange={(newStatus) => updateOrderStatus(record._id, newStatus)}
+            style={{ width: 120 }}
           >
-            <Button type="link" danger>
-              Hủy
-            </Button>
-          </Popconfirm>
+            <Option value="Chờ xử lý">Chờ xử lý</Option>
+            <Option value="Đang giao">Đang giao</Option>
+            <Option value="Đã giao">Đã giao</Option>
+            <Option value="Hủy">Hủy</Option>
+          </Select>
         </Space>
       ),
     },
@@ -87,10 +122,6 @@ const Order_Management = () => {
     setIsModalVisible(true);
   };
 
-  const handleCancelOrder = (key) => {
-    setOrders(orders.filter((order) => order.key !== key));
-  };
-
   const handleCloseModal = () => {
     setIsModalVisible(false);
     setSelectedOrder(null);
@@ -99,8 +130,12 @@ const Order_Management = () => {
   return (
     <div>
       <h2>Quản lý Đơn hàng</h2>
-      <Table columns={columns} dataSource={orders} rowKey="key" />
-
+      <Table
+        columns={columns}
+        dataSource={orders}
+        rowKey="orderId"
+        loading={loading}
+      />
       <OrderDetailModal
         visible={isModalVisible}
         onClose={handleCloseModal}
