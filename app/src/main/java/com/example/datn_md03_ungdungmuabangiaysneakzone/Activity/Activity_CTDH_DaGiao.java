@@ -32,23 +32,27 @@ public class Activity_CTDH_DaGiao extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+        EdgeToEdge.enable(this); // Bật chế độ Edge-to-Edge UI
         setContentView(R.layout.activity_ctdh_da_giao);
+
+        // Áp dụng padding để tránh tràn UI vào vùng hệ thống
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
+        // Liên kết các thành phần giao diện
         rcvCTSP_DaGiao = findViewById(R.id.rcvCTDH_DaGiao);
-
         tvName = findViewById(R.id.tvName_CTDH_DaGiao);
         tvAdress = findViewById(R.id.tvAdress_CTDH_DaGiao);
         tvPhone = findViewById(R.id.tvPhone_CTDH_DaGiao);
         tvPayMent = findViewById(R.id.tvPayMent_CTDH_DaGiao);
         tvTT = findViewById(R.id.tvTrangThai_CTDH_DaGiao);
         tvTCP = findViewById(R.id.tvTCP_CTDH_DaGiao);
+        imgBack = findViewById(R.id.imageView4);
 
+        // Nhận dữ liệu từ Intent
         Intent intent = getIntent();
         name = intent.getStringExtra("order_ten");
         address = intent.getStringExtra("order_diachi");
@@ -56,18 +60,19 @@ public class Activity_CTDH_DaGiao extends AppCompatActivity {
         payMent = intent.getStringExtra("order_pttt");
         tt = intent.getStringExtra("order_ttdh");
         tcp = intent.getDoubleExtra("order_tongTien", 0.0);
-        imgBack = findViewById(R.id.imageView4);
 
+        // Xử lý sự kiện nút quay lại
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Activity_CTDH_DaGiao.this, Activity_DonHang.class);
-                intent.putExtra("select_tab", 2);
+                intent.putExtra("select_tab", 2); // Chuyển sang tab đơn hàng đã giao
                 startActivity(intent);
                 finish();
             }
         });
 
+        // Hiển thị thông tin đơn hàng
         tvName.setText(name);
         tvAdress.setText(address);
         tvPhone.setText(phone);
@@ -75,10 +80,11 @@ public class Activity_CTDH_DaGiao extends AppCompatActivity {
         tvTT.setText(tt);
         tvTCP.setText(String.format("%.2f", tcp));
 
+        // Lấy danh sách sản phẩm từ Intent và hiển thị trong RecyclerView
         sanPhamList = new ArrayList<>();
         sanPhamList = (ArrayList<ProductItemCart>) intent.getSerializableExtra("order_sp");
         thanhToanAdapter = new ThanhToanAdapter(this, sanPhamList);
-        rcvCTSP_DaGiao.setLayoutManager(new LinearLayoutManager(this));
-        rcvCTSP_DaGiao.setAdapter(thanhToanAdapter);
+        rcvCTSP_DaGiao.setLayoutManager(new LinearLayoutManager(this)); // Cài đặt layout dọc
+        rcvCTSP_DaGiao.setAdapter(thanhToanAdapter); // Liên kết adapter với RecyclerView
     }
 }
