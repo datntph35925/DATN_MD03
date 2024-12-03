@@ -178,42 +178,19 @@ router.get('/get-product-by-id/:id', async (req, res) => {
   }
 });
 
-router.get('/get-so-luong-ton/:id/:size', async (req, res) => {
+router.get('/total-products', async (req, res) => {
   try {
-    const { id, size } = req.params; // Get product ID and size from the request parameters
-    const product = await Products.findById(id); // Find the product by ID
-
-    if (product) {
-      // Find the specific size in the KichThuoc array
-      const sizeData = product.KichThuoc.find(item => item.size === parseInt(size));
-
-      if (sizeData) {
-        res.status(200).json({
-          status: 200,
-          message: 'Lấy soLuongTon thành công',
-          soLuongTon: sizeData.soLuongTon
-        });
-      } else {
-        res.status(404).json({
-          status: 404,
-          message: 'Không tìm thấy kích cỡ này',
-          soLuongTon: null
-        });
-      }
-    } else {
-      res.status(404).json({
-        status: 404,
-        message: 'Không tìm thấy sản phẩm',
-        soLuongTon: null
+      const totalProducts = await Products.countDocuments();
+      res.status(200).json({
+          success: true,
+          totalProducts: totalProducts
       });
-    }
   } catch (error) {
-    console.error('Lỗi:', error);
-    res.status(500).json({
-      status: 500,
-      message: 'Lỗi server',
-      error: error.message
-    });
+      res.status(500).json({
+          success: false,
+          message: 'Lỗi khi lấy tổng số lượng tài khoản khách hàng',
+          error: error.message
+      });
   }
 });
 
