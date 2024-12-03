@@ -45,16 +45,20 @@ public class Activity_CTDH_ChoXacNhan extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Bật tính năng Edge-to-Edge để tối ưu giao diện
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_ctdh_cho_xac_nhan);
+
+        // Cấu hình khoảng cách padding để phù hợp với hệ thống
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
+        // Ánh xạ các thành phần giao diện
         rcvCTSP_ChoXacNhan = findViewById(R.id.rcvCTDH_ChoXacNhan);
-
         imgBack = findViewById(R.id.imageView4);
         tvName = findViewById(R.id.tvName_CTDH_ChoXacNhan);
         tvAdress = findViewById(R.id.tvAdress_CTDH_ChoXacNhan);
@@ -64,47 +68,58 @@ public class Activity_CTDH_ChoXacNhan extends AppCompatActivity {
         tvTCP = findViewById(R.id.tvTCP_CTDH_ChoXacNhan);
         btnHuyMuaHang = findViewById(R.id.btnHuyDonHang);
 
+        // Khởi tạo đối tượng đơn hàng
         order = new Order();
 
+        // Xử lý sự kiện khi nhấn nút Hủy Đơn Hàng
         btnHuyMuaHang.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Lấy ID của đơn hàng từ Intent
                 String orderId = getIntent().getStringExtra("order_id");
                 Log.d("CartAdapter", "Current Quantity: " + orderId);
 
+                // Tạo request để cập nhật trạng thái đơn hàng
                 UpdateStatusRequest request = new UpdateStatusRequest("Hủy");
 
+                // Gửi yêu cầu cập nhật trạng thái đơn hàng qua API
                 RetrofitClient.getApiService().updateOrderStatus(orderId, request).enqueue(new Callback<Response<Order>>() {
                     @Override
                     public void onResponse(Call<Response<Order>> call, retrofit2.Response<Response<Order>> response) {
                         if (response.isSuccessful() && response.body() != null) {
+                            // Hủy đơn hàng thành công
                             Toast.makeText(Activity_CTDH_ChoXacNhan.this, "Order canceled successfully", Toast.LENGTH_SHORT).show();
 
-                            // Chuyển về MainActivity và mở Fragment_DaHuy
+                            // Chuyển sang màn hình đơn hàng và mở tab "Đã Hủy"
                             Intent intent = new Intent(Activity_CTDH_ChoXacNhan.this, Activity_DonHang.class);
                             intent.putExtra("select_tab", 3);
                             startActivity(intent);
                             finish(); // Đóng Activity hiện tại
                         } else {
+                            // Hủy đơn hàng thất bại
                             Toast.makeText(Activity_CTDH_ChoXacNhan.this, "Failed to cancel order", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<Response<Order>> call, Throwable t) {
+                        // Xử lý lỗi khi gọi API thất bại
                         Toast.makeText(Activity_CTDH_ChoXacNhan.this, "Error", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
         });
 
+        // Xử lý sự kiện khi nhấn nút quay lại
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Chuyển về màn hình danh sách đơn hàng
                 startActivity(new Intent(Activity_CTDH_ChoXacNhan.this, Activity_DonHang.class));
             }
         });
 
+        // Lấy dữ liệu từ Intent
         Intent intent = getIntent();
         name = intent.getStringExtra("order_ten");
         address = intent.getStringExtra("order_diachi");
@@ -113,7 +128,7 @@ public class Activity_CTDH_ChoXacNhan extends AppCompatActivity {
         tt = intent.getStringExtra("order_ttdh");
         tcp = intent.getDoubleExtra("order_tongTien", 0.0);
 
-        // Set data to TextViews
+        // Hiển thị dữ liệu lên giao diện
         tvName.setText(name);
         tvAdress.setText(address);
         tvPhone.setText(phone);
@@ -121,11 +136,13 @@ public class Activity_CTDH_ChoXacNhan extends AppCompatActivity {
         tvTT.setText(tt);
         tvTCP.setText(String.format("%.2f", tcp));
 
+        // Lấy danh sách sản phẩm từ Intent
         sanPhamList = new ArrayList<>();
         sanPhamList = (ArrayList<ProductItemCart>) intent.getSerializableExtra("order_sp");
+
+        // Cấu hình RecyclerView để hiển thị danh sách sản phẩm
         thanhToanAdapter = new ThanhToanAdapter(this, sanPhamList);
         rcvCTSP_ChoXacNhan.setLayoutManager(new LinearLayoutManager(this));
         rcvCTSP_ChoXacNhan.setAdapter(thanhToanAdapter);
-
     }
 }
