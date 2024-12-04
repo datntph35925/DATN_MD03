@@ -371,17 +371,19 @@ router.get('/get-order-by-id/:id', async (req, res) => {
 
 router.get('/total-orders', async (req, res) => {
     try {
-        const totalOrders = await Orders.countDocuments();
+        // Count only orders with the status "Chờ xử lý"
+        const unprocessedOrdersCount = await Orders.countDocuments({ TrangThai: 'Chờ xử lý' });
         res.status(200).json({
             success: true,
-            totalOrders: totalOrders
+            unprocessedOrders: unprocessedOrdersCount
         });
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: 'Lỗi khi lấy tổng số lượng tài khoản khách hàng',
+            message: 'Lỗi khi lấy tổng số lượng đơn hàng chưa xử lý',
             error: error.message
         });
     }
-  });
+});
+
 module.exports = router;
