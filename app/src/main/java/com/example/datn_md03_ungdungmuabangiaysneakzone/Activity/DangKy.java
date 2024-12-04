@@ -51,24 +51,48 @@ public class DangKy extends AppCompatActivity {
             String password = editTextPassword.getText().toString().trim();
             String rePassword = editTextRePassword.getText().toString().trim();
 
-            // Kiểm tra dữ liệu nhập vào
+            // Kiểm tra tên
+            boolean isValid = true;
             if (TextUtils.isEmpty(ten)) {
-                Toast.makeText(DangKy.this, "Vui lòng nhập tên!", Toast.LENGTH_SHORT).show();
-                return;
+                editTextTen.setError("Vui lòng nhập tên!");
+                isValid = false;
+            } else if (ten.length() < 3 || ten.matches(".*[0-9@#$%^&*!].*")) {
+                editTextTen.setError("Tên không hợp lệ! Tên phải có ít nhất 3 ký tự và không chứa ký tự đặc biệt.");
+                isValid = false;
             }
 
-            if (TextUtils.isEmpty(email) || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                Toast.makeText(DangKy.this, "Vui lòng nhập email hợp lệ!", Toast.LENGTH_SHORT).show();
-                return;
+            // Kiểm tra email
+            if (TextUtils.isEmpty(email)) {
+                editTextEmail.setError("Vui lòng nhập email!");
+                isValid = false;
+            } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                editTextEmail.setError("Vui lòng nhập email hợp lệ!");
+                isValid = false;
+            } else if (email.length() < 5 || email.length() > 50) {
+                editTextEmail.setError("Email phải từ 5 đến 50 ký tự!");
+                isValid = false;
             }
 
-            if (TextUtils.isEmpty(password) || password.length() < 6) {
-                Toast.makeText(DangKy.this, "Mật khẩu phải có ít nhất 6 ký tự!", Toast.LENGTH_SHORT).show();
-                return;
+            // Kiểm tra mật khẩu
+            if (TextUtils.isEmpty(password)) {
+                editTextPassword.setError("Vui lòng nhập mật khẩu!");
+                isValid = false;
+            } else if (password.length() < 6) {
+                editTextPassword.setError("Mật khẩu phải có ít nhất 6 ký tự!");
+                isValid = false;
             }
 
-            if (!password.equals(rePassword)) {
-                Toast.makeText(DangKy.this, "Mật khẩu không khớp!", Toast.LENGTH_SHORT).show();
+            // Kiểm tra mật khẩu xác nhận
+            if (TextUtils.isEmpty(rePassword)) {
+                editTextRePassword.setError("Vui lòng xác nhận mật khẩu!");
+                isValid = false;
+            } else if (!password.equals(rePassword)) {
+                editTextRePassword.setError("Mật khẩu không khớp!");
+                isValid = false;
+            }
+
+            // Nếu không hợp lệ, thoát ra
+            if (!isValid) {
                 return;
             }
 
