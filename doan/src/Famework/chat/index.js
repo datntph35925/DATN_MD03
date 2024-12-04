@@ -11,7 +11,7 @@ const Chat = () => {
   const [loading, setLoading] = useState({ users: false, messages: false });
   const [error, setError] = useState("");
 
-  // Fetch list of users on mount
+  // Lấy danh sách người dùng khi component được mount
   useEffect(() => {
     const fetchUsers = async () => {
       setLoading((prev) => ({ ...prev, users: true }));
@@ -19,7 +19,7 @@ const Chat = () => {
         const userList = await getListAccount();
         setUsers(userList);
       } catch (err) {
-        console.error("Error fetching users:", err);
+        console.error("Lỗi khi lấy danh sách người dùng:", err);
         setError("Không thể tải danh sách người dùng.");
       } finally {
         setLoading((prev) => ({ ...prev, users: false }));
@@ -28,17 +28,17 @@ const Chat = () => {
     fetchUsers();
   }, []);
 
-  // Fetch chat history for active user
+  // Lấy lịch sử tin nhắn của người dùng đang hoạt động
   useEffect(() => {
     if (!activeUser) return;
 
     const fetchHistory = async () => {
       setLoading((prev) => ({ ...prev, messages: true }));
       try {
-        const history = await getChatHistory(activeUser.Tentaikhoan); // Lấy lịch sử tin nhắn của người dùng từ backend
+        const history = await getChatHistory(activeUser.Tentaikhoan); // Lấy lịch sử tin nhắn từ backend
         setChatHistory(history);
       } catch (err) {
-        console.error("Error fetching chat history:", err);
+        console.error("Lỗi khi lấy lịch sử tin nhắn:", err);
         setError("Không thể tải lịch sử tin nhắn.");
       } finally {
         setLoading((prev) => ({ ...prev, messages: false }));
@@ -47,7 +47,7 @@ const Chat = () => {
     fetchHistory();
   }, [activeUser]);
 
-  // Send a message to active user
+  // Gửi tin nhắn tới người dùng đang hoạt động
   const handleSendMessage = async () => {
     if (!message.trim() || !activeUser) return;
 
@@ -55,30 +55,30 @@ const Chat = () => {
     const tempMessage = {
       senderId: "admin",
       message: "Đang gửi...",
-      temp: true, // Flag để phân biệt tin nhắn tạm thời
+      temp: true, // Gắn cờ để phân biệt tin nhắn tạm thời
     };
 
     setChatHistory((prev) => [...prev, tempMessage]);
 
     try {
-      // Gửi tin nhắn đến backend
+      // Gửi tin nhắn tới backend
       const newMessage = await sendMessage(activeUser.Tentaikhoan, message);
 
-      setMessage(""); // Xóa nội dung trong input sau khi gửi
+      setMessage(""); // Xóa nội dung trong ô nhập sau khi gửi
 
-      // Sau 10 giây, cập nhật tin nhắn từ "Đang gửi..." thành tin nhắn thật
+      // Sau 10 giây, cập nhật tin nhắn từ "Đang gửi..." thành tin nhắn thực
       setTimeout(() => {
         setChatHistory((prev) =>
           prev.map((msg) => (msg.temp ? { ...newMessage, temp: false } : msg))
         );
       }, 10000); // 10 giây
     } catch (err) {
-      console.error("Error sending message:", err);
+      console.error("Lỗi khi gửi tin nhắn:", err);
       setError("Không thể gửi tin nhắn.");
     }
   };
 
-  // Helper to get user name by ID
+  // Trợ giúp lấy tên người dùng theo ID
   const getUserNameById = (id) => {
     const user = users.find((u) => u.Tentaikhoan === id);
     return user ? user.Hoten : id;
@@ -86,7 +86,7 @@ const Chat = () => {
 
   return (
     <div className="chat-container">
-      {/* User List */}
+      {/* Danh sách người dùng */}
       <div className="user-list">
         <h3>Người dùng</h3>
         {loading.users ? (
@@ -112,13 +112,13 @@ const Chat = () => {
         )}
       </div>
 
-      {/* Chat Content */}
+      {/* Nội dung chat */}
       <div className="chat-content">
         <div className="chat-header">
           <h2>Chat với {activeUser?.Hoten || "..."}</h2>
         </div>
 
-        {/* Chat Messages */}
+        {/* Tin nhắn chat */}
         <div className="chat-body">
           {loading.messages ? (
             <p>Đang tải tin nhắn...</p>
@@ -143,7 +143,7 @@ const Chat = () => {
           )}
         </div>
 
-        {/* Chat Input */}
+        {/* Nhập tin nhắn */}
         <div className="chat-footer">
           <input
             type="text"
@@ -159,7 +159,7 @@ const Chat = () => {
         </div>
       </div>
 
-      {/* Error Message */}
+      {/* Hiển thị lỗi */}
       {error && <div className="error-message">{error}</div>}
     </div>
   );

@@ -9,28 +9,40 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { getTotalAccounts } from "../../Server/Auth";
-import "./index.scss"; // Import the external SCSS file
+import { totalListProducts } from "../../Server/ProductsApi";
+import { totalOrders } from "../../Server/Order";
+import "./index.scss";
 import Bieudo from "../../Componer/Bieudo";
 
 const Dashboard = () => {
-  const [accountCount, setAccountCount] = useState();
+  const [accountCount, setAccountCount] = useState(null);
+  const [productCount, setProductCount] = useState(null);
+  const [orderCount, setOrderCount] = useState(null); // State for unprocessed orders
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchAccountCount = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await getTotalAccounts();
-        setAccountCount(response.totalAccounts || 0);
+        const [accountResponse, productResponse, orderResponse] =
+          await Promise.all([
+            getTotalAccounts(),
+            totalListProducts(),
+            totalOrders(), // Fetch total orders
+          ]);
+        console.log("abc", orderResponse);
+        setAccountCount(accountResponse.totalAccounts || 0);
+        setProductCount(productResponse.totalProducts || 0);
+        setOrderCount(orderResponse.totalOrders || 0); // Assume API returns `unprocessedOrders`
       } catch (error) {
-        message.error(error.message || "Lấy số tài khoản thất bại");
+        message.error(error.message || "Lấy dữ liệu thất bại");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAccountCount();
+    fetchData();
   }, []);
 
   const data = [
@@ -48,21 +60,23 @@ const Dashboard = () => {
       count: accountCount !== null ? accountCount : "Đang tải...",
       label: "Số người dùng",
       icon: <UserOutlined />,
-      onClick: () => navigate("/profile"), // Navigate to /users when clicked
+      onClick: () => navigate("/profile"),
     },
     {
-      count: 5,
+      count: productCount !== null ? productCount : "Đang tải...",
       label: "Sản phẩm",
       icon: <ShoppingOutlined />,
+      onClick: () => navigate("/products"),
     },
     {
-      count: 5,
+      count: orderCount !== null ? orderCount : "Đang tải...",
       label: "ĐH chưa xử lý",
       icon: <ProductOutlined />,
+      onClick: () => navigate("/quanlydonhang/dangxuly"), // Navigate to orders page
     },
   ];
 
-  if (loading && accountCount === null) {
+  if (loading) {
     return (
       <div className="dashboard-container">
         <Spin size="large" />
@@ -78,9 +92,8 @@ const Dashboard = () => {
             <Col xs={24} sm={12} md={8} lg={4} key={index}>
               <Card
                 className="dashboard-card"
-                style={{ backgroundColor: item.color }}
                 hoverable
-                onClick={item.onClick} // Handle click event
+                onClick={item.onClick}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = "scale(1.05)";
                 }}

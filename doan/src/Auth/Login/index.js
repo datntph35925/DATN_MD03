@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "../../Router/authSlice";
 import backgroundImage from "../../Image/backgroup_nike.jpg";
 import { LoginAPI, VerifyCodeAPI } from "../../Server/Auth";
 import LoginModal from "../../Modal/LoginModal";
@@ -13,11 +15,14 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [inputCode, setInputCode] = useState("");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const handleLogin = async () => {
     try {
       const loginResponse = await LoginAPI({ username, password });
 
       if (loginResponse.status) {
+        dispatch(loginSuccess(loginResponse.user)); // Lưu thông tin vào Redux
         setVerificationEmailSent(true); // Hiển thị modal xác minh
         setErrorMessage("");
       } else {

@@ -8,7 +8,7 @@ import {
   Descriptions,
   message,
 } from "antd";
-import { getListAccount, deleteAccounts } from "../../Server/account_api"; // Adjust the path to your API functions
+import { getListAccount, deleteAccounts } from "../../Server/account_api";
 
 const Account_Management = () => {
   const [customers, setCustomers] = useState([]);
@@ -16,24 +16,30 @@ const Account_Management = () => {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Fetch customers from the API
+  // Fetch customer data from the API
   useEffect(() => {
     const fetchAccounts = async () => {
       setLoading(true);
       try {
         const data = await getListAccount();
-
+        console.log("Fetched customer data:", data);
         setCustomers(
-          data.map((customer) => ({
-            key: customer._id,
-            Matk: customer.Matk,
-            Tentaikhoan: customer.Tentaikhoan,
-            Hoten: customer.Hoten,
-            // Append .jpg to image filenames
-            Anhtk: customer.Anhtk
-              ? `/uploads/${customer.Anhtk}.jpg`
-              : "/uploads/default-avatar.jpg", // Default fallback image
-          }))
+          data.map((customer) => {
+            const avatarPath = customer.Anhtk
+              ? `http://localhost:3000/${customer.Anhtk}`
+              : "http://localhost:3000/uploads/default-avatar.jpg";
+
+            // Log avatar path for debugging
+            console.log("Avatar Path:", avatarPath);
+
+            return {
+              key: customer._id,
+              Matk: customer.Matk,
+              Tentaikhoan: customer.Tentaikhoan,
+              Hoten: customer.Hoten,
+              Anhtk: avatarPath,
+            };
+          })
         );
       } catch (error) {
         message.error("Failed to fetch customer accounts");
@@ -66,9 +72,9 @@ const Account_Management = () => {
       title: "Avatar",
       dataIndex: "Anhtk",
       key: "Anhtk",
-      render: (text) => (
+      render: (Anhtk) => (
         <img
-          src={text}
+          src={Anhtk}
           alt="avatar"
           style={{ width: 50, height: 50, borderRadius: "50%" }}
         />
@@ -82,9 +88,10 @@ const Account_Management = () => {
           <Button type="link" onClick={() => handleViewDetails(record)}>
             View Details
           </Button>
+          {/* Uncomment and modify the following block for delete functionality */}
           {/* <Popconfirm
             title="Are you sure to delete this customer?"
-            onConfirm={() => handleDelete(record.key)} // Call delete with the account ID
+            onConfirm={() => handleDelete(record.key)}
             okText="Yes"
             cancelText="No"
           >
@@ -99,7 +106,7 @@ const Account_Management = () => {
 
   // Delete customer handler
   // const handleDelete = async (accountId) => {
-  //   setLoading(true); // Set loading state to true during API call
+  //   setLoading(true);
   //   try {
   //     await deleteAccounts(accountId);
   //     setCustomers(customers.filter((customer) => customer.key !== accountId));
@@ -108,7 +115,7 @@ const Account_Management = () => {
   //     message.error("Failed to delete customer");
   //     console.error("Error deleting customer:", error);
   //   } finally {
-  //     setLoading(false); // Reset loading state
+  //     setLoading(false);
   //   }
   // };
 

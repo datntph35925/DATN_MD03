@@ -48,7 +48,9 @@ const ForgotPasswordAPI = async (payload) => {
     );
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.message || "Quên mật khẩu thất bại");
+    throw new Error(
+      error.response?.data?.message || "Gửi mã đặt lại mật khẩu thất bại."
+    );
   }
 };
 
@@ -61,17 +63,18 @@ const resetPasswordAPI = async (payload) => {
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "Cài lại mật khẩu thất bại"
+      error.response?.data?.message || "Cài lại mật khẩu thất bại."
     );
   }
 };
+
 const getTotalAccounts = async (payload) => {
   try {
     const response = await axios.get("/auth/tong-tai-khoan", payload);
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "Lấy tổng số tài khoản thất bại"
+      error.response?.data?.message || "Lấy tổng số tài khoản thất bại."
     );
   }
 };

@@ -9,7 +9,7 @@ const sendMessage = async (TentaiKhoan, message) => {
     });
     return response.data; // Trả về dữ liệu tin nhắn
   } catch (error) {
-    console.error("Error sending message:", error);
+    console.error("Lỗi khi gửi tin nhắn:", error);
     throw error;
   }
 };
@@ -22,7 +22,7 @@ const getChatHistory = async (TentaiKhoan) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching chat history:", error);
+    console.error("Lỗi khi tải lịch sử tin nhắn:", error);
     throw new Error("Không thể tải lịch sử tin nhắn.");
   }
 };
