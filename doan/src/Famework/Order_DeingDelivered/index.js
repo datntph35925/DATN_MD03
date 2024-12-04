@@ -107,9 +107,8 @@ const Order_Management = () => {
             onChange={(newStatus) => updateOrderStatus(record._id, newStatus)}
             style={{ width: 120 }}
           >
-            <Option value="Chờ xử lý">Chờ xử lý</Option>
             <Option value="Đang giao">Đang giao</Option>
-            <Option value="Hủy">Hủy</Option>
+            <Option value="Đã giao">Đã giao</Option>
           </Select>
         </Space>
       ),
@@ -128,10 +127,10 @@ const Order_Management = () => {
 
   return (
     <div>
-      <h2>Đơn hàng đang xử lý</h2>
+      <h2>Đơn hàng đang giao</h2>
       <Table
         columns={columns}
-        dataSource={orders.filter((order) => order.TrangThai === "Chờ xử lý")} // Filter orders
+        dataSource={orders.filter((order) => order.TrangThai === "Đang giao")} // Filter orders
         rowKey="_id" // Ensure the key matches the property in your order object
         loading={loading}
       />

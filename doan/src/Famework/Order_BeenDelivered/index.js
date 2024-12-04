@@ -102,15 +102,6 @@ const Order_Management = () => {
           <Button type="link" onClick={() => showModal(record)}>
             Xem Chi tiết
           </Button>
-          <Select
-            value={record.TrangThai} // Reflect the current status
-            onChange={(newStatus) => updateOrderStatus(record._id, newStatus)}
-            style={{ width: 120 }}
-          >
-            <Option value="Chờ xử lý">Chờ xử lý</Option>
-            <Option value="Đang giao">Đang giao</Option>
-            <Option value="Hủy">Hủy</Option>
-          </Select>
         </Space>
       ),
     },
@@ -128,10 +119,10 @@ const Order_Management = () => {
 
   return (
     <div>
-      <h2>Đơn hàng đang xử lý</h2>
+      <h2>Đơn hàng đã giao</h2>
       <Table
         columns={columns}
-        dataSource={orders.filter((order) => order.TrangThai === "Chờ xử lý")} // Filter orders
+        dataSource={orders.filter((order) => order.TrangThai === "Đã giao")} // Filter orders
         rowKey="_id" // Ensure the key matches the property in your order object
         loading={loading}
       />

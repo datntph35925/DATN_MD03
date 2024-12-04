@@ -73,15 +73,7 @@ const Order_Management = () => {
       title: "Trạng thái",
       dataIndex: "TrangThai",
       key: "TrangThai",
-      render: (status) => {
-        let color = "default";
-        if (status === "Chờ xử lý") color = "orange";
-        else if (status === "Đang giao") color = "blue";
-        else if (status === "Đã giao") color = "green";
-        else if (status === "Hủy") color = "red";
-
-        return <Tag color={color}>{status}</Tag>;
-      },
+      render: () => <Tag color="red">Hủy</Tag>, // Always "Hủy"
     },
     {
       title: "Tổng số lượng",
@@ -102,15 +94,6 @@ const Order_Management = () => {
           <Button type="link" onClick={() => showModal(record)}>
             Xem Chi tiết
           </Button>
-          <Select
-            value={record.TrangThai} // Reflect the current status
-            onChange={(newStatus) => updateOrderStatus(record._id, newStatus)}
-            style={{ width: 120 }}
-          >
-            <Option value="Chờ xử lý">Chờ xử lý</Option>
-            <Option value="Đang giao">Đang giao</Option>
-            <Option value="Hủy">Hủy</Option>
-          </Select>
         </Space>
       ),
     },
@@ -131,7 +114,7 @@ const Order_Management = () => {
       <h2>Đơn hàng đang xử lý</h2>
       <Table
         columns={columns}
-        dataSource={orders.filter((order) => order.TrangThai === "Chờ xử lý")} // Filter orders
+        dataSource={orders.filter((order) => order.TrangThai === "Hủy")} // Filter orders
         rowKey="_id" // Ensure the key matches the property in your order object
         loading={loading}
       />

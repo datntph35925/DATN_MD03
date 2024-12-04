@@ -8,12 +8,13 @@ import {
   BarChartOutlined,
   OrderedListOutlined,
   LogoutOutlined,
+  MailOutlined,
 } from "@ant-design/icons";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const location = useLocation(); // Lấy thông tin đường dẫn hiện tại
+  const location = useLocation();
 
   // Xác định mục menu nào đang hoạt động dựa trên pathname
   const selectedKey = () => {
@@ -27,11 +28,13 @@ const Dashboard = () => {
       case "/chat":
         return "4";
       case "/quanlydonhang":
+      case "/quanlydonhang/dangxuly":
+      case "/quanlydonhang/dagiao":
         return "5";
       case "/settings":
         return "6";
       default:
-        return ""; // Không chọn mục nào nếu không khớp
+        return "";
     }
   };
 
@@ -63,11 +66,26 @@ const Dashboard = () => {
         <Link to="/products">Sản phẩm</Link>
       </Menu.Item>
       <Menu.Item key="4" icon={<BarChartOutlined />}>
-        <Link to="/chat">Hỗ trợ khách hành</Link>
+        <Link to="/chat">Hỗ trợ khách hàng</Link>
       </Menu.Item>
-      <Menu.Item key="5" icon={<OrderedListOutlined />}>
-        <Link to="/quanlydonhang">Quản lý đơn hàng</Link>
-      </Menu.Item>
+      <Menu.SubMenu
+        key="5"
+        icon={<OrderedListOutlined />}
+        title="Quản lý đơn hàng"
+      >
+        <Menu.Item key="5-1">
+          <Link to="/quanlydonhang/dangxuly">Đang xử lý</Link>
+        </Menu.Item>
+        <Menu.Item key="5-2">
+          <Link to="/quanlydonhang/danggiao">Đang giao</Link>
+        </Menu.Item>
+        <Menu.Item key="5-3">
+          <Link to="/quanlydonhang/dagiao">Đã giao</Link>
+        </Menu.Item>
+        <Menu.Item key="5-4">
+          <Link to="/quanlydonhang/huy">Đã hủy</Link>
+        </Menu.Item>
+      </Menu.SubMenu>
       <Menu.Item key="6" icon={<SettingOutlined />}>
         <Link to="/settings">Settings</Link>
       </Menu.Item>

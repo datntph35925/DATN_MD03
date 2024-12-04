@@ -7,6 +7,10 @@ import Login from "./Auth/Login";
 import Homes from "./Famework/Home";
 import Products from "./Famework/Product";
 import QlDonHang from "./Famework/Order_Management/index";
+import OrderDeingDelivered from "./Famework/Order_DeingDelivered/index";
+import OrderBeenDelivered from "./Famework/Order_BeenDelivered/index";
+import OrderBeenCancalled from "./Famework/Order_BeenCancelled/index";
+
 import Profile from "./Famework/Account_Management/Index";
 import Chat from "./Famework/chat";
 import store from "./Router/store";
@@ -20,7 +24,16 @@ const App = () => {
           <Route path="/" element={<Home />}>
             <Route path="products" element={<Products />} />
             <Route path="/home" element={<Homes />} />
-            <Route path="/quanlydonhang" element={<QlDonHang />} />
+            <Route path="/quanlydonhang/dangxuly" element={<QlDonHang />} />
+            <Route
+              path="/quanlydonhang/danggiao"
+              element={<OrderDeingDelivered />}
+            />
+            <Route
+              path="/quanlydonhang/dagiao"
+              element={<OrderBeenDelivered />}
+            />
+            <Route path="/quanlydonhang/huy" element={<OrderBeenCancalled />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/chat" element={<Chat />} />
           </Route>

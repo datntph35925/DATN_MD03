@@ -82,7 +82,7 @@ const Account_Management = () => {
           <Button type="link" onClick={() => handleViewDetails(record)}>
             View Details
           </Button>
-          <Popconfirm
+          {/* <Popconfirm
             title="Are you sure to delete this customer?"
             onConfirm={() => handleDelete(record.key)} // Call delete with the account ID
             okText="Yes"
@@ -91,26 +91,26 @@ const Account_Management = () => {
             <Button type="link" danger>
               Delete
             </Button>
-          </Popconfirm>
+          </Popconfirm> */}
         </Space>
       ),
     },
   ];
 
   // Delete customer handler
-  const handleDelete = async (accountId) => {
-    setLoading(true); // Set loading state to true during API call
-    try {
-      await deleteAccounts(accountId);
-      setCustomers(customers.filter((customer) => customer.key !== accountId));
-      message.success("Customer deleted successfully");
-    } catch (error) {
-      message.error("Failed to delete customer");
-      console.error("Error deleting customer:", error);
-    } finally {
-      setLoading(false); // Reset loading state
-    }
-  };
+  // const handleDelete = async (accountId) => {
+  //   setLoading(true); // Set loading state to true during API call
+  //   try {
+  //     await deleteAccounts(accountId);
+  //     setCustomers(customers.filter((customer) => customer.key !== accountId));
+  //     message.success("Customer deleted successfully");
+  //   } catch (error) {
+  //     message.error("Failed to delete customer");
+  //     console.error("Error deleting customer:", error);
+  //   } finally {
+  //     setLoading(false); // Reset loading state
+  //   }
+  // };
 
   // Open modal and set selected customer
   const handleViewDetails = (customer) => {
