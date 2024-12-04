@@ -25,16 +25,16 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [accountResponse, productResponse, orderResponse] =
+        const [accountResponse, productResponse, unprocessedOrdersCount] =
           await Promise.all([
             getTotalAccounts(),
             totalListProducts(),
             totalOrders(), // Fetch total orders
           ]);
-        console.log("abc", orderResponse);
+        console.log("abc", unprocessedOrdersCount);
         setAccountCount(accountResponse.totalAccounts || 0);
         setProductCount(productResponse.totalProducts || 0);
-        setOrderCount(orderResponse.totalOrders || 0); // Assume API returns `unprocessedOrders`
+        setOrderCount(unprocessedOrdersCount.unprocessedOrders || 0); // Assume API returns `unprocessedOrders`
       } catch (error) {
         message.error(error.message || "Lấy dữ liệu thất bại");
       } finally {

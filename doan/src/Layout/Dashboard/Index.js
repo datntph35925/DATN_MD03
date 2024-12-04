@@ -15,7 +15,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Xác định mục menu đang hoạt động dựa trên pathname
+  // Xác định mục menu đang hoạt động
   const getSelectedKey = () => {
     if (location.pathname.startsWith("/home")) return "1";
     if (location.pathname.startsWith("/profile")) return "2";
@@ -25,6 +25,7 @@ const Dashboard = () => {
     return "";
   };
 
+  // Xử lý đăng xuất
   const handleLogout = () => {
     Modal.confirm({
       title: "Xác nhận đăng xuất",
@@ -32,7 +33,8 @@ const Dashboard = () => {
       okText: "Đăng xuất",
       cancelText: "Hủy",
       onOk: () => {
-        navigate("/login");
+        localStorage.removeItem("isLoggedIn"); // Xóa trạng thái đăng nhập
+        navigate("/login"); // Chuyển hướng về trang đăng nhập
       },
     });
   };
@@ -40,7 +42,7 @@ const Dashboard = () => {
   return (
     <Menu
       mode="inline"
-      selectedKeys={[getSelectedKey()]} // Đặt trạng thái mục đang hoạt động
+      selectedKeys={[getSelectedKey()]}
       className="custom-menu"
     >
       <Menu.Item key="1" icon={<HomeOutlined />}>
