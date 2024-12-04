@@ -97,6 +97,7 @@ const ForgotPassword = ({ onClose }) => {
                 >
                   Gửi Yêu Cầu
                 </Button>
+
                 <Button type="default" onClick={onClose} block>
                   Hủy
                 </Button>

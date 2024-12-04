@@ -1,18 +1,57 @@
-.container_header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-    height: 64px;
-    background: #001529;
-    color: #fff;
-  }
-  
-  .container_header .ant-avatar {
-    margin-right: 8px;
-  }
-  
-  .container_header .ant-badge {
-    cursor: pointer;
-  }
-  
+.custom-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  height: 64px;
+  background: #1166b6;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.custom-header-logo {
+ 
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.custom-header-logo img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  background-image: white;
+  filter: brightness(0) invert(1);
+}
+
+.custom-header-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.custom-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.custom-header-avatar {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.custom-header-avatar .ant-avatar {
+  background-color: transparent;
+  margin-right: 8px;
+}
+
+.custom-header-avatar span {
+  margin-left: 8px;
+}
+
+.custom-header-bell {
+  font-size: 20px;
+  color: #fff;
+  cursor: pointer;
+}

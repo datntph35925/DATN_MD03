@@ -1,21 +1,20 @@
 import React from "react";
-import { Avatar, Badge, Dropdown, Menu } from "antd";
-import { BellOutlined, UserOutlined, LogoutOutlined } from "@ant-design/icons";
+import { useSelector } from "react-redux";
+import { Avatar, Badge, Dropdown, Menu, Tooltip } from "antd";
+import { BellOutlined, UserOutlined } from "@ant-design/icons";
+import logo from "../../Image/logo.png";
+import "./index.scss"; // Import file SCSS
+
+// Thay đổi URL của logo
 
 const Header = () => {
-  const user = {
-    name: "John Doe",
-    avatar: "",
-  };
-
-  const handleLogout = () => {
-    console.log("Logging out...");
-  };
+  // Access user data from Redux
+  const user = useSelector((state) => state.auth.user);
 
   const userMenu = (
     <Menu>
       <Menu.Item key="1" icon={<UserOutlined />}>
-        Profile
+        {user?.email || "No email available"}
       </Menu.Item>
     </Menu>
   );
@@ -31,59 +30,43 @@ const Header = () => {
   );
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "0 20px",
-        height: "64px",
-        background: "#001529",
-        color: "#fff",
-      }}
-    >
-      <div
-        style={{ fontSize: "20px", color: "#fff", fontWeight: "bold" }}
-      ></div>
-      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-        <Dropdown
-          overlay={notificationsMenu}
-          trigger={["click"]}
-          placement="bottomRight"
-          arrow
-        >
-          <Badge
-            count={3}
-            offset={[0, 5]}
-            style={{ backgroundColor: "#f5222d" }}
+    <header className="custom-header">
+      <div className="custom-header-logo">
+        <img src={logo} alt="Logo" />
+        <div className="custom-header-title">SneakZone</div>
+      </div>
+
+      <div className="custom-header-actions">
+        <Tooltip title="Notifications">
+          <Dropdown
+            overlay={notificationsMenu}
+            trigger={["click"]}
+            placement="bottomRight"
+            arrow
           >
-            <BellOutlined
-              style={{ fontSize: "20px", color: "#fff", cursor: "pointer" }}
-            />
-          </Badge>
-        </Dropdown>
+            <Badge
+              count={3}
+              offset={[0, 5]}
+              style={{ backgroundColor: "#f5222d" }}
+            >
+              <BellOutlined className="custom-header-bell" />
+            </Badge>
+          </Dropdown>
+        </Tooltip>
         <Dropdown overlay={userMenu} placement="bottomRight" arrow>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              cursor: "pointer",
-              color: "#fff",
-            }}
-          >
+          <div className="custom-header-avatar">
             <Avatar
-              src={user.avatar || null}
-              icon={!user.avatar && <UserOutlined />}
+              src={user?.avatar || null}
+              icon={!user?.avatar && <UserOutlined />}
               style={{
-                backgroundColor: user.avatar ? "transparent" : "#87d068",
-                marginRight: "8px",
+                backgroundColor: user?.avatar ? "transparent" : "#87d068",
               }}
             />
-            <span>{user.name}</span>
+            <span>{user?.name || "Guest"}</span>
           </div>
         </Dropdown>
       </div>
-    </div>
+    </header>
   );
 };
 

@@ -8,7 +8,6 @@ import {
   BarChartOutlined,
   OrderedListOutlined,
   LogoutOutlined,
-  MailOutlined,
 } from "@ant-design/icons";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
@@ -16,26 +15,14 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Xác định mục menu nào đang hoạt động dựa trên pathname
-  const selectedKey = () => {
-    switch (location.pathname) {
-      case "/home":
-        return "1";
-      case "/profile":
-        return "2";
-      case "/products":
-        return "3";
-      case "/chat":
-        return "4";
-      case "/quanlydonhang":
-      case "/quanlydonhang/dangxuly":
-      case "/quanlydonhang/dagiao":
-        return "5";
-      case "/settings":
-        return "6";
-      default:
-        return "";
-    }
+  // Xác định mục menu đang hoạt động dựa trên pathname
+  const getSelectedKey = () => {
+    if (location.pathname.startsWith("/home")) return "1";
+    if (location.pathname.startsWith("/profile")) return "2";
+    if (location.pathname.startsWith("/products")) return "3";
+    if (location.pathname.startsWith("/chat")) return "4";
+    if (location.pathname.startsWith("/quanlydonhang")) return "5";
+    return "";
   };
 
   const handleLogout = () => {
@@ -45,7 +32,7 @@ const Dashboard = () => {
       okText: "Đăng xuất",
       cancelText: "Hủy",
       onOk: () => {
-        navigate("/login"); // Điều hướng đến trang đăng nhập
+        navigate("/login");
       },
     });
   };
@@ -53,11 +40,11 @@ const Dashboard = () => {
   return (
     <Menu
       mode="inline"
-      selectedKeys={[selectedKey()]} // Đặt trạng thái mục đang hoạt động
+      selectedKeys={[getSelectedKey()]} // Đặt trạng thái mục đang hoạt động
       className="custom-menu"
     >
       <Menu.Item key="1" icon={<HomeOutlined />}>
-        <Link to="/home">Home</Link>
+        <Link to="/home">Trang chủ</Link>
       </Menu.Item>
       <Menu.Item key="2" icon={<UserOutlined />}>
         <Link to="/profile">Quản lí tài khoản</Link>
@@ -86,11 +73,8 @@ const Dashboard = () => {
           <Link to="/quanlydonhang/huy">Đã hủy</Link>
         </Menu.Item>
       </Menu.SubMenu>
-      {/* <Menu.Item key="6" icon={<SettingOutlined />}>
-        <Link to="/settings">Settings</Link>
-      </Menu.Item> */}
       <Menu.Item key="7" icon={<LogoutOutlined />} onClick={handleLogout}>
-        Logout
+        Đăng xuất
       </Menu.Item>
     </Menu>
   );

@@ -7,6 +7,7 @@ import {
   Modal,
   Descriptions,
   message,
+  Image,
 } from "antd";
 import { getListAccount, deleteAccounts } from "../../Server/account_api";
 
@@ -162,7 +163,7 @@ const Account_Management = () => {
               {selectedCustomer.Hoten}
             </Descriptions.Item>
             <Descriptions.Item label="Avatar">
-              <img
+              <Image
                 src={selectedCustomer.Anhtk}
                 alt="avatar"
                 style={{ width: 100, borderRadius: "10px" }}

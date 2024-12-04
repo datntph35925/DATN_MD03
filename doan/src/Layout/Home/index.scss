@@ -5,6 +5,7 @@
   flex-direction: column;
   background-color: #f0f2f5;
 
+  // Header styling
   .custom-header {
     height: 64px;
     line-height: 64px;
@@ -15,25 +16,38 @@
     background-color: #001529;
   }
 
+  // Sider (Dashboard Menu) styling
   .custom-sider {
     background-color: #ffffff;
     padding: 20px;
+    border-right: 1px solid #e8e8e8;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+
+    // Adjusting padding for smaller screens
+    @media (max-width: 768px) {
+      padding: 10px;
+      width: 200px !important;
+    }
   }
 
+  // Content area styling
   .custom-content {
     padding: 20px;
     background-color: #ffffff;
     overflow-y: auto;
 
-    // Style the content of the Outlet
     .outlet-container {
-      padding: 15px;
+      padding: 20px;
       border-radius: 8px;
       background-color: #f9f9f9;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 
-      h1, h2, h3, h4, h5, h6 {
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
         color: #333;
         margin-bottom: 10px;
       }
@@ -44,19 +58,23 @@
         margin-bottom: 12px;
       }
 
-      // Add responsiveness
+      // Adjust padding for smaller screens
       @media (max-width: 768px) {
-        padding: 10px;
+        padding: 15px;
       }
     }
   }
 
+  // Footer styling
   .custom-footer {
     height: 64px;
     line-height: 64px;
     text-align: center;
-    font-size: 16px;
-    color: #888;
+    font-size: 14px;
+    color: #666;
     background-color: #f0f2f5;
+
+    // Add border for better distinction
+    border-top: 1px solid #e8e8e8;
   }
 }
