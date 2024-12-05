@@ -66,13 +66,15 @@ router.post('/add-order-from-cart/:userId', async (req, res) => {
     try {
         const { userId } = req.params; // Lấy userId từ URL params
 
-        // Lấy dữ liệu từ body của request (địa chỉ, phương thức thanh toán, v.v.)
+        // Lấy dữ liệu từ body của request (địa chỉ, phương thức thanh toán, voucher, v.v.)
         const {
+            MaDonHang,
             TenNguoiNhan,
             DiaChiGiaoHang,
             SoDienThoai,
             PhuongThucThanhToan,
-            selectedProducts // Các sản phẩm đã chọn từ giỏ hàng (danh sách ID sản phẩm)
+            selectedProducts, // Các sản phẩm đã chọn từ giỏ hàng (danh sách ID sản phẩm)
+            Voucher // Mã voucher (nếu có)
         } = req.body;
 
         // Kiểm tra xem tài khoản người dùng có tồn tại không
@@ -142,8 +144,28 @@ router.post('/add-order-from-cart/:userId', async (req, res) => {
         const TongSoLuong = updatedProducts.reduce((total, item) => total + item.SoLuongGioHang, 0);
         const TongTien = updatedProducts.reduce((total, item) => total + item.TongTien, 0);
 
+        // Kiểm tra voucher nếu có
+        let voucherApplied = null;
+        if (Voucher) {
+            // Tìm voucher trong hệ thống
+            const orderWithVoucher = await Orders.findOne({ Voucher });
+            if (orderWithVoucher && orderWithVoucher.VoucherUsedBy.includes(userAccount.Tentaikhoan)) {
+                return res.status(400).json({ message: 'Voucher này đã được sử dụng cho tài khoản này.' });
+            }
+
+            // Áp dụng voucher
+            voucherApplied = Voucher;
+
+            // Thêm tài khoản vào danh sách đã sử dụng voucher
+            await Orders.updateMany(
+                { Voucher: voucherApplied },
+                { $addToSet: { VoucherUsedBy: userAccount.Tentaikhoan } }
+            );
+        }
+
         // Tạo đơn hàng mới
         const newOrder = new Orders({
+            MaDonHang,
             Tentaikhoan: userAccount.Tentaikhoan,
             SanPham: updatedProducts,  // Các sản phẩm đã được cập nhật
             TenNguoiNhan,
@@ -152,7 +174,8 @@ router.post('/add-order-from-cart/:userId', async (req, res) => {
             TrangThai: 'Chờ xử lý',
             TongSoLuong,
             TongTien,
-            PhuongThucThanhToan
+            PhuongThucThanhToan,
+            Voucher: voucherApplied  // Thêm voucher vào đơn hàng nếu có
         });
 
         // Lưu đơn hàng vào cơ sở dữ liệu
@@ -176,21 +199,14 @@ router.post('/add-order-directly/:userId', async (req, res) => {
 
         // Lấy dữ liệu từ body của request (danh sách sản phẩm, địa chỉ giao hàng, phương thức thanh toán, v.v.)
         const {
+            MaDonHang,
             SanPham, // Mảng sản phẩm trực tiếp từ body
             TenNguoiNhan,
             DiaChiGiaoHang,
             SoDienThoai,
-            PhuongThucThanhToan
+            PhuongThucThanhToan,
+            Voucher // Mã voucher (nếu có)
         } = req.body;
-
-        console.log('Dữ liệu đầu vào từ người dùng:');
-        console.log({
-            SanPham,
-            TenNguoiNhan,
-            DiaChiGiaoHang,
-            SoDienThoai,
-            PhuongThucThanhToan
-        });
 
         if (!SanPham || SanPham.length === 0) {
             return res.status(401).json({ message: 'Danh sách sản phẩm không được để trống!' });
@@ -223,29 +239,24 @@ router.post('/add-order-directly/:userId', async (req, res) => {
             const productInDb = productsInDb.find(product => product._id.toString() === item.MaSanPham.toString());
 
             if (!productInDb) {
-                // Nếu không tìm thấy sản phẩm trong cơ sở dữ liệu
                 return true; // Đánh dấu sản phẩm này là không hợp lệ
             }
 
-            // Kiểm tra thông tin sản phẩm và số lượng tồn kho theo kích cỡ
-            const sizeInfo = productInDb.KichThuoc.find(size => size.size === item.Size); // Tìm thông tin kích cỡ sản phẩm
+            const sizeInfo = productInDb.KichThuoc.find(size => size.size === item.Size); // Kiểm tra kích thước
             if (!sizeInfo) {
-                return true; // Kích cỡ không hợp lệ
+                return true; // Kích thước không hợp lệ
             }
 
-            // Kiểm tra xem sản phẩm có đủ tồn kho hay không
             if (sizeInfo.soLuongTon < item.SoLuongGioHang) {
                 return true; // Không đủ tồn kho
             }
 
-            // Kiểm tra giá sản phẩm có hợp lệ không
             if (productInDb.GiaBan !== item.Gia) {
-                return true; // Giá sản phẩm không hợp lệ
+                return true; // Giá không hợp lệ
             }
 
-            // Cập nhật hình ảnh cho sản phẩm nếu chưa có
             if (!item.HinhAnh) {
-                item.HinhAnh = productInDb.HinhAnh || []; // Đảm bảo HinhAnh là mảng (có thể là mảng rỗng)
+                item.HinhAnh = productInDb.HinhAnh || []; // Đảm bảo có HìnhAnh
             }
 
             return false;
@@ -261,8 +272,28 @@ router.post('/add-order-directly/:userId', async (req, res) => {
         const TongSoLuong = SanPham.reduce((total, item) => total + item.SoLuongGioHang, 0);
         const TongTien = SanPham.reduce((total, item) => total + item.TongTien, 0);
 
+        // Kiểm tra voucher nếu có
+        let voucherApplied = null;
+        if (Voucher) {
+            // Tìm voucher trong hệ thống
+            const orderWithVoucher = await Orders.findOne({ Voucher });
+            if (orderWithVoucher && orderWithVoucher.VoucherUsedBy.includes(userAccount.Tentaikhoan)) {
+                return res.status(400).json({ message: 'Voucher này đã được sử dụng cho tài khoản này.' });
+            }
+
+            // Áp dụng voucher
+            voucherApplied = Voucher;
+
+            // Thêm tài khoản vào danh sách đã sử dụng voucher
+            await Orders.updateMany(
+                { Voucher: voucherApplied },
+                { $addToSet: { VoucherUsedBy: userAccount.Tentaikhoan } }
+            );
+        }
+
         // Tạo đơn hàng mới
         const newOrder = new Orders({
+            MaDonHang,
             Tentaikhoan: userAccount.Tentaikhoan,
             SanPham: SanPham.map(item => ({
                 MaSanPham: item.MaSanPham,
@@ -279,7 +310,8 @@ router.post('/add-order-directly/:userId', async (req, res) => {
             TrangThai: 'Chờ xử lý',
             TongSoLuong,
             TongTien,
-            PhuongThucThanhToan
+            PhuongThucThanhToan,
+            Voucher: voucherApplied  // Thêm voucher vào đơn hàng nếu có
         });
 
         // Lưu đơn hàng vào cơ sở dữ liệu
