@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Image, message, Modal, Input } from "antd";
+import { Table, Button, Image, message, Modal, Input, Carousel } from "antd";
 import AddProductModal from "../../Modal/ModalAddProduct";
 import {
   addProduct,
@@ -13,7 +13,6 @@ const Products = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [loadingRow, setLoadingRow] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const { confirm } = Modal;
 
@@ -27,6 +26,9 @@ const Products = () => {
           const data = response.data.data.map((product) => ({
             ...product,
             key: product._id,
+            HinhAnh: Array.isArray(product.HinhAnh)
+              ? product.HinhAnh
+              : [product.HinhAnh],
             soLuongTon: product.KichThuoc.reduce(
               (total, size) => total + size.soLuongTon,
               0
@@ -53,32 +55,42 @@ const Products = () => {
       return;
     }
     setIsAddModalVisible(false);
+
     if (editingProduct) {
       // Cập nhật sản phẩm
       try {
-        const updatedProduct = await updateProductById(
-          editingProduct._id,
-          product
-        );
-        setProducts((prevProducts) =>
-          prevProducts.map((p) =>
-            p._id === updatedProduct._id ? { ...p, ...updatedProduct } : p
-          )
-        );
-        message.success("Sản phẩm đã được cập nhật!");
+        const response = await updateProductById(editingProduct._id, product);
+        if (response.status === 200) {
+          const updatedProduct = response.data;
+          setProducts((prevProducts) =>
+            prevProducts.map((p) =>
+              p._id === updatedProduct._id
+                ? { ...p, ...updatedProduct, key: updatedProduct._id }
+                : p
+            )
+          );
+          message.success("Sản phẩm đã được cập nhật!");
+        }
       } catch (error) {
         message.error(error.response?.data?.message || "Cập nhật thất bại!");
       }
     } else {
       // Thêm mới sản phẩm
       try {
-        const newProduct = await addProduct(product);
-        setProducts([...products, { ...newProduct, key: newProduct._id }]);
-        message.success("Sản phẩm đã được thêm mới!");
+        const response = await addProduct(product);
+        if (response.status === 201) {
+          const newProduct = response.data;
+          setProducts((prevProducts) => [
+            ...prevProducts,
+            { ...newProduct, key: newProduct._id },
+          ]);
+          message.success("Sản phẩm đã được thêm mới!");
+        }
       } catch (error) {
         message.error(error.response?.data?.message || "Thêm mới thất bại!");
       }
     }
+
     setEditingProduct(null);
   };
 
@@ -94,7 +106,9 @@ const Products = () => {
       onOk: async () => {
         try {
           await deleteProductById(productToDelete._id);
-          setProducts(products.filter((item) => item.key !== key));
+          setProducts((prevProducts) =>
+            prevProducts.filter((item) => item.key !== key)
+          );
           message.success("Sản phẩm đã được xóa thành công!");
         } catch (error) {
           message.error("Đã xảy ra lỗi khi xóa sản phẩm!");
@@ -135,8 +149,25 @@ const Products = () => {
       title: "Hình Ảnh",
       dataIndex: "HinhAnh",
       key: "HinhAnh",
-      render: (HinhAnh) => <Image width={50} src={HinhAnh} />,
+      render: (HinhAnh) =>
+        Array.isArray(HinhAnh) && HinhAnh.length > 0 ? (
+          <Image.PreviewGroup>
+            <Image
+              width={50}
+              src={HinhAnh[0]} // Display only the first image as a thumbnail
+              preview={{
+                src: HinhAnh[0], // The main preview will start with the first image
+              }}
+            />
+            {HinhAnh.slice(1).map((url, index) => (
+              <Image key={index} src={url} style={{ display: "none" }} />
+            ))}
+          </Image.PreviewGroup>
+        ) : (
+          "Không có hình ảnh"
+        ),
     },
+
     { title: "Thương Hiệu", dataIndex: "ThuongHieu", key: "ThuongHieu" },
     {
       title: "Giá Bán",
@@ -145,25 +176,16 @@ const Products = () => {
       sorter: (a, b) => a.GiaBan - b.GiaBan,
       render: (GiaBan) => (GiaBan ? `${GiaBan.toLocaleString()} VND` : "N/A"),
     },
-    { title: "Số Lượng Tồn", dataIndex: "soLuongTon", key: "soLuongTon" },
+    { title: "Số lượng tổng", dataIndex: "soLuongTon", key: "soLuongTon" },
     {
       title: "Hành Động",
       key: "action",
       render: (text, record) => (
         <>
-          <Button
-            type="link"
-            onClick={() => showEditProductModal(record)}
-            loading={loadingRow === record.key}
-          >
+          <Button type="link" onClick={() => showEditProductModal(record)}>
             Sửa
           </Button>
-          <Button
-            type="link"
-            onClick={() => handleDelete(record.key)}
-            danger
-            loading={loadingRow === record.key}
-          >
+          <Button type="link" onClick={() => handleDelete(record.key)} danger>
             Xóa
           </Button>
         </>

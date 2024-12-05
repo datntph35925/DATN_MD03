@@ -6,15 +6,20 @@ const AddProductModal = ({ visible, onAdd, onCancel, initialValues }) => {
   const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Set giá trị ban đầu khi mở modal
+  // Set giá trị ban đầu hoặc reset form khi `initialValues` thay đổi
   useEffect(() => {
     if (initialValues) {
-      form.setFieldsValue(initialValues);
+      const initialData = {
+        ...initialValues,
+        HinhAnh: initialValues.HinhAnh?.join(", ") || "",
+      };
+      form.setFieldsValue(initialData);
     } else {
       form.resetFields();
     }
   }, [initialValues, form]);
 
+  // Xử lý sự kiện khi người dùng nhấn "OK" để thêm/sửa sản phẩm
   const handleAddProduct = async () => {
     try {
       const values = await form.validateFields();
@@ -23,21 +28,25 @@ const AddProductModal = ({ visible, onAdd, onCancel, initialValues }) => {
       // Chuẩn hóa dữ liệu trước khi gửi
       const formattedValues = {
         ...values,
-        KichThuoc: values.KichThuoc.map((item) => ({
-          size: item.size,
-          soLuongTon: parseInt(item.soLuongTon, 10),
-        })),
+        HinhAnh: values.HinhAnh
+          ? values.HinhAnh.split(",").map((url) => url.trim())
+          : [],
+        KichThuoc:
+          values.KichThuoc?.map((item) => ({
+            size: item?.size || 0,
+            soLuongTon: parseInt(item?.soLuongTon || "0", 10),
+          })) || [],
       };
 
-      onAdd(formattedValues);
+      onAdd(formattedValues); // Gửi dữ liệu đến callback
       message.success(
         initialValues
-          ? "Sản phẩm đã được cập nhật!"
+          ? "Sản phẩm đã được cập nhật thành công!"
           : "Sản phẩm đã được thêm thành công!"
       );
       form.resetFields();
     } catch (error) {
-      message.error("Vui lòng kiểm tra lại thông tin!");
+      message.error("Vui lòng kiểm tra lại thông tin nhập!");
     } finally {
       setIsSubmitting(false);
     }
@@ -62,21 +71,21 @@ const AddProductModal = ({ visible, onAdd, onCancel, initialValues }) => {
         <Form.Item
           name="TenSP"
           label="Tên sản phẩm"
-          rules={[{ required: true, message: "Vui lòng nhập tên sản phẩm!" }]}
+          rules={[{ required: true, message: "Vui lòng nhập Tên sản phẩm!" }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
           name="GiaBan"
           label="Giá bán"
-          rules={[{ required: true, message: "Vui lòng nhập giá bán!" }]}
+          rules={[{ required: true, message: "Vui lòng nhập Giá bán!" }]}
         >
           <InputNumber min={0} style={{ width: "100%" }} />
         </Form.Item>
         <Form.Item
           name="ThuongHieu"
           label="Thương hiệu"
-          rules={[{ required: true, message: "Vui lòng nhập thương hiệu!" }]}
+          rules={[{ required: true, message: "Vui lòng nhập Thương hiệu!" }]}
         >
           <Input />
         </Form.Item>
@@ -84,17 +93,26 @@ const AddProductModal = ({ visible, onAdd, onCancel, initialValues }) => {
           <Form.List name="KichThuoc">
             {(fields, { add, remove }) => (
               <>
-                {fields.map(({ key, name }) => (
-                  <Space key={key} style={{ display: "flex", marginBottom: 8 }}>
+                {fields.map(({ key, name, ...restField }) => (
+                  <Space
+                    key={key}
+                    style={{ display: "flex", marginBottom: 8 }}
+                    align="baseline"
+                  >
                     <Form.Item
+                      {...restField}
                       name={[name, "size"]}
                       rules={[
-                        { required: true, message: "Vui lòng nhập size!" },
+                        {
+                          required: true,
+                          message: "Vui lòng nhập kích thước!",
+                        },
                       ]}
                     >
                       <InputNumber placeholder="Kích thước" min={1} />
                     </Form.Item>
                     <Form.Item
+                      {...restField}
                       name={[name, "soLuongTon"]}
                       rules={[
                         { required: true, message: "Vui lòng nhập số lượng!" },
@@ -114,15 +132,15 @@ const AddProductModal = ({ visible, onAdd, onCancel, initialValues }) => {
         </Form.Item>
         <Form.Item
           name="HinhAnh"
-          label="Ảnh sản phẩm"
+          label="Ảnh sản phẩm (URL cách nhau bằng dấu phẩy)"
           rules={[{ required: true, message: "Vui lòng nhập URL ảnh!" }]}
         >
-          <Input />
+          <Input placeholder="Nhập URL ảnh" />
         </Form.Item>
         <Form.Item
           name="MoTa"
           label="Mô tả sản phẩm"
-          rules={[{ required: true, message: "Vui lòng nhập mô tả sản phẩm!" }]}
+          rules={[{ required: true, message: "Vui lòng nhập Mô tả sản phẩm!" }]}
         >
           <Input.TextArea rows={4} />
         </Form.Item>
