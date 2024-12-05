@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter.SanPhamAdapter;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.ThongbaodsActivity;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiService;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.RetrofitClient;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Product;
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Product> productArrayList;
     BottomNavigationView bottomNavigationView;
     TextView tvXemThem;
-    ImageView imageViewSlider; // ImageView cho slideshow
+    ImageView imageViewSlider, imageView; // ImageView cho slideshow
     ImageButton btnPrev, btnNext; // Nút điều khiển ảnh
     int[] imageList = {R.drawable.banner1, R.drawable.banner2, R.drawable.banner3}; // Danh sách ảnh slideshow
     int currentImageIndex = 0; // Chỉ mục ảnh hiện tại
@@ -56,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         btnPrev = findViewById(R.id.btnPrev); // Nút "Trước đó"
         btnNext = findViewById(R.id.btnNext); // Nút "Tiếp theo"
         setBottomNavigationView();
-
+        imageView = findViewById(R.id.imageView);
         tvXemThem = findViewById(R.id.tvXemThem);
         tvXemThem.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, Activity_SP_PhoBien.class));
@@ -89,6 +90,11 @@ public class MainActivity extends AppCompatActivity {
                 currentImageIndex = 0; // Quay lại ảnh đầu tiên
             }
             showImage();
+        });
+        imageView.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ThongbaodsActivity.class);
+            startActivity(intent);
+            finish(); // Đảm bảo không quay lại màn hình đăng nhập
         });
     }
 

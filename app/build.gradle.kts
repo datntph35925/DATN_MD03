@@ -66,7 +66,9 @@ dependencies {
     implementation ("com.airbnb.android:lottie:5.0.3")
     implementation ("io.socket:socket.io-client:2.0.0")
     implementation ("com.google.android.material:material:1.9.0")
-
+    implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation ("androidx.recyclerview:recyclerview:1.2.1")
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
 
 }

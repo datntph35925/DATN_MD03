@@ -1,5 +1,7 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.api;
 
+import android.app.Notification;
+
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Cart;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.CustomerAccount;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.DeleteCartRequest;
@@ -12,6 +14,7 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ResetPasswordReque
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.TemporaryVerificationCode;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ChatMessage;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Thongbao;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.UpdateStatusRequest;
 
 import java.util.ArrayList;
@@ -155,4 +158,12 @@ public interface ApiService {
             @Path("userId") String userId,
             @Body RemoveItemsRequest request
     );
+    // ------------------- Thong bao APIs ------------------------
+
+    @GET("routes/notifications/{tentaikhoan}")
+    Call<List<Thongbao>> getNotifications(@Path("tentaikhoan") String tentaikhoan);
+    @DELETE("routes/notifications/{id}")
+    Call<Void> deleteNotification(@Path("id") String notificationId);
+    @PUT("routes/notifications/{id}/read")  // Địa chỉ API của bạn
+    Call<Void> markNotificationAsRead(@Path("id") String notificationId);
 }
