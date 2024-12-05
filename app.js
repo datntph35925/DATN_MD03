@@ -17,7 +17,6 @@ const database = require("./config/db");
 const cors = require("cors");
 const Admin = require("./models/Admin"); // Import model Admin
 const locationRouter = require("./routes/locations");
-const paymentAuthentication = require("./routes/paymentAuthentication");
 
 const app = express();
 const server = http.createServer(app); // Tạo server từ app
@@ -28,6 +27,8 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Cấu hình để phục vụ các tệp tĩnh từ thư mục 'uploads'
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
 
 // Cài đặt view engine
 app.set("views", path.join(__dirname, "views"));
@@ -64,7 +65,6 @@ app.use("/cart", cartRouter);
 app.use("/chatRouter", chatRoutes);
 app.use("/order", orderRouter);
 app.use("/locations", locationRouter)
-app.use("/paymentAuthentication", paymentAuthentication)
 // Socket.io để xử lý chat thời gian thực
 io.on("connection", (socket) => {
   console.log("Có người dùng kết nối:", socket.id);

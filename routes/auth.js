@@ -8,7 +8,7 @@ const multer = require('multer');
 const path = require("path");
 const nodemailer = require('nodemailer');
 const Admin = require('../models/Admin'); 
-
+const Notification = require('../models/Notification'); 
 //nam anh test git
 // Cấu hình tài khoản Gmail của bạn để gửi email
 const transporter = nodemailer.createTransport({
@@ -686,6 +686,7 @@ router.post('/xacthucma-doi-matkhau', async (req, res) => {
         res.status(500).json({ message: 'Lỗi khi xác thực mã và đổi mật khẩu', error });
     }
 });
+
 // Route để đổi họ tên
 router.put('/doi-hoten', async (req, res) => {
     try {
@@ -701,7 +702,19 @@ router.put('/doi-hoten', async (req, res) => {
         user.Hoten = HotenMoi;
         await user.save();
 
-        res.status(200).json({ message: 'Họ tên đã được cập nhật thành công' });
+        // Tạo thông báo
+        const notification = new Notification({
+            tentaikhoan: Tentaikhoan,
+            title: 'Cập nhật thông tin cá nhân',
+            message: `Họ tên của bạn đã được cập nhật thành công thành: ${HotenMoi}`,
+        });
+        await notification.save();
+
+        // Phản hồi thành công
+        res.status(200).json({
+            message: 'Họ tên đã được cập nhật thành công',
+            notification, // Gửi thông báo đã tạo trong phản hồi
+        });
     } catch (error) {
         console.error('Lỗi khi đổi họ tên:', error);
         res.status(500).json({ message: 'Đã xảy ra lỗi khi đổi họ tên', error });
