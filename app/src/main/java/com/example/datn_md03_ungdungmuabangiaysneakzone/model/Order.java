@@ -2,10 +2,11 @@ package com.example.datn_md03_ungdungmuabangiaysneakzone.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Order {
+public class Order implements Serializable {
     @SerializedName("_id")
     private String id;             // Mã đơn hàng
     private String Tentaikhoan;   // Tên tài khoản người dùng
