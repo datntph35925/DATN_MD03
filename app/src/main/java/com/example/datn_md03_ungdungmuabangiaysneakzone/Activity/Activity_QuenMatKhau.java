@@ -45,9 +45,28 @@ public class Activity_QuenMatKhau extends AppCompatActivity {
         String email = edtEmail.getText().toString().trim();
 
         if (email.isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập email", Toast.LENGTH_SHORT).show();
+            edtEmail.setError("Vui lòng nhập email");
+            edtEmail.requestFocus();
             return;
         }
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            edtEmail.setError("Email không hợp lệ! Vui lòng kiểm tra lại");
+            edtEmail.requestFocus();
+            return;
+        }
+        if (email.contains(" ")) {
+            edtEmail.setError("Email không được chứa khoảng trắng!");
+            edtEmail.requestFocus();
+            return;
+        }
+
+        if (email.length() < 5) {
+            edtEmail.setError("Email quá ngắn, vui lòng kiểm tra lại!");
+            edtEmail.requestFocus();
+            return;
+        }
+
 
         // Hiển thị ProgressBar
         progressBar.setVisibility(View.VISIBLE);
