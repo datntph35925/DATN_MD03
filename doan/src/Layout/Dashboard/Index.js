@@ -8,6 +8,7 @@ import {
   BarChartOutlined,
   OrderedListOutlined,
   LogoutOutlined,
+  HistoryOutlined, // Import icon cho lịch sử giao dịch
 } from "@ant-design/icons";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
@@ -22,6 +23,7 @@ const Dashboard = () => {
     if (location.pathname.startsWith("/products")) return "3";
     if (location.pathname.startsWith("/chat")) return "4";
     if (location.pathname.startsWith("/quanlydonhang")) return "5";
+    if (location.pathname.startsWith("/transaction-history")) return "6"; // Thêm điều kiện cho mục lịch sử giao dịch
     return "";
   };
 
@@ -57,6 +59,7 @@ const Dashboard = () => {
       <Menu.Item key="4" icon={<BarChartOutlined />}>
         <Link to="/chat">Hỗ trợ khách hàng</Link>
       </Menu.Item>
+
       <Menu.SubMenu
         key="5"
         icon={<OrderedListOutlined />}
@@ -75,6 +78,9 @@ const Dashboard = () => {
           <Link to="/quanlydonhang/huy">Đã hủy</Link>
         </Menu.Item>
       </Menu.SubMenu>
+      <Menu.Item key="6" icon={<HistoryOutlined />}>
+        <Link to="/lichsugiaodich">Lịch sử giao dịch</Link>
+      </Menu.Item>
       <Menu.Item key="7" icon={<LogoutOutlined />} onClick={handleLogout}>
         Đăng xuất
       </Menu.Item>

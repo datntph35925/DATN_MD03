@@ -40,7 +40,7 @@ const OrderDetailModal = ({ visible, onClose, order }) => {
           {/* Thông tin chung của đơn hàng */}
           <Descriptions bordered column={1}>
             <Descriptions.Item label="Mã Đơn hàng">
-              {order.orderId || "N/A"}
+              {order.MaDonHang || "N/A"}
             </Descriptions.Item>
             <Descriptions.Item label="Tên Người nhận">
               {order.TenNguoiNhan || "N/A"}
@@ -64,6 +64,9 @@ const OrderDetailModal = ({ visible, onClose, order }) => {
             </Descriptions.Item>
             <Descriptions.Item label="Tổng số lượng">
               {order.TongSoLuong || "N/A"}
+            </Descriptions.Item>
+            <Descriptions.Item label="Mã Voucher">
+              {order.Voucher || "đéo cho sử dụng"}
             </Descriptions.Item>
             <Descriptions.Item label="Tổng tiền">
               {order.TongTien
