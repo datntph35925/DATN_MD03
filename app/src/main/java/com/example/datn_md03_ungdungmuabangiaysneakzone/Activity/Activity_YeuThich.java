@@ -1,29 +1,40 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.datn_md03_ungdungmuabangiaysneakzone.Demo.YeuThichAdapter_Demo;
-import com.example.datn_md03_ungdungmuabangiaysneakzone.Demo.YeuThich_Demo;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter.FavoriteAdapter;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiService;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.api.RetrofitClient;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Favorite;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
 import java.util.ArrayList;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+
 public class Activity_YeuThich extends AppCompatActivity {
 
     BottomNavigationView bottomNavigationView;
+    RecyclerView rcvYT;
+    FavoriteAdapter favoriteAdapter;
+    ApiService apiService;
+    String email;
+    ArrayList<Favorite> favoriteArrayList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,19 +43,45 @@ public class Activity_YeuThich extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottomnavigation);
         setBottomNavigationView();
 
-        RecyclerView recyclerView = findViewById(R.id.rcvYeuThich_YT);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        rcvYT = findViewById(R.id.rcvYeuThich_YT);
+        rcvYT.setLayoutManager(new GridLayoutManager(this, 2));
+        favoriteArrayList = new ArrayList<>();
 
-        ArrayList<YeuThich_Demo> shoeList = new ArrayList<>();
-        shoeList.add(new YeuThich_Demo("Nike Jordan", 58.7, R.drawable.nice_shoe));
-        shoeList.add(new YeuThich_Demo("Nike Air Max", 37.8, R.drawable.nice_shoe));
-        shoeList.add(new YeuThich_Demo("Nike Club Max", 47.7, R.drawable.nice_shoe));
+        Log.d("CartAdapter", "Current Quantity: " + favoriteArrayList);
 
+        apiService = RetrofitClient.getClient().create(ApiService.class);
 
-        YeuThichAdapter_Demo adapter = new YeuThichAdapter_Demo(shoeList);
-        recyclerView.setAdapter(adapter);
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        email = sharedPreferences.getString("Tentaikhoan", ""); // Retrieve the email
+
+        getListFavorite();
     }
 
+//    favoriteArrayList = response.body().getData();
+//    favoriteAdapter = new FavoriteAdapter(Activity_YeuThich.this, favoriteArrayList);
+//                    rcvYT.setAdapter(favoriteAdapter);
+
+    private void getListFavorite() {
+        Call<Response<ArrayList<Favorite>>> call = apiService.getFavorites(email);
+        call.enqueue(new Callback<Response<ArrayList<Favorite>>>() {
+            @Override
+            public void onResponse(Call<Response<ArrayList<Favorite>>> call, retrofit2.Response<Response<ArrayList<Favorite>>> response) {
+                if(response.isSuccessful() && response.body() != null){
+                  favoriteArrayList = response.body().getData();
+                  favoriteAdapter = new FavoriteAdapter(Activity_YeuThich.this, favoriteArrayList);
+                  rcvYT.setAdapter(favoriteAdapter);
+                } else {
+                    Toast.makeText(Activity_YeuThich.this, "Lỗi khi lấy danh sách sản phẩm yêu thích", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Response<ArrayList<Favorite>>> call, Throwable t) {
+                Toast.makeText(Activity_YeuThich.this, "looi", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
 
     public void setBottomNavigationView() {
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
@@ -61,6 +98,5 @@ public class Activity_YeuThich extends AppCompatActivity {
             }
         });
         bottomNavigationView.setSelectedItemId(R.id.yeuthich);
-
     }
 }

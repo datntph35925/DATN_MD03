@@ -1,59 +1,29 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.model;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.util.List;
 
-public class Product {
-    @SerializedName("_id")  //trường -id nhận từ id của api
-    private String id;
-    private String Masanpham;
+public class ProductYeuThich {
+    private String MaSanPham;
     private String TenSP;
     private String Thuonghieu;
     private List<KichThuoc> KichThuoc;
     private double GiaBan;
     private String MoTa;
     private List<String> HinhAnh;
-    private boolean TrangThaiYeuThich;
+    private Boolean TrangThaiYeuThich;
 
-    public boolean isTrangThaiYeuThich() {
-        return TrangThaiYeuThich;
+    public ProductYeuThich() {
     }
 
-    public void setTrangThaiYeuThich(boolean trangThaiYeuThich) {
-        TrangThaiYeuThich = trangThaiYeuThich;
-    }
-
-    public Product() {
-    }
-
-
-    public Product(double giaBan, List<String> hinhAnh, String id, List<com.example.datn_md03_ungdungmuabangiaysneakzone.model.KichThuoc> kichThuoc, String masanpham, String moTa, String tenSP, String thuonghieu, boolean trangThaiYeuThich) {
+    public ProductYeuThich(double giaBan, List<String> hinhAnh, List<com.example.datn_md03_ungdungmuabangiaysneakzone.model.KichThuoc> kichThuoc, String masanpham, String moTa, String tenSP, String thuonghieu, Boolean trangThaiYeuThich) {
         GiaBan = giaBan;
         HinhAnh = hinhAnh;
-        this.id = id;
         KichThuoc = kichThuoc;
-        Masanpham = masanpham;
+        MaSanPham = masanpham;
         MoTa = moTa;
         TenSP = tenSP;
         Thuonghieu = thuonghieu;
         TrangThaiYeuThich = trangThaiYeuThich;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public List<KichThuoc> getKichThuoc() {
-        return KichThuoc;
-    }
-
-    public void setKichThuoc(List<KichThuoc> kichThuoc) {
-        KichThuoc = kichThuoc;
     }
 
     public double getGiaBan() {
@@ -72,14 +42,21 @@ public class Product {
         HinhAnh = hinhAnh;
     }
 
+    public List<com.example.datn_md03_ungdungmuabangiaysneakzone.model.KichThuoc> getKichThuoc() {
+        return KichThuoc;
+    }
+
+    public void setKichThuoc(List<com.example.datn_md03_ungdungmuabangiaysneakzone.model.KichThuoc> kichThuoc) {
+        KichThuoc = kichThuoc;
+    }
+
     public String getMasanpham() {
-        return Masanpham;
+        return MaSanPham;
     }
 
     public void setMasanpham(String masanpham) {
-        Masanpham = masanpham;
+        MaSanPham = masanpham;
     }
-
 
     public String getMoTa() {
         return MoTa;
@@ -88,7 +65,6 @@ public class Product {
     public void setMoTa(String moTa) {
         MoTa = moTa;
     }
-
 
     public String getTenSP() {
         return TenSP;
@@ -106,4 +82,11 @@ public class Product {
         Thuonghieu = thuonghieu;
     }
 
+    public Boolean getTrangThaiYeuThich() {
+        return TrangThaiYeuThich;
+    }
+
+    public void setTrangThaiYeuThich(Boolean trangThaiYeuThich) {
+        TrangThaiYeuThich = trangThaiYeuThich;
+    }
 }

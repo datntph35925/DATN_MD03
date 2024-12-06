@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,9 +24,12 @@ public class ThanhToanAdapter extends RecyclerView.Adapter<ThanhToanAdapter.View
     private Context context;
     private List<ProductItemCart> productItemList;
 
-    public ThanhToanAdapter(Context context, List<ProductItemCart> productItemList) {
+    private boolean isOrderDelivered;
+
+    public ThanhToanAdapter(Context context, List<ProductItemCart> productItemList, boolean isOrderDelivered) {
         this.context = context;
         this.productItemList = productItemList;
+        this.isOrderDelivered = isOrderDelivered;
     }
     @NonNull
     @Override
@@ -43,6 +47,12 @@ public class ThanhToanAdapter extends RecyclerView.Adapter<ThanhToanAdapter.View
         holder.tvProductSize.setText(String.format("Size: %d", item.getSize()));
 
         Glide.with(context).load(item.getHinhAnh().get(0)).into(holder.imgProduct);
+
+        if (isOrderDelivered) {
+            holder.edDanhGia.setVisibility(View.GONE);  // Hoặc View.INVISIBLE
+        } else {
+            holder.edDanhGia.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -53,6 +63,7 @@ public class ThanhToanAdapter extends RecyclerView.Adapter<ThanhToanAdapter.View
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvProductName, tvProductQuantity, tvProductPrice, tvProductSize;
         ImageView imgProduct;
+        EditText edDanhGia;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvProductName = itemView.findViewById(R.id.NameProduct_dt);
@@ -60,6 +71,8 @@ public class ThanhToanAdapter extends RecyclerView.Adapter<ThanhToanAdapter.View
             tvProductPrice = itemView.findViewById(R.id.priceOrder_dt);
             tvProductSize = itemView.findViewById(R.id.tvSize_dt);
             imgProduct = itemView.findViewById(R.id.img_Order_Dt);
+
+            edDanhGia = itemView.findViewById(R.id.edDanhGia);
         }
     }
 }

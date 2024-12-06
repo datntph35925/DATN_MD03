@@ -1,20 +1,20 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.api;
 
-import android.app.Notification;
-
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Cart;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.CustomerAccount;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.DeleteCartRequest;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Favorite;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.FavoriteAdd;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Location;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.LocationRequest;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Order;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.PaymentAuthentication;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Product;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.RemoveItemsRequest;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ResetPasswordRequest;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.TemporaryVerificationCode;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ChatMessage;
-import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Thongbao;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.UpdateStatusRequest;
 
 import java.util.ArrayList;
@@ -158,12 +158,18 @@ public interface ApiService {
             @Path("userId") String userId,
             @Body RemoveItemsRequest request
     );
-    // ------------------- Thong bao APIs ------------------------
 
-    @GET("routes/notifications/{tentaikhoan}")
-    Call<List<Thongbao>> getNotifications(@Path("tentaikhoan") String tentaikhoan);
-    @DELETE("routes/notifications/{id}")
-    Call<Void> deleteNotification(@Path("id") String notificationId);
-    @PUT("routes/notifications/{id}/read")  // Địa chỉ API của bạn
-    Call<Void> markNotificationAsRead(@Path("id") String notificationId);
+    @GET("/favorite/get-favorites/{Tentaikhoan}")
+    Call<Response<ArrayList<Favorite>>> getFavorites(@Path("Tentaikhoan") String tentaikhoan);
+
+    @GET("/favorite/get-favorite-status/{Tentaikhoan}/{SanPhamId}")
+    Call<Response> getFavoriteStatus(@Path("Tentaikhoan") String tentaikhoan, @Path("SanPhamId") String sanPhamId);
+
+    // Cập nhật trạng thái yêu thích cho sản phẩm (thêm/xóa)
+    @PUT("/favorite/update-favorite-status/{Tentaikhoan}/{SanPhamId}")
+    Call<Response> updateFavoriteStatus(@Path("Tentaikhoan") String tentaikhoan, @Path("SanPhamId") String sanPhamId, @Body FavoriteAdd request);
+
+    //xác thực thanh toán
+    @POST("/paymentAuthentication/add-paymentauthentication")
+    Call<PaymentAuthentication> addPaymentAuthentication(@Body PaymentAuthentication request);
 }

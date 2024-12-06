@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -38,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -55,10 +57,12 @@ public class Activity_ThanhToan extends AppCompatActivity {
     LinearLayout lrlAddress, lraddressGone;
     private ArrayList<String> maSPList;
     private ArrayList<Integer> sizeList;// Mảng chứa các maSP
-    AppCompatButton btnOrder;
-    String email, name, address, phone;
+    AppCompatButton btnOrder ;
+    String email, name, address, phone, result;
     ApiService apiService;
     Order order;
+
+    EditText edVoicher;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +78,7 @@ public class Activity_ThanhToan extends AppCompatActivity {
         imgAddress = findViewById(R.id.imgChooseAddress);
         lrlAddress = findViewById(R.id.lraddress);
         lraddressGone = findViewById(R.id.idlr_gone);
+        edVoicher = findViewById(R.id.edtVoicher);
 
         btnOrder = findViewById(R.id.btnOrder);
         poppuGetListPayment();
@@ -87,6 +92,7 @@ public class Activity_ThanhToan extends AppCompatActivity {
         maSPList = new ArrayList<>();
         sizeList = new ArrayList<>();
 
+        layMaDonHang();
         sizeList = getIntent().getIntegerArrayListExtra("sizeList");
         maSPList = getIntent().getStringArrayListExtra("maSPList");
 
@@ -104,7 +110,7 @@ public class Activity_ThanhToan extends AppCompatActivity {
         });
 
         if (selectedCartItems != null && !selectedCartItems.isEmpty()) {
-            ThanhToanAdapter adapter = new ThanhToanAdapter(this, selectedCartItems);
+            ThanhToanAdapter adapter = new ThanhToanAdapter(this, selectedCartItems, true);
             rcvThanhToan.setLayoutManager(new LinearLayoutManager(this));
             rcvThanhToan.setAdapter(adapter);
 
@@ -118,39 +124,96 @@ public class Activity_ThanhToan extends AppCompatActivity {
         btnOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                double totalCost = Double.parseDouble(tvTotalCost.getText().toString().replace("$", "").trim());
-
-                order = new Order();
-                order.setSelectedProducts(maSPList);
-                order.setTenNguoiNhan(name);
-                order.setDiaChiGiaoHang(address);
-                order.setSoDienThoai(phone);
-                order.setPhuongThucThanhToan(tvPayMent.getText().toString());
-                order.setTongTien(totalCost);
-
-                Call<Order> call = apiService.createOrderFromCart(email, order);
-                call.enqueue(new Callback<Order>() {
-                    @Override
-                    public void onResponse(Call<Order> call, Response<Order> response) {
-                        if (response.isSuccessful()) {
-                            // Đơn hàng được tạo thành công
-                            removeCartItem();
-                            startActivity(new Intent(Activity_ThanhToan.this, MainActivity.class));
-                            Toast.makeText(Activity_ThanhToan.this, "Order thành công", Toast.LENGTH_SHORT).show();
-                        } else {
-                            // Xử lý lỗi khi tạo đơn hàng
-                            Toast.makeText(Activity_ThanhToan.this, "Failed to place order. Please try again.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Order> call, Throwable t) {
-                        Toast.makeText(Activity_ThanhToan.this, "Network error. Please try again.", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                handleOrder();
             }
         });
 
+    }
+
+    private void handleOrder() {
+        order = new Order();
+        order.setSelectedProducts(maSPList);
+        order.setTenNguoiNhan(name);
+        order.setDiaChiGiaoHang(address);
+        order.setSoDienThoai(phone);
+        order.setPhuongThucThanhToan(tvPayMent.getText().toString());
+        order.setVoucher(edVoicher.getText().toString());
+        order.setMaDonHang(result);
+
+        // Thêm email vào order
+        order.setTentaikhoan(email);
+        double totalCost = Double.parseDouble(tvTotalCost.getText().toString().replace("$", "").trim());
+        order.setTongTien(totalCost);
+
+        if (tvPayMent.getText().toString().equals("Thanh toán qua ngân hàng")) {
+            // Xử lý thanh toán qua ngân hàng
+            order.setMaDonHang(result);
+            double amount = order.getTongTien(); // Tổng tiền
+//            String description = email + " - " + phone; // Tên tài khoản và số điện thoại
+            String description = order.getMaDonHang();
+            String accountName = "Mua Ban Giay SneakZone"; // Tên tài khoản ngân hàng
+
+            //lấy mã đơn hàng chuyền vào
+            // Tạo URL mã QR
+            String qrUrl = generateVietQRUrl(amount, description, accountName);
+
+            Log.d("qUrl", "Current Quantity: " + qrUrl);
+            // Mở Activity hiển thị QR Code
+            Intent intent = new Intent(Activity_ThanhToan.this, QRCodeCartActivity.class);
+            intent.putExtra("order", order);  // Truyền đối tượng order
+            intent.putExtra("qrUrl", qrUrl);  // Truyền mã QR
+            startActivity(intent);
+
+        } else if (tvPayMent.getText().toString().equals("Thanh toán khi nhận hàng (COD)")) {
+            // Lưu đơn hàng vào database
+            saveOrderToDatabase();
+        }
+    }
+
+    private String generateVietQRUrl(double amount, String description, String accountName) {
+        String bankId = "970423"; // BANK_ID
+        String accountNo = "0384191830"; // ACCOUNT_NO
+        String template = "print"; // TEMPLATE
+
+        return "https://img.vietqr.io/image/" + bankId + "-" + accountNo + "-" + template + ".png"
+                + "?amount=" + amount
+                + "&addInfo=" + description
+                + "&accountName=" + accountName;
+    }
+
+    private void saveOrderToDatabase() {
+        double totalCost = Double.parseDouble(tvTotalCost.getText().toString().replace("$", "").trim());
+
+        order = new Order();
+        order.setSelectedProducts(maSPList);
+        order.setTenNguoiNhan(name);
+        order.setDiaChiGiaoHang(address);
+        order.setSoDienThoai(phone);
+        order.setPhuongThucThanhToan(tvPayMent.getText().toString());
+        order.setTongTien(totalCost);
+        order.setVoucher(edVoicher.getText().toString());
+        order.setMaDonHang(result);
+
+        Call<Order> call = apiService.createOrderFromCart(email, order);
+        call.enqueue(new Callback<Order>() {
+            @Override
+            public void onResponse(Call<Order> call, Response<Order> response) {
+                if (response.isSuccessful()) {
+                    // Đơn hàng được tạo thành công
+                    removeCartItem();
+                    startActivity(new Intent(Activity_ThanhToan.this, MainActivity.class));
+                    Toast.makeText(Activity_ThanhToan.this, "Order thành công", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Xử lý lỗi khi tạo đơn hàng
+                    Toast.makeText(Activity_ThanhToan.this, "Failed to place order. Please try again.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Order> call, Throwable t) {
+                Toast.makeText(Activity_ThanhToan.this, "Network error. Please try again.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void removeCartItem(){
@@ -183,6 +246,32 @@ public class Activity_ThanhToan extends AppCompatActivity {
         });
     }
 
+
+    private void layMaDonHang() {
+// Kiểm tra email có hợp lệ không
+        if (email != null && email.length() >= 4) {
+            // Lấy 4 ký tự đầu tiên của email
+            String firstFourChars = email.substring(0, 4).toUpperCase();;
+
+            // Tạo đối tượng Random
+            Random random = new Random();
+
+            // Tạo 4 chữ số ngẫu nhiên
+            StringBuilder randomDigits = new StringBuilder();
+            for (int i = 0; i < 4; i++) {
+                randomDigits.append(random.nextInt(10)); // Thêm một chữ số ngẫu nhiên (0-9)
+            }
+
+            // Ghép 4 ký tự đầu tiên với 4 chữ số ngẫu nhiên
+            result = firstFourChars + randomDigits.toString();
+
+            // In ra kết quả
+            Log.d("RandomString", "Kết quả: " + result);
+        } else {
+            Log.d("Error", "Email không hợp lệ hoặc quá ngắn.");
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -210,7 +299,7 @@ public class Activity_ThanhToan extends AppCompatActivity {
     }
 
     private void poppuGetListPayment() {
-        String[] listPayment = {"Thanh toán khi nhận hàng (COD)", "Thanh toán với PayPal"};
+        String[] listPayment = {"Thanh toán khi nhận hàng (COD)", "Thanh toán qua ngân hàng"};
         tvPayMent.setOnClickListener(view -> {
             PopupMenu popupMenu = new PopupMenu(Activity_ThanhToan.this, tvPayMent);
             for (String address : listPayment) {

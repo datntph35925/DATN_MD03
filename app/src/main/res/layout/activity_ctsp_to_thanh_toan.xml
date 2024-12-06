@@ -210,7 +210,6 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/txt7"
                     style="@style/textStyleBold"
-
                     android:text="Total"
                     app:layout_constraintStart_toStartOf="@+id/txt5"
                     android:layout_marginTop="8dp"
@@ -232,6 +231,16 @@
                     app:layout_constraintTop_toTopOf="@id/txt7"
                     style="@style/textStyleBold"
                     android:text="VND"/>
+
+                <EditText
+                    android:id="@+id/edtVoicher"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Ma voicher"
+                    app:layout_constraintTop_toTopOf="@+id/txt7"
+                    app:layout_constraintStart_toStartOf="@+id/View"
+                    android:layout_marginTop="40dp"
+                    />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!--            <TextView-->

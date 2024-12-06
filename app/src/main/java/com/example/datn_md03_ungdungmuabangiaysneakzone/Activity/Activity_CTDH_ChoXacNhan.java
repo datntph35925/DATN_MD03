@@ -141,7 +141,7 @@ public class Activity_CTDH_ChoXacNhan extends AppCompatActivity {
         sanPhamList = (ArrayList<ProductItemCart>) intent.getSerializableExtra("order_sp");
 
         // Cấu hình RecyclerView để hiển thị danh sách sản phẩm
-        thanhToanAdapter = new ThanhToanAdapter(this, sanPhamList);
+        thanhToanAdapter = new ThanhToanAdapter(this, sanPhamList, true);
         rcvCTSP_ChoXacNhan.setLayoutManager(new LinearLayoutManager(this));
         rcvCTSP_ChoXacNhan.setAdapter(thanhToanAdapter);
     }

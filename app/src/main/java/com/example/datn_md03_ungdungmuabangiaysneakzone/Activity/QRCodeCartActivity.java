@@ -8,7 +8,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
@@ -21,18 +25,25 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class QRCodeActivity extends AppCompatActivity {
+public class QRCodeCartActivity extends AppCompatActivity {
 
     private ImageView imgQRCode;
     private Button btnConfirmPayment;
     private TextView tvOrderDetails;
     private Order order;
     private ApiService apiService;
+
     String email;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_qrcode);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_qrcode_cart);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
         // Khởi tạo các thành phần giao diện
         imgQRCode = findViewById(R.id.imgQRCode);
@@ -44,10 +55,8 @@ public class QRCodeActivity extends AppCompatActivity {
         String qrUrl = intent.getStringExtra("qrUrl");
         order = (Order) intent.getSerializableExtra("order");
 
-        // Hiển thị mã QR
         Glide.with(this).load(qrUrl).into(imgQRCode);
 
-        // Hiển thị thông tin chi tiết đơn hàng
         if (order != null) {
             tvOrderDetails.setText("Tên người nhận: " + order.getTenNguoiNhan() +
                     "\nĐịa chỉ giao hàng: " + order.getDiaChiGiaoHang() +
@@ -71,28 +80,28 @@ public class QRCodeActivity extends AppCompatActivity {
 
             // Gọi API tạo đơn hàng
             ApiService apiService = RetrofitClient.getClient().create(ApiService.class); // Khởi tạo apiService
-            Call<Order> call = apiService.createOrder(email, order); // Truyền email vào API call
+            Call<Order> call = apiService.createOrderFromCart(email, order); // Truyền email vào API call
             // Thực hiện gọi API
             call.enqueue(new Callback<Order>() {
                 @Override
                 public void onResponse(Call<Order> call, Response<Order> response) {
                     if (response.isSuccessful()) {
-                        Toast.makeText(QRCodeActivity.this, "Order thành công", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(QRCodeCartActivity.this, "Order thành công", Toast.LENGTH_SHORT).show();
                         finish();
-                        startActivity(new Intent(QRCodeActivity.this, MainActivity.class));
+                        startActivity(new Intent(QRCodeCartActivity.this, MainActivity.class));
 
                     } else {
-                        Toast.makeText(QRCodeActivity.this, "Failed to place order. Please try again.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(QRCodeCartActivity.this, "Failed to place order. Please try again.", Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<Order> call, Throwable t) {
-                    Toast.makeText(QRCodeActivity.this, "Network error. Please try again.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(QRCodeCartActivity.this, "Network error. Please try again.", Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
-            Toast.makeText(QRCodeActivity.this, "Đơn hàng không hợp lệ!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(QRCodeCartActivity.this, "Đơn hàng không hợp lệ!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -109,15 +118,15 @@ public class QRCodeActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<PaymentAuthentication> call, Response<PaymentAuthentication> response) {
                 if(response.isSuccessful()){
-                    Toast.makeText(QRCodeActivity.this, "Xác thực thành công", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(QRCodeCartActivity.this, "Xác thực thành công", Toast.LENGTH_SHORT).show();
                 }else{
-                    Toast.makeText(QRCodeActivity.this, "Xác thực thất bại", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(QRCodeCartActivity.this, "Xác thực thất bại", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<PaymentAuthentication> call, Throwable t) {
-                Toast.makeText(QRCodeActivity.this, "Looix", Toast.LENGTH_SHORT).show();
+                Toast.makeText(QRCodeCartActivity.this, "Looix", Toast.LENGTH_SHORT).show();
             }
         });
     }

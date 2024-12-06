@@ -83,7 +83,7 @@ public class Activity_CTDH_DaGiao extends AppCompatActivity {
         // Lấy danh sách sản phẩm từ Intent và hiển thị trong RecyclerView
         sanPhamList = new ArrayList<>();
         sanPhamList = (ArrayList<ProductItemCart>) intent.getSerializableExtra("order_sp");
-        thanhToanAdapter = new ThanhToanAdapter(this, sanPhamList);
+        thanhToanAdapter = new ThanhToanAdapter(this, sanPhamList, false);
         rcvCTSP_DaGiao.setLayoutManager(new LinearLayoutManager(this)); // Cài đặt layout dọc
         rcvCTSP_DaGiao.setAdapter(thanhToanAdapter); // Liên kết adapter với RecyclerView
     }

@@ -3,9 +3,11 @@ package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -24,6 +26,7 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ProductItemCart;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,11 +40,13 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
     private LinearLayout lrlAddress, lraddressGone;
     private Button btnOrder;
 
+    EditText edtVoicher;
     private Order order;
     private String name, address, phone, email;
     private ApiService apiService;
     private ProductItemCart productItem;
 
+    String result;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +76,8 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
 
         // Xử lý khi bấm nút "Đặt hàng"
         btnOrder.setOnClickListener(view -> handleOrder());
+
+        layMaDonHang();
     }
 
     private void initializeViews() {
@@ -88,6 +95,7 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
         btnOrder = findViewById(R.id.btnOrder_CTSP);
         lrlAddress = findViewById(R.id.lraddress);
         lraddressGone = findViewById(R.id.idlr_gone);
+        edtVoicher = findViewById(R.id.edtVoicher);
         apiService = RetrofitClient.getClient().create(ApiService.class);
         order = new Order();
     }
@@ -145,19 +153,26 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
         order.setDiaChiGiaoHang(address);
         order.setSoDienThoai(phone);
         order.setPhuongThucThanhToan(tvPaymentMethods.getText().toString());
+        order.setVoucher(edtVoicher.getText().toString());
+        order.setMaDonHang(result);
 
+        order.setTongTien(productItem.getTongTien());
         // Thêm email vào order
         order.setTentaikhoan(email);
 
         if (tvPaymentMethods.getText().toString().equals("Thanh toán qua ngân hàng")) {
             // Xử lý thanh toán qua ngân hàng
+            order.setMaDonHang(result);
             double amount = productItem.getTongTien(); // Tổng tiền
-            String description = email + " - " + phone; // Tên tài khoản và số điện thoại
+//            String description = email + " - " + phone; // Tên tài khoản và số điện thoại
+            String description = order.getMaDonHang();
             String accountName = "Mua Ban Giay SneakZone"; // Tên tài khoản ngân hàng
 
+            //lấy mã đơn hàng chuyền vào
             // Tạo URL mã QR
             String qrUrl = generateVietQRUrl(amount, description, accountName);
 
+            Log.d("qUrl", "Current Quantity: " + qrUrl);
             // Mở Activity hiển thị QR Code
             Intent intent = new Intent(ActivityCTSP_To_ThanhToan.this, QRCodeActivity.class);
             intent.putExtra("order", order);  // Truyền đối tượng order
@@ -167,6 +182,31 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
         } else if (tvPaymentMethods.getText().toString().equals("Thanh toán khi nhận hàng (COD)")) {
             // Lưu đơn hàng vào database
             saveOrderToDatabase();
+        }
+    }
+
+    private void layMaDonHang() {
+// Kiểm tra email có hợp lệ không
+        if (email != null && email.length() >= 4) {
+            // Lấy 4 ký tự đầu tiên của email
+            String firstFourChars = email.substring(0, 4).toUpperCase();;
+
+            // Tạo đối tượng Random
+            Random random = new Random();
+
+            // Tạo 4 chữ số ngẫu nhiên
+            StringBuilder randomDigits = new StringBuilder();
+            for (int i = 0; i < 4; i++) {
+                randomDigits.append(random.nextInt(10)); // Thêm một chữ số ngẫu nhiên (0-9)
+            }
+
+            // Ghép 4 ký tự đầu tiên với 4 chữ số ngẫu nhiên
+             result = firstFourChars + randomDigits.toString();
+
+            // In ra kết quả
+            Log.d("RandomString", "Kết quả: " + result);
+        } else {
+            Log.d("Error", "Email không hợp lệ hoặc quá ngắn.");
         }
     }
 
