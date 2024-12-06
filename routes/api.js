@@ -150,6 +150,37 @@ router.delete("/delete-product-by-id/:id", async (req, res) => {
   });
 
 
+  router.put('/update-product-trangThai-by-id/:id', async (req, res) => {
+    try {
+        const {id} = req.params
+        const data = req.body; // lấy dữ liệu từ body
+        const updateProduct = await Products.findById(id)
+        let result = null;
+        if(updateProduct){
+          updateProduct.TrangThaiYeuThich = data.TrangThaiYeuThich ?? updateProduct.TrangThaiYeuThich,
+            result = await updateProduct.save();
+        }
+        if(result)
+        {
+        // Nếu thêm thành công result Inull trở về dữ liệu
+            res.json({
+                "status": 200,
+                "messenger": "Cập nhật thành công",
+                "data": result
+            })
+        }else{
+            // Nếu thêm không thành công result null, thông báo không thành công
+            res.json({
+                "status": 400,
+                "messenger": "Lỗi, Cập nhật không thành công",
+                "data":[]
+            })
+        }
+    } catch (error) {
+        console.log(error);
+    }
+  });
+
 router.get('/get-product-by-id/:id', async (req, res) => {
   try {
     const { id } = req.params; // Lấy id từ params
