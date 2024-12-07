@@ -177,8 +177,13 @@ public interface ApiService {
     // ------------------- Thong bao APIs ------------------------
     @GET("routes/notifications/{tentaikhoan}")
     Call<List<Thongbao>> getNotifications(@Path("tentaikhoan") String tentaikhoan);
+
     @DELETE("routes/notifications/{id}")
     Call<Void> deleteNotification(@Path("id") String notificationId);
+
     @PUT("routes/notifications/{id}/read")  // Địa chỉ API của bạn
     Call<Void> markNotificationAsRead(@Path("id") String notificationId);
+
+    @GET("routes/notifications/{tentaikhoan}/tongtb")
+    Call<ApiResponse> getUnreadNotificationCount(@Path("tentaikhoan") String tentaikhoan);
 }

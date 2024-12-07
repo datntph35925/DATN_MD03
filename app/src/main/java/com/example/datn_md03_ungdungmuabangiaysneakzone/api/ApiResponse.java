@@ -6,12 +6,13 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ChatMessage;
 import java.util.List;
 
 public class ApiResponse<T> {
-    private boolean success; // Trường success được thêm từ phần Stashed changes
-    private String message; // Thông báo từ server
-    private String token; // Token nếu API đăng nhập trả về
-    private String id; // ID được trả về từ server
+    private boolean success; // Trường success
+    private String message;  // Thông báo từ server
+    private String token;    // Token nếu API đăng nhập trả về
+    private String id;       // ID được trả về từ server
     private CustomerAccount data; // Dữ liệu chi tiết của tài khoản khách hàng
     private List<ChatMessage> messages; // Danh sách tin nhắn từ server
+    private int unreadCount; // Thêm trường unreadCount để lưu số lượng thông báo chưa đọc
 
     // Getters và Setters
     public boolean isSuccess() {
@@ -60,5 +61,13 @@ public class ApiResponse<T> {
 
     public void setMessages(List<ChatMessage> messages) {
         this.messages = messages;
+    }
+
+    public int getUnreadCount() {
+        return unreadCount;
+    }
+
+    public void setUnreadCount(int unreadCount) {
+        this.unreadCount = unreadCount;
     }
 }

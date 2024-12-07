@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="To SneakerZone"
+                android:text="To SneakeZone"
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 android:textSize="20sp"
@@ -52,11 +52,25 @@
                 android:id="@+id/imageView"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/bell"
                 android:contentDescription="Notification Bell" />
+
+            <!-- Notification Badge (Unread Count) -->
+            <TextView
+                android:id="@+id/hienthiso"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:gravity="center"
+                android:text="5"
+                android:textColor="#FF0000"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="@id/imageView"
+                app:layout_constraintTop_toTopOf="@id/imageView" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- EditText tìm kiếm -->
@@ -176,4 +190,3 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/menu" />
 </androidx.constraintlayout.widget.ConstraintLayout>
-

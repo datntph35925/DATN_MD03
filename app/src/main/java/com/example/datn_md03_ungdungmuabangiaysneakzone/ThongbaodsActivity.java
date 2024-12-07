@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -26,8 +27,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.datn_md03_ungdungmuabangiaysneakzone.Activity.Activity_SP_PhoBien;
-import com.example.datn_md03_ungdungmuabangiaysneakzone.Activity.DangNhap;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Activity.MainActivity;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter.NotificationAdapter;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiService;
@@ -43,12 +42,17 @@ import retrofit2.Response;
 
 public class ThongbaodsActivity extends AppCompatActivity {
 
-    private ImageButton btnExit ;
+    private ImageButton btnExit;
     private RecyclerView recyclerView;
     private NotificationAdapter notificationAdapter;
     private List<Thongbao> thongbaoList = new ArrayList<>();
     private SwipeRefreshLayout swipeRefreshLayout;
     private String email;
+    private Handler handler;
+    private Runnable refreshRunnable;
+
+    // Thời gian tải lại dữ liệu (mili giây)
+    private static final long REFRESH_INTERVAL = 1000; //
 
     // Khai báo CHANNEL_ID cho kênh thông báo
     private static final String CHANNEL_ID = "my_notification_channel";
@@ -74,6 +78,7 @@ public class ThongbaodsActivity extends AppCompatActivity {
             Toast.makeText(this, "Không tìm thấy thông tin tài khoản!", Toast.LENGTH_SHORT).show();
             return;
         }
+
         // Kiểm tra quyền POST_NOTIFICATIONS
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
@@ -82,7 +87,6 @@ public class ThongbaodsActivity extends AppCompatActivity {
                         new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1);
             }
         }
-
 
         // Lấy các view cần thiết
         btnExit = findViewById(R.id.btnExit);
@@ -109,13 +113,11 @@ public class ThongbaodsActivity extends AppCompatActivity {
                 Toast.makeText(ThongbaodsActivity.this, "Không thể xóa thông báo: ID không hợp lệ", Toast.LENGTH_SHORT).show();
             }
         });
-        btnExit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ThongbaodsActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish(); // Đảm bảo không quay lại màn hình đăng nhập
-            }
+
+        btnExit.setOnClickListener(view -> {
+            Intent intent = new Intent(ThongbaodsActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish(); // Đảm bảo không quay lại màn hình đăng nhập
         });
 
         recyclerView.setAdapter(notificationAdapter);
@@ -123,14 +125,25 @@ public class ThongbaodsActivity extends AppCompatActivity {
         // Cấu hình SwipeRefreshLayout
         swipeRefreshLayout.setOnRefreshListener(() -> loadNotifications(email));
 
-        // Gọi API để tải thông báo
+        // Gọi API để tải thông báo ban đầu
         loadNotifications(email);
+
+        // Khởi động Handler để tải dữ liệu định kỳ
+        handler = new Handler();
+        refreshRunnable = new Runnable() {
+            @Override
+            public void run() {
+                loadNotifications(email); // Gọi API tải dữ liệu
+                handler.postDelayed(this, REFRESH_INTERVAL); // Lặp lại sau REFRESH_INTERVAL
+            }
+        };
+        handler.post(refreshRunnable); // Bắt đầu tải dữ liệu
     }
 
-    private void loadNotifications(String tentaikhoan) {
+    private void loadNotifications(String email) {
         ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
 
-        Call<List<Thongbao>> call = apiService.getNotifications(tentaikhoan);
+        Call<List<Thongbao>> call = apiService.getNotifications(email);
         call.enqueue(new Callback<List<Thongbao>>() {
             @Override
             public void onResponse(Call<List<Thongbao>> call, Response<List<Thongbao>> response) {
@@ -205,10 +218,8 @@ public class ThongbaodsActivity extends AppCompatActivity {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Kiểm tra nếu kênh thông báo đã tồn tại
             NotificationChannel existingChannel = notificationManager.getNotificationChannel(CHANNEL_ID);
             if (existingChannel == null) {
-                // Tạo kênh thông báo nếu chưa có
                 NotificationChannel channel = new NotificationChannel(
                         CHANNEL_ID,
                         "Thông báo",
@@ -219,7 +230,6 @@ public class ThongbaodsActivity extends AppCompatActivity {
             }
         }
 
-        // Đảm bảo smallIcon hợp lệ (Sử dụng biểu tượng mặc định của Android nếu cần thiết)
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.bell) // Đảm bảo rằng đây là drawable hợp lệ
                 .setContentTitle(thongbao.getTitle())
@@ -228,8 +238,15 @@ public class ThongbaodsActivity extends AppCompatActivity {
                 .setAutoCancel(true)
                 .build();
 
-        // Hiển thị thông báo
-        notificationManager.notify(1, notification);  // Dùng ID duy nhất để tránh xung đột
+        notificationManager.notify((int) System.currentTimeMillis(), notification);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Ngừng Handler khi Activity bị hủy
+        if (handler != null) {
+            handler.removeCallbacks(refreshRunnable);
+        }
+    }
 }

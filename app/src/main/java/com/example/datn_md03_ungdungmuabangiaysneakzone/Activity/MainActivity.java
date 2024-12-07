@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter.SanPhamAdapter;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.ThongbaodsActivity;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiResponse;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiService;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.RetrofitClient;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Product;
@@ -39,12 +41,14 @@ public class MainActivity extends AppCompatActivity {
     SanPhamAdapter productAdapter;
     ArrayList<Product> productArrayList;
     BottomNavigationView bottomNavigationView;
-    TextView tvXemThem;
+    TextView tvXemThem,hienthiso;
     ImageView imageViewSlider, imageView; // ImageView cho slideshow
     ImageButton btnPrev, btnNext; // Nút điều khiển ảnh
     int[] imageList = {R.drawable.banner1, R.drawable.banner2, R.drawable.banner3}; // Danh sách ảnh slideshow
     int currentImageIndex = 0; // Chỉ mục ảnh hiện tại
     Handler handler = new Handler(); // Handler để quản lý thời gian trễ cho slideshow
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +63,25 @@ public class MainActivity extends AppCompatActivity {
         setBottomNavigationView();
         imageView = findViewById(R.id.imageView);
         tvXemThem = findViewById(R.id.tvXemThem);
+        hienthiso = findViewById(R.id.hienthiso);
         tvXemThem.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, Activity_SP_PhoBien.class));
         });
+        // Khởi tạo API service
+        apiService = RetrofitClient.getClient().create(ApiService.class);
+
+        // Lấy tài khoản từ SharedPreferences
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        String tentaikhoan = sharedPreferences.getString("Tentaikhoan", "");  // Lấy tên tài khoản từ SharedPreferences
+
+        if (!tentaikhoan.isEmpty()) {
+            // Gọi API để lấy tổng số thông báo chưa đọc
+            getUnreadNotificationCount(tentaikhoan);
+            startNotificationUpdate(tentaikhoan);  // Gọi hàm để tự động cập nhật thông báo
+
+        } else {
+            Toast.makeText(MainActivity.this, "Không tìm thấy tài khoản người dùng!", Toast.LENGTH_SHORT).show();
+        }
 
         spRecyclerView = findViewById(R.id.SanPhamPhoBienView);
         apiService = RetrofitClient.getClient().create(ApiService.class);
@@ -98,10 +118,52 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     private void loadDuLieu(ArrayList<Product> list) {
         productAdapter = new SanPhamAdapter(this, list);
         spRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         spRecyclerView.setAdapter(productAdapter);
+    }
+
+    private void getUnreadNotificationCount(String tentaikhoan) {
+        ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
+
+        // Gọi API để lấy tổng số thông báo chưa đọc
+        apiService.getUnreadNotificationCount(tentaikhoan).enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(Call<ApiResponse> call, retrofit2.Response<ApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Lấy số lượng thông báo chưa đọc từ API
+                    int unreadCount = response.body().getUnreadCount();
+
+                    // Hiển thị số lượng thông báo chưa đọc lên giao diện
+                    hienthiso.setText(String.valueOf(unreadCount));
+                } else {
+                    Toast.makeText(MainActivity.this, "Không thể lấy thông báo", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse> call, Throwable t) {
+                // Xử lý lỗi kết nối
+                Toast.makeText(MainActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    // Thêm Handler để tự động cập nhật thông báo chưa đọc mỗi 30 giây
+    private void startNotificationUpdate(String tentaikhoan) {
+        Runnable notificationRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // Gọi lại API để lấy số lượng thông báo chưa đọc
+                getUnreadNotificationCount(tentaikhoan);
+
+                handler.postDelayed(this, 1000);  //
+            }
+        };
+
+        // Bắt đầu việc tự động cập nhật thông báo ngay khi Activity bắt đầu
+        handler.post(notificationRunnable);
     }
 
     private void getListProducts() {
