@@ -91,6 +91,28 @@ router.delete('/:id', async (req, res) => {
         });
     }
 });
+// 5. API để tính tổng số thông báo chưa đọc của một tài khoản
+router.get('/:tentaikhoan/tongtb', async (req, res) => {
+    const { tentaikhoan } = req.params; // Lấy tên tài khoản từ params
+
+    try {
+        // Tìm tất cả các thông báo chưa đọc của tài khoản này
+        const unreadNotificationsCount = await Notification.countDocuments({
+            tentaikhoan,
+            read: false // Chỉ đếm những thông báo chưa được đánh dấu là đã đọc
+        });
+
+        res.status(200).json({
+            message: 'Lấy tổng số thông báo chưa đọc thành công',
+            unreadCount: unreadNotificationsCount
+        });
+    } catch (error) {
+        res.status(500).json({
+            error: 'Lỗi khi tính tổng số thông báo chưa đọc',
+            details: error.message
+        });
+    }
+});
 
 
 module.exports = router;
