@@ -19,6 +19,7 @@ const Admin = require("./models/Admin"); // Import model Admin
 const locationRouter = require("./routes/locations");
 const paymentAuthenticationRouter = require("./routes/paymentAuthentication");
 const favoriteRouter = require("./routes/favorite")
+const notificationRouter = require('./routes/NotificationRouter'); 
 
 const app = express();
 const server = http.createServer(app); // Tạo server từ app
@@ -69,6 +70,7 @@ app.use("/order", orderRouter);
 app.use("/locations", locationRouter)
 app.use("/paymentAuthentication", paymentAuthenticationRouter)
 app.use("/favorite", favoriteRouter)
+app.use('/routes/notifications', notificationRouter);
 // Socket.io để xử lý chat thời gian thực
 io.on("connection", (socket) => {
   console.log("Có người dùng kết nối:", socket.id);
