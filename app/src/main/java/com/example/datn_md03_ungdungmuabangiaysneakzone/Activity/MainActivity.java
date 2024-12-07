@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter.SanPhamAdapter;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
-import com.example.datn_md03_ungdungmuabangiaysneakzone.ThongbaodsActivity;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiService;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.RetrofitClient;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Product;
@@ -91,11 +90,11 @@ public class MainActivity extends AppCompatActivity {
             }
             showImage();
         });
-        imageView.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, ThongbaodsActivity.class);
-            startActivity(intent);
-            finish(); // Đảm bảo không quay lại màn hình đăng nhập
-        });
+//        imageView.setOnClickListener(v -> {
+//            Intent intent = new Intent(MainActivity.this, NotificationsActivity.class);
+//            startActivity(intent);
+//            finish(); // Đảm bảo không quay lại màn hình đăng nhập
+//        });
     }
 
     private void loadDuLieu(ArrayList<Product> list) {
