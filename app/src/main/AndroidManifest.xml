@@ -9,6 +9,10 @@
     <uses-permission android:name="android.permission.CAMERA" /> <!-- Quyền cho truy cập ảnh trên Android 13 (API 33) trở lên -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- Quyền cũ cho các phiên bản Android dưới 13 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- Tính năng phần cứng camera (không bắt buộc) -->
+    <!-- gg map -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -25,11 +29,12 @@
         android:theme="@style/Theme.DATN_MD03_UngDungMuaBanGiaySneakZone"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".ThongbaodsActivity"
+            android:name=".Activity.QRCodeCartActivity"
             android:exported="false" />
         <activity
-            android:name=".activity_notifications"
+            android:name=".ThongbaodsActivity"
             android:exported="false" />
+
         <activity
             android:name=".Activity.item_notification"
             android:exported="false" />
@@ -135,6 +140,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyDcxyryj5Dzbcj3GbTt1s7W32MOzHvnuys" />
     </application>
 
 </manifest>

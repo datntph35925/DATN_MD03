@@ -7,32 +7,22 @@
     android:layout_height="match_parent"
     tools:context=".ThongbaodsActivity">
 
-    <!-- Text thông báo hiển thị khi không có dữ liệu -->
-    <TextView
-        android:id="@+id/tvNoNotifications"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Không có thông báo"
-        android:textSize="16sp"
-        android:textColor="#FF0000"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:gravity="center"
-        android:visibility="gone"/>
+
 
     <!-- Button thoát -->
-    <Button
+
+    <!-- SwipeRefreshLayout cho phép người dùng kéo xuống để làm mới danh sách thông báo -->
+    <ImageButton
         android:id="@+id/btnExit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Thoát"
-        app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    android:layout_marginTop="16dp" />
+        android:layout_marginTop="24dp"
+        android:background="@drawable/ic_back"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.041"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- SwipeRefreshLayout cho phép người dùng kéo xuống để làm mới danh sách thông báo -->
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="0dp"

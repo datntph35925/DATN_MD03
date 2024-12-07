@@ -1,8 +1,12 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -28,9 +33,13 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.api.RetrofitClient;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Location;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.LocationRequest;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -43,6 +52,11 @@ public class ActivityLocation extends AppCompatActivity {
     private String currentUserId ; // ID người dùng hiện tại
     ArrayList<Location> locationArrayList;
     ImageButton img_back;
+    Button btnLayViTri;
+
+    private static final int LOCATION_REQUEST_CODE = 100;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +81,10 @@ public class ActivityLocation extends AppCompatActivity {
             }
         });
         apiService = RetrofitClient.getClient().create(ApiService.class);
+
+        // Khởi tạo FusedLocationProviderClient
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
 
         getListLocationById();
         findViewById(R.id.btn_add_location).setOnClickListener(v -> showAddLocationDialog());
@@ -94,6 +112,11 @@ public class ActivityLocation extends AppCompatActivity {
                             TextView tvTitle = view.findViewById(R.id.tv_title_sp); // Từ layout `dialog_diachi`
                             tvTitle.setText("Sửa địa chỉ");
                             // Hiển thị thông tin hiện tại
+
+                            Button btnLayViTri = view.findViewById(R.id.btnLayViTri);
+                            btnLayViTri.setOnClickListener(v -> requestLocationPermission(edtDiaChi));
+
+
                             edtTenNguoiNhan.setText(address.getTenNguoiNhan());
                             edtDiaChi.setText(address.getDiaChi());
                             edtSdt.setText(address.getSdt());
@@ -200,6 +223,10 @@ public class ActivityLocation extends AppCompatActivity {
         EditText edtDiaChi = view.findViewById(R.id.edt_diachi);
         EditText edtSdt = view.findViewById(R.id.edt_sodienthoai);
 
+        Button btnLayViTri = view.findViewById(R.id.btnLayViTri);
+        btnLayViTri.setOnClickListener(v -> requestLocationPermission(edtDiaChi));
+
+
         Button btnCancel = view.findViewById(R.id.btn_cancel_diaSp);
         Button btnSave = view.findViewById(R.id.btn_save_diaSp);
 
@@ -246,4 +273,43 @@ public class ActivityLocation extends AppCompatActivity {
         dialog.show();
     }
 
+    private void requestLocationPermission(EditText edtDiaChi) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+        } else {
+            getCurrentLocation(edtDiaChi);
+        }
+    }
+
+    private void getCurrentLocation(EditText edtDiaChi) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationProviderClient.getLastLocation()
+                    .addOnSuccessListener(location -> {
+                        if (location != null) {
+                            double latitude = location.getLatitude();
+                            double longitude = location.getLongitude();
+                            getAddressFromCoordinates(latitude, longitude, edtDiaChi);
+                        } else {
+                            Toast.makeText(this, "Không thể lấy vị trí hiện tại!", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(this, "Lỗi khi lấy vị trí!", Toast.LENGTH_SHORT).show());
+        }
+    }
+
+    private void getAddressFromCoordinates(double latitude, double longitude, EditText edtDiaChi) {
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                String address = addresses.get(0).getAddressLine(0);
+                edtDiaChi.setText(address);
+            } else {
+                Toast.makeText(this, "Không tìm thấy địa chỉ!", Toast.LENGTH_SHORT).show();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Lỗi khi chuyển đổi tọa độ!", Toast.LENGTH_SHORT).show();
+        }
+    }
 }

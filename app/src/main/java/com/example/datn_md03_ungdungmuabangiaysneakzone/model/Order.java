@@ -9,6 +9,7 @@ import java.util.List;
 public class Order implements Serializable {
     @SerializedName("_id")
     private String id;             // Mã đơn hàng
+    private String MaDonHang;
     private String Tentaikhoan;   // Tên tài khoản người dùng
     private List<ProductItemCart> SanPham; // Danh sách sản phẩm trong đơn hàng
     private String TenNguoiNhan;   // Tên người nhận
@@ -20,6 +21,23 @@ public class Order implements Serializable {
     private String PhuongThucThanhToan; // Phương thức thanh toán
     private String NgayDatHang;    // Ngày đặt hàng
     private String NgayGiaoHang;   // Ngày giao hàng (nếu có)
+    private String Voucher;
+
+    public String getVoucher() {
+        return Voucher;
+    }
+
+    public void setVoucher(String voucher) {
+        Voucher = voucher;
+    }
+
+    public String getMaDonHang() {
+        return MaDonHang;
+    }
+
+    public void setMaDonHang(String maDonHang) {
+        MaDonHang = maDonHang;
+    }
 
     public String getId() {
         return id;

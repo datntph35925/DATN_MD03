@@ -17,6 +17,7 @@
     import com.example.datn_md03_ungdungmuabangiaysneakzone.Demo.SP_PhoBienAdapterDemo;
     import com.example.datn_md03_ungdungmuabangiaysneakzone.Domain.SanPham;
     import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
+    import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Favorite;
     import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Product;
 
     import java.io.Serializable;

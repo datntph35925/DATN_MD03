@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -74,19 +75,27 @@ public class DangNhap extends AppCompatActivity {
                 String email = editTextEmail.getText().toString().trim();
                 String password = editTextPassword.getText().toString().trim();
 
-                // Kiểm tra thông tin đăng nhập
-                if (email.isEmpty() || password.isEmpty()) {
-                    Toast.makeText(DangNhap.this, "Vui lòng nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
-                    return;
+                Boolean isValid = true;
+                // Kiểm tra email
+                if (email.isEmpty()) {
+                    editTextEmail.setError("Vui lòng nhập email!");
+                    isValid = false;
+                } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    editTextEmail.setError("Email không hợp lệ!");
+                    isValid = false;
                 }
 
-                if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    Toast.makeText(DangNhap.this, "Email không hợp lệ!", Toast.LENGTH_SHORT).show();
-                    return;
+                // Kiểm tra mật khẩu
+                if (password.isEmpty()) {
+                    editTextPassword.setError("Vui lòng nhập mật khẩu!");
+                    isValid = false;
+                } else if (password.length() < 6) {
+                    editTextPassword.setError("Mật khẩu phải có ít nhất 6 ký tự!");
+                    isValid = false;
                 }
 
-                if (password.isEmpty() || password.length() < 6) {
-                    Toast.makeText(DangNhap.this, "Mật khẩu phải có ít nhất 6 ký tự!", Toast.LENGTH_SHORT).show();
+                // Nếu không hợp lệ, thoát ra
+                if (!isValid) {
                     return;
                 }
 

@@ -5,6 +5,26 @@ public class Response<T>{
     private String messerger;
     private T data; // T kiểu gen
 
+    private boolean success;
+
+    private boolean isFavorite;
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
     private String token;
     private String refreshToken;
 

@@ -34,6 +34,17 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintHorizontal_bias="0.5" />
 
+    <!-- Nút Yêu Thích red -->
+    <ImageView
+        android:id="@+id/btnYeuThich_CTSP_red"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintTop_toTopOf="@+id/imgBack"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/favorite_red"
+        android:visibility="gone"
+        />
     <!-- Nút Yêu Thích -->
     <ImageView
         android:id="@+id/btnYeuThich_CTSP"

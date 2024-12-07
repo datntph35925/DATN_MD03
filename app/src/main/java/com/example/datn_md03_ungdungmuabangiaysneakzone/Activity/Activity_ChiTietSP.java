@@ -1,7 +1,6 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -28,17 +27,16 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter.SizeAdapter;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Demo.DanhGia_Demo;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Demo.DanhGiaAdapter_Demo;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
-import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiResponse;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiService;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.RetrofitClient;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Cart;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.CustomerAccount;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.FavoriteAdd;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.KichThuoc;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Product;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ProductItem;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ProductItemCart;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response;
-import com.example.datn_md03_ungdungmuabangiaysneakzone.untils.untils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -47,7 +45,6 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Retrofit;
 
 public class Activity_ChiTietSP extends AppCompatActivity {
 
@@ -77,6 +74,8 @@ public class Activity_ChiTietSP extends AppCompatActivity {
     ProductItemCart productItem;
 
     ProductItem proitem;
+
+    private boolean isFavorite = false; // Trạng thái ban đầu
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,7 +118,7 @@ public class Activity_ChiTietSP extends AppCompatActivity {
         tvMoTa = findViewById(R.id.tvMoTa_SPCT);
         imgSP = findViewById(R.id.img_SPCT);
         btnYeuThich = findViewById(R.id.btnYeuThich_CTSP);
-//        btnYeuThichRed = findViewById(R.id.btnYeuThich_Red_CTSP);
+        btnYeuThichRed = findViewById(R.id.btnYeuThich_CTSP_red);
         btnGioHang = findViewById(R.id.btnGioHang_CTSP);
 
 
@@ -166,11 +165,99 @@ public class Activity_ChiTietSP extends AppCompatActivity {
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(Activity_ChiTietSP.this, MainActivity.class));
+                onBackPressed();
             }
         });
 
+        btnYeuThich.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+              onAddToFavoriteClicked();
+            }
+        });
 
+        btnYeuThichRed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onRemoveFromFavoriteClicked();
+            }
+        });
+
+        getFavoriteStatus(email, maSP);
+    }
+
+    // Xử lý khi nhấn nút thêm vào yêu thích
+    public void onAddToFavoriteClicked() {
+        updateFavoriteStatus(email, maSP, true);  // Thêm vào yêu thích
+    }
+
+    // Xử lý khi nhấn nút xóa khỏi yêu thích
+    public void onRemoveFromFavoriteClicked() {
+        updateFavoriteStatus(email, maSP,false);  // Xóa khỏi yêu thích
+    }
+
+    // Lấy trạng thái yêu thích
+    private void getFavoriteStatus(String tentaikhoan, String sanPhamId) {
+        ApiService apiService = RetrofitClient.getApiService();
+        apiService.getFavoriteStatus(tentaikhoan, sanPhamId).enqueue(new Callback<Response>() {
+            @Override
+            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Response response1 = response.body();
+                    // Kiểm tra nếu sản phẩm là yêu thích
+                    if (response1.isFavorite()) {
+                        // Sản phẩm là yêu thích, hiển thị nút đỏ và ẩn nút yêu thích
+                        btnYeuThich.setVisibility(View.GONE);
+                        btnYeuThichRed.setVisibility(View.VISIBLE);
+                    } else {
+                        // Sản phẩm chưa yêu thích, hiển thị nút yêu thích và ẩn nút đỏ
+                        btnYeuThich.setVisibility(View.VISIBLE);
+                        btnYeuThichRed.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Response> call, Throwable t) {
+                Toast.makeText(Activity_ChiTietSP.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // Cập nhật trạng thái yêu thích (thêm hoặc xóa)
+    private void updateFavoriteStatus(String tentaikhoan, String sanPhamId, boolean isFavorite) {
+        FavoriteAdd request = new FavoriteAdd(isFavorite);
+        ApiService apiService = RetrofitClient.getApiService();
+        apiService.updateFavoriteStatus(tentaikhoan, sanPhamId, request).enqueue(new Callback<Response>() {
+            @Override
+            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                if(response.isSuccessful() && response.body() != null){
+                    if (isFavorite) {
+                        Toast.makeText(Activity_ChiTietSP.this, "Sản phẩm đã được thêm vào danh sách yêu thích", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(Activity_ChiTietSP.this, "Sản phẩm đã bị xóa khỏi danh sách yêu thích", Toast.LENGTH_SHORT).show();
+                    }
+                    getFavoriteStatus(email, maSP);
+                } else {
+                    Toast.makeText(Activity_ChiTietSP.this, "Lỗi khi cập nhật danh sách yêu thích", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Response> call, Throwable t) {
+                Toast.makeText(Activity_ChiTietSP.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void updateFavoriteUI() {
+        if (isFavorite) {
+            btnYeuThich.setVisibility(View.GONE);    // Ẩn nút yêu thích
+            btnYeuThichRed.setVisibility(View.VISIBLE); // Hiển thị nút đã yêu thích
+        } else {
+            btnYeuThich.setVisibility(View.VISIBLE);  // Hiển thị nút yêu thích
+            btnYeuThichRed.setVisibility(View.GONE);  // Ẩn nút đã yêu thích
+        }
     }
 
     //Demo
@@ -361,14 +448,6 @@ public class Activity_ChiTietSP extends AppCompatActivity {
                        Toast.makeText(Activity_ChiTietSP.this, "Kích cỡ hiện tại đã hết hàng. Vui lòng chọn kích cỡ khác!", Toast.LENGTH_SHORT).show();
                        return;
                    } else {
-                      Log.d("SharedPreferences", "Retrieved maSP: " + maSP);
-                       Log.d("SharedPreferences", "Retrieved tenSP: " + tenSP);
-                       Log.d("SharedPreferences", "Retrieved num: " + num);
-                       Log.d("SharedPreferences", "Retrieved selectSize: " + selectSize);
-                       Log.d("SharedPreferences", "Retrieved giaSP: " + giaSP);
-                       Log.d("SharedPreferences", "Retrieved email: " + email);
-                       Log.d("SharedPreferences", "Retrieved slt: " + soLuongTon);
-
                        List<String> hinhanh = Collections.singletonList(hinh);
 
                        productItem.setMaSanPham(maSP);
@@ -379,14 +458,6 @@ public class Activity_ChiTietSP extends AppCompatActivity {
                        productItem.setTongTien(giaSP * num);
                        productItem.setHinhAnh(hinhanh);
                        productItem.setSoLuongTon(soLuongTon);
-
-//                       // Tạo danh sách sản phẩm và thêm vào giỏ hàng
-//                       ArrayList<ProductItemCart> productItems = new ArrayList<>();
-//                       productItems.add(productItem);
-
-//                       Intent intent = new Intent(Activity_ChiTietSP.this, Activity_Cart.class);
-//                       intent.putExtra("cartItems", productItems); // productItems is your ArrayList<ProductItemCart>
-//                       startActivity(intent);
 
                        Cart cart = new Cart();
                        cart.setProductId(maSP);
@@ -402,7 +473,6 @@ public class Activity_ChiTietSP extends AppCompatActivity {
                                   dialog.dismiss();
                               }
                            }
-
                            @Override
                            public void onFailure(Call<Response<ArrayList<Cart>>> call, Throwable t) {
                                Toast.makeText(Activity_ChiTietSP.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
@@ -412,64 +482,8 @@ public class Activity_ChiTietSP extends AppCompatActivity {
                 }
             });
         }
-
-
-
         dialog.show();
     }
-//
-//    private void setupFavoriteButtonListeners() {
-//        btnYeuThich.setOnClickListener(view -> {
-//            if (product != null) {
-//                // Update the local cache for instant UI feedback
-//                updateFavoriteStatusLocally(true);
-//                // Push the update to the server asynchronously
-//                updateTrangThaiYeuThich();
-//                Toast.makeText(this, "Thêm danh sách yêu thích thành công", Toast.LENGTH_SHORT).show();
-//            } else {
-//                Toast.makeText(this, "Looix", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//
-//        btnYeuThichRed.setOnClickListener(view -> {
-//            if (product != null) {
-//                // Update the local cache for instant UI feedback
-//                updateFavoriteStatusLocally(false);
-//                // Push the update to the server asynchronously
-//                updateTrangThaiYeuThich();
-//                Toast.makeText(this, "Đã xóa danh sách yêu thích thành công", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//    }
-
-//    private void updateFavoriteStatusLocally(boolean isFavorite) {
-//        product.setTrangThaiYeuThich(isFavorite);
-//        btnYeuThich.setVisibility(isFavorite ? View.GONE : View.VISIBLE);
-//        btnYeuThichRed.setVisibility(isFavorite ? View.VISIBLE : View.GONE);
-//    }
-//
-//    private void updateTrangThaiYeuThich() {
-//        if (product == null) return;
-//
-//        Call<Response<Product>> call = apiService.updateProductYeuThichById(maSP, false);
-//        call.enqueue(new Callback<Response<Product>>() {
-//            @Override
-//            public void onResponse(Call<Response<Product>> call, retrofit2.Response<Response<Product>> response) {
-//                if (!response.isSuccessful() || response.body() == null || response.body().getStatus() != 200) {
-//                    // If the update fails, inform the user and revert changes if necessary
-//                    Toast.makeText(Activity_ChiTietSP.this, "Không thể cập nhật trạng thái yêu thích", Toast.LENGTH_SHORT).show();
-//                    updateFavoriteStatusLocally(!product.isTrangThaiYeuThich());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<Response<Product>> call, Throwable t) {
-//                Toast.makeText(Activity_ChiTietSP.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-//                updateFavoriteStatusLocally(!product.isTrangThaiYeuThich());
-//            }
-//        });
-//    }
-
 
     private List<DanhGia_Demo> getDummyReviews() {
         List<DanhGia_Demo> reviews = new ArrayList<>();

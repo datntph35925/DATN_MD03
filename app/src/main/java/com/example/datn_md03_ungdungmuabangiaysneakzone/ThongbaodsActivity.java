@@ -4,11 +4,14 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -23,6 +26,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.datn_md03_ungdungmuabangiaysneakzone.Activity.Activity_SP_PhoBien;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.Activity.DangNhap;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.Activity.MainActivity;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter.NotificationAdapter;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiService;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.RetrofitClient;
@@ -37,6 +43,7 @@ import retrofit2.Response;
 
 public class ThongbaodsActivity extends AppCompatActivity {
 
+    private ImageButton btnExit ;
     private RecyclerView recyclerView;
     private NotificationAdapter notificationAdapter;
     private List<Thongbao> thongbaoList = new ArrayList<>();
@@ -78,6 +85,7 @@ public class ThongbaodsActivity extends AppCompatActivity {
 
 
         // Lấy các view cần thiết
+        btnExit = findViewById(R.id.btnExit);
         recyclerView = findViewById(R.id.recyclerView);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
 
@@ -99,6 +107,14 @@ public class ThongbaodsActivity extends AppCompatActivity {
                 deleteNotification(notificationId, position);
             } else {
                 Toast.makeText(ThongbaodsActivity.this, "Không thể xóa thông báo: ID không hợp lệ", Toast.LENGTH_SHORT).show();
+            }
+        });
+        btnExit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ThongbaodsActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish(); // Đảm bảo không quay lại màn hình đăng nhập
             }
         });
 

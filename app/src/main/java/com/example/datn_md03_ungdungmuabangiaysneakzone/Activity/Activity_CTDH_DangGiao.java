@@ -76,7 +76,7 @@ public class Activity_CTDH_DangGiao extends AppCompatActivity {
 
         sanPhamList = new ArrayList<>();
         sanPhamList = (ArrayList<ProductItemCart>) intent.getSerializableExtra("order_sp");
-        thanhToanAdapter = new ThanhToanAdapter(this, sanPhamList);
+        thanhToanAdapter = new ThanhToanAdapter(this, sanPhamList, true);
         rcvCTSP_DangGiao.setLayoutManager(new LinearLayoutManager(this));
         rcvCTSP_DangGiao.setAdapter(thanhToanAdapter);
     }
