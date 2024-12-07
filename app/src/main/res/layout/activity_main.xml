@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="To SneakeZone"
+                android:text="To SneakZone"
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 android:textSize="20sp"
@@ -62,14 +62,15 @@
                 android:id="@+id/hienthiso"
                 android:layout_width="18dp"
                 android:layout_height="18dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="4dp"
                 android:gravity="center"
                 android:text="5"
                 android:textColor="#FF0000"
+                android:textStyle="bold"
                 android:textSize="12sp"
-                app:layout_constraintEnd_toEndOf="@id/imageView"
-                app:layout_constraintTop_toTopOf="@id/imageView" />
+                app:layout_constraintBottom_toBottomOf="@+id/imageView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/imageView"
+                app:layout_constraintTop_toTopOf="@+id/imageView" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
