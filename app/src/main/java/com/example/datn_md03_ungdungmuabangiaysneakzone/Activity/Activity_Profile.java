@@ -33,7 +33,7 @@ public class Activity_Profile extends AppCompatActivity {
     // Khai báo các view
     private ImageView imgAvatarProfile;
     private TextView tvNameProduct, tvEmail, tvChinhSuaThongTin;
-    private CardView cvAdddiachi, cvOderForShop, cvChatBox , cvOut;
+    private CardView cvAdddiachi, cvOderForShop, cvChatBox , cvOut, cvVoucher;
     private BottomNavigationView bottomNavigationView;
 
     @Override
@@ -64,6 +64,7 @@ public class Activity_Profile extends AppCompatActivity {
         cvChatBox = findViewById(R.id.cvChatBox);
         bottomNavigationView = findViewById(R.id.bottomnavigation);
         cvOut = findViewById(R.id.cvOut);
+        cvVoucher = findViewById(R.id.cvVoucher);
     }
 
     private void loadUserData() {
@@ -145,6 +146,11 @@ public class Activity_Profile extends AppCompatActivity {
         cvChatBox.setOnClickListener(view -> {
             startActivity(new Intent(Activity_Profile.this,activity_chat.class));
         });
+
+        cvVoucher.setOnClickListener(view -> {
+            startActivity(new Intent(Activity_Profile.this, Activity_Voucher.class));
+        });
+
         cvOut.setOnClickListener(view -> {
             // Xóa thông tin đăng nhập khỏi SharedPreferences
             SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);

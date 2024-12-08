@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter.ReviewAdapter;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter.SizeAdapter;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Demo.DanhGia_Demo;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Demo.DanhGiaAdapter_Demo;
@@ -37,6 +38,7 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Product;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ProductItem;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ProductItemCart;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Review;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -47,10 +49,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 
 public class Activity_ChiTietSP extends AppCompatActivity {
-
-    private RecyclerView recyclerReviews, rcvSizes;
-    private DanhGiaAdapter_Demo reviewsAdapter;
-
     Button btnMuaHang;
     ImageView btnYeuThich, btnYeuThichRed, btnGioHang;
     private int num,selectedProductQuantity, selectSize = -1;
@@ -76,6 +74,11 @@ public class Activity_ChiTietSP extends AppCompatActivity {
     ProductItem proitem;
 
     private boolean isFavorite = false; // Trạng thái ban đầu
+    ReviewAdapter reviewAdapter;
+    RecyclerView rcvReview;
+    private ArrayList<Review> reviewList ;
+
+    RecyclerView rcvSizes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,15 +141,10 @@ public class Activity_ChiTietSP extends AppCompatActivity {
         kichThuocArrayList = new ArrayList();
         accountArrayList = new ArrayList();
 
-        recyclerReviews = findViewById(R.id.rcvDanhGia_SPCT);
+        rcvReview = findViewById(R.id.rcvDanhGia_SPCT);
         btnMuaHang = findViewById(R.id.btnMuaHang_CTSP);
+        rcvReview.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
-        // Set up RecyclerView for reviews
-        recyclerReviews.setLayoutManager(new LinearLayoutManager(this));
-        reviewsAdapter = new DanhGiaAdapter_Demo(getDummyReviews());
-        recyclerReviews.setAdapter(reviewsAdapter);
-
-        // Set up button Mua Hang click listener
 
         btnMuaHang.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -182,8 +180,40 @@ public class Activity_ChiTietSP extends AppCompatActivity {
                 onRemoveFromFavoriteClicked();
             }
         });
+        reviewList = new ArrayList<>(); // Khởi tạo danh sách
+        reviewAdapter = new ReviewAdapter(reviewList, this); // Tạo adapter
+        rcvReview.setAdapter(reviewAdapter); // Gán adapter
 
         getFavoriteStatus(email, maSP);
+        loadReviewsByProduct();
+    }
+
+    private void loadReviewsByProduct() {
+     Call<Response<ArrayList<Review>>> call = apiService.getReviewsByProduct(maSP);
+     call.enqueue(new Callback<Response<ArrayList<Review>>>() {
+         @Override
+         public void onResponse(Call<Response<ArrayList<Review>>> call, retrofit2.Response<Response<ArrayList<Review>>> response) {
+             if (response.isSuccessful() && response.body() != null) {
+                 ArrayList<Review> data = response.body().getData();
+                 if (data != null) {
+                     reviewList.clear();
+                     reviewList.addAll(data);
+                     reviewAdapter.notifyDataSetChanged();
+                 } else {
+                     Log.d("API Response", "No reviews available");
+                     Toast.makeText(Activity_ChiTietSP.this, "No reviews found for this product.", Toast.LENGTH_SHORT).show();
+                 }
+             } else {
+                 Log.e("API Response", "Failed to load reviews.");
+                 Toast.makeText(Activity_ChiTietSP.this, "Failed to load reviews.", Toast.LENGTH_SHORT).show();
+             }
+         }
+
+         @Override
+         public void onFailure(Call<Response<ArrayList<Review>>> call, Throwable t) {
+
+         }
+     });
     }
 
     // Xử lý khi nhấn nút thêm vào yêu thích
@@ -250,15 +280,6 @@ public class Activity_ChiTietSP extends AppCompatActivity {
         });
     }
 
-    private void updateFavoriteUI() {
-        if (isFavorite) {
-            btnYeuThich.setVisibility(View.GONE);    // Ẩn nút yêu thích
-            btnYeuThichRed.setVisibility(View.VISIBLE); // Hiển thị nút đã yêu thích
-        } else {
-            btnYeuThich.setVisibility(View.VISIBLE);  // Hiển thị nút yêu thích
-            btnYeuThichRed.setVisibility(View.GONE);  // Ẩn nút đã yêu thích
-        }
-    }
 
     //Demo
     private void diaLogToBuy(int type) {
@@ -483,14 +504,5 @@ public class Activity_ChiTietSP extends AppCompatActivity {
             });
         }
         dialog.show();
-    }
-
-    private List<DanhGia_Demo> getDummyReviews() {
-        List<DanhGia_Demo> reviews = new ArrayList<>();
-        reviews.add(new DanhGia_Demo("Hồng hài nhi", 5, "Giày đẹp quá shop ơi...."));
-        reviews.add(new DanhGia_Demo("Ngư ma vương", 5, "GIAYDEP..."));
-        reviews.add(new DanhGia_Demo("Nhị lang thần", 5, "Có tiền để mua giầy nhưnghfyfghkhxgdfgvhkjhcxzfsdghvcx yufghjvhcfvgbjk uyuftygyuhiugyfygyuh gufythg không thể mua được em :P"));
-        reviews.add(new DanhGia_Demo("Nhị lang thần", 5, "Có tiền để mua giầy nhưnghfyfghkhxgdfgvhkjhcxzfsdghvcx yufghjvhcfvgbjk uyuftygyuhiugyfygyuh gufythg không thể mua được em :P"));
-        return reviews;
     }
 }

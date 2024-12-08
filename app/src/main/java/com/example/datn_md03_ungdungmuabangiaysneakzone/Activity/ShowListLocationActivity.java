@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +44,7 @@ public class ShowListLocationActivity extends AppCompatActivity {
     private String currentUserId ; // ID người dùng hiện tại
     ArrayList<Location> locationArrayList;
 
+    ImageButton img_Back;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +53,15 @@ public class ShowListLocationActivity extends AppCompatActivity {
         rcvDiaChi = findViewById(R.id.rcv_diachi);
         locationArrayList = new ArrayList<>();
         rcvDiaChi.setLayoutManager(new LinearLayoutManager(this));
+
+        img_Back = findViewById(R.id.img_back);
+
+        img_Back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         apiService = RetrofitClient.getClient().create(ApiService.class);
         SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
@@ -66,30 +77,6 @@ public class ShowListLocationActivity extends AppCompatActivity {
 //            }
 //        });
     }
-
-//    private void setupRecyclerView() {
-//        diaChiAdapter = new DiaChiAdapter(ShowListLocationActivity.this, diaChiList, new DiaChiAdapter.Callback() {
-//            @Override
-//            public void clickItem(Location address) {
-//                Intent intent = new Intent(ShowListLocationActivity.this, MainActivity.class);
-//                Bundle bundle = new Bundle();
-//                bundle.putString("nameLocation", address.getTenNguoiNhan());
-//                bundle.putString("location", address.getDiaChi());
-//                bundle.putString("phoneLocation", address.getSdt());
-//
-//                intent.putExtras(bundle);
-//                setResult(RESULT_OK, intent);
-//                finish();
-//            }
-//
-//            @Override
-//            public void deleteAddress(Location address) {
-//
-//            }
-//        });
-//        rcvDiaChi.setLayoutManager(new LinearLayoutManager(this));
-//        rcvDiaChi.setAdapter(diaChiAdapter);
-//    }
 
     private void getListLocationById() {
         // Gọi API để lấy danh sách địa chỉ từ server
@@ -122,7 +109,7 @@ public class ShowListLocationActivity extends AppCompatActivity {
                         public void editAddress(Location address) {
 
                         }
-                    });
+                    }, true);
                     rcvDiaChi.setAdapter(diaChiAdapter);
                 } else {
                     Toast.makeText(ShowListLocationActivity.this, "Không thể lấy địa chỉ", Toast.LENGTH_SHORT).show();

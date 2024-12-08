@@ -2,8 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <!-- Các quyền cần thiết -->
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" /> <!-- Quyền cho truy cập ảnh trên Android 13 (API 33) trở lên -->
@@ -29,12 +27,19 @@
         android:theme="@style/Theme.DATN_MD03_UngDungMuaBanGiaySneakZone"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".Activity.Activity_ShowList_Voucher"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Activity_Voucher"
+            android:exported="false" />
+        <activity
             android:name=".Activity.QRCodeCartActivity"
             android:exported="false" />
         <activity
             android:name=".ThongbaodsActivity"
-            android:exported="false" />
-
+            android:exported="false" /> <!-- <activity -->
+        <!-- android:name=".activity_notifications" -->
+        <!-- android:exported="false" /> -->
         <activity
             android:name=".Activity.item_notification"
             android:exported="false" />

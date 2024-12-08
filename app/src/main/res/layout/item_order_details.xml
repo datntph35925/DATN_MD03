@@ -98,12 +98,31 @@
 <!--                android:textSize="20dp"/>-->
         </LinearLayout>
     </LinearLayout>
-
-
+    <!-- RatingBar for star rating -->
+    <RatingBar
+        android:id="@+id/ratingBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="5"
+        android:stepSize="1"
+        android:rating="0"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        />
     <EditText
         android:id="@+id/edDanhGia"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Đánh giá"
+        android:visibility="gone"
+        />
+
+    <Button
+        android:id="@+id/btnDanhGia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Gửi đánh giá"
+        android:visibility="gone"
         />
 </LinearLayout>

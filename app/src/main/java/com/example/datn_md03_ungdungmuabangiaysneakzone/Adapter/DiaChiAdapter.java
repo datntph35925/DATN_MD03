@@ -24,11 +24,12 @@ public class DiaChiAdapter extends RecyclerView.Adapter<DiaChiAdapter.ViewHolder
     private Context context;
     private List<Location> lstSP;
     private Callback callback;
-
-    public DiaChiAdapter(Context context, List<Location> lstSP, Callback callback) {
+    private boolean isOrderDelivered;
+    public DiaChiAdapter(Context context, List<Location> lstSP, Callback callback, boolean isOrderDelivered) {
         this.context = context;
         this.lstSP = lstSP;
         this.callback = callback;
+        this.isOrderDelivered = isOrderDelivered;
         notifyDataSetChanged();
     }
 
@@ -58,23 +59,19 @@ public class DiaChiAdapter extends RecyclerView.Adapter<DiaChiAdapter.ViewHolder
 //            }
 //        });
 
+        if (isOrderDelivered) {
+            holder.btnEdit.setVisibility(View.GONE);
+            holder.btn_delete.setVisibility(View.GONE);// Hoặc View.INVISIBLE
+        } else {
+            holder.btnEdit.setVisibility(View.VISIBLE);
+            holder.btn_delete.setVisibility(View.VISIBLE);
+        }
+
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
               callback.clickItem(diaChi);
             }
-        });
-
-        holder.btnEdit.setOnClickListener(v -> {
-            // Tạo một form để nhập lại thông tin cập nhật, hoặc bạn có thể gọi activity mới để sửa
-            // Cập nhật địa chỉ
-            callback.editAddress(diaChi);
-        });
-
-        // Xử lý sự kiện "Xóa"
-        holder.btn_delete.setOnClickListener(v -> {
-            // Xóa địa chỉ
-            callback.deleteAddress(diaChi);
         });
 
     }

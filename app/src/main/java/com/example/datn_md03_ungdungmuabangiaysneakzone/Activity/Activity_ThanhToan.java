@@ -48,7 +48,7 @@ import retrofit2.Response;
 public class Activity_ThanhToan extends AppCompatActivity {
 
     private RecyclerView rcvThanhToan;
-    private TextView tvTotalCost, tvPayMent;
+    private TextView tvTotalCost, tvPayMent, tvVoucher;
     KichThuoc kichThuoc;
     ArrayList<ProductItemCart> selectedCartItems;
 
@@ -58,7 +58,7 @@ public class Activity_ThanhToan extends AppCompatActivity {
     private ArrayList<String> maSPList;
     private ArrayList<Integer> sizeList;// Mảng chứa các maSP
     AppCompatButton btnOrder ;
-    String email, name, address, phone, result;
+    String email, name, address, phone, result, giaTri;
     ApiService apiService;
     Order order;
 
@@ -79,6 +79,7 @@ public class Activity_ThanhToan extends AppCompatActivity {
         lrlAddress = findViewById(R.id.lraddress);
         lraddressGone = findViewById(R.id.idlr_gone);
         edVoicher = findViewById(R.id.edtVoicher);
+        tvVoucher = findViewById(R.id.txtTax);
 
         btnOrder = findViewById(R.id.btnOrder);
         poppuGetListPayment();
@@ -109,6 +110,22 @@ public class Activity_ThanhToan extends AppCompatActivity {
             }
         });
 
+        lrlAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Activity_ThanhToan.this, ShowListLocationActivity.class);
+                startActivityForResult(intent, 100);
+            }
+        });
+
+        lraddressGone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Activity_ThanhToan.this, ShowListLocationActivity.class);
+                startActivityForResult(intent, 100);
+            }
+        });
+
         if (selectedCartItems != null && !selectedCartItems.isEmpty()) {
             ThanhToanAdapter adapter = new ThanhToanAdapter(this, selectedCartItems, true);
             rcvThanhToan.setLayoutManager(new LinearLayoutManager(this));
@@ -125,6 +142,14 @@ public class Activity_ThanhToan extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 handleOrder();
+            }
+        });
+
+        edVoicher.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Activity_ThanhToan.this, Activity_ShowList_Voucher.class);
+                startActivityForResult(intent, 101);
             }
         });
 
@@ -276,25 +301,59 @@ public class Activity_ThanhToan extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Kiểm tra requestCode và resultCode
         if (requestCode == 100 && resultCode == RESULT_OK && data != null) {
-            // Nhận dữ liệu trả về
-             name = data.getStringExtra("nameLocation");
-             address = data.getStringExtra("location");
-             phone = data.getStringExtra("phoneLocation");
+            name = data.getStringExtra("nameLocation");
+            address = data.getStringExtra("location");
+            phone = data.getStringExtra("phoneLocation");
 
-            // Cập nhật dữ liệu vào TextView
             lrlAddress.setVisibility(View.GONE);
             lraddressGone.setVisibility(View.VISIBLE);
-
-            tvNameLocation.setVisibility(View.VISIBLE);
-            tvPhoneLocation.setVisibility(View.VISIBLE);
-            tvLocation.setVisibility(View.VISIBLE);
 
             tvNameLocation.setText(name);
             tvPhoneLocation.setText(phone);
             tvLocation.setText(address);
+        } else if (requestCode == 101 && resultCode == RESULT_OK && data != null) {
+            // Nhận thông tin voucher
+            String maVoucher = data.getStringExtra("maVoucher");
+            String loaiVoucher = data.getStringExtra("loaiVoucher");
+            double giaTriVoucher = data.getDoubleExtra("giaTri", 0.0);
 
+            // Hiển thị mã voucher
+            edVoicher.setText(maVoucher);
+
+            // Hiển thị loại voucher
+            // Định dạng giá trị voucher
+            if (giaTriVoucher % 1 == 0) {
+                giaTri = String.valueOf((int) giaTriVoucher);
+            } else {
+                giaTri = String.valueOf(giaTriVoucher);
+            }
+
+            // Hiển thị loại voucher
+            if ("Giảm giá theo %".equals(loaiVoucher)) {
+                tvVoucher.setText("-" + giaTri + "%");
+            } else if ("Giảm giá cố định".equals(loaiVoucher)) {
+                tvVoucher.setText("-" + giaTri + " VNĐ");
+            } else {
+                tvVoucher.setText(giaTri);
+            }
+            // Tính toán lại tổng tiền
+            double totalCost = 0;
+            for (ProductItemCart item : selectedCartItems) {
+                totalCost += item.getGia() * item.getSoLuongGioHang();
+            }
+
+            if ("Giảm giá theo %".equals(loaiVoucher)) {
+                totalCost -= totalCost * (giaTriVoucher / 100);
+            } else if ("Giảm giá cố định".equals(loaiVoucher)) {
+                totalCost -= giaTriVoucher;
+            }
+
+            // Đảm bảo tổng tiền không âm
+            totalCost = Math.max(0, totalCost);
+
+            // Hiển thị tổng tiền mới
+            tvTotalCost.setText(String.format("$%.2f", totalCost));
         }
     }
 

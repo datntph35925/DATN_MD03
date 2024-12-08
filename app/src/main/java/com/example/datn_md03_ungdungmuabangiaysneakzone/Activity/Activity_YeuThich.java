@@ -3,6 +3,7 @@ package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -35,6 +36,10 @@ public class Activity_YeuThich extends AppCompatActivity {
     ApiService apiService;
     String email;
     ArrayList<Favorite> favoriteArrayList;
+
+    private Handler handler = new Handler();  // Khai báo handler
+    private Runnable fetchFavoriteRunnable;   // Khai báo runnable
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +59,25 @@ public class Activity_YeuThich extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
         email = sharedPreferences.getString("Tentaikhoan", ""); // Retrieve the email
 
-        getListFavorite();
+        fetchFavoriteRunnable = new Runnable() {
+            @Override
+            public void run() {
+                getListFavorite(); // Gọi API để tải tin nhắn
+                handler.postDelayed(this, 1000); // Lặp lại sau mỗi giây
+            }
+        };
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        handler.post(fetchFavoriteRunnable); // Bắt đầu tải tin nhắn định kỳ
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        handler.removeCallbacks(fetchFavoriteRunnable); // Dừng tải tin nhắn khi Activity dừng
     }
 
 //    favoriteArrayList = response.body().getData();

@@ -12,13 +12,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Order;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
     private Context context;
     private List<Order> hoaDonList;
 
     private OnItemClickListener onItemClickListener;
+    private SimpleDateFormat dateFormat;
 
     public OrderAdapter(Context context, List<Order> hoaDonList) {
         this.context = context;
@@ -40,6 +43,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         holder.tvSoDienThoai.setText("Số điện thoại: " + order.getSoDienThoai());
         holder.tvDate.setText(order.getNgayDatHang());
         holder.tvTongTien.setText("Tổng tiền: " + String.format("%.2f", order.getTongTien()));
+
 
         holder.tvSoLuong.setText("Tổng số lượng: " + String.valueOf(order.getTongSoLuong()));
     }

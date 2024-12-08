@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -54,6 +55,10 @@ public class ActivityLocation extends AppCompatActivity {
     ImageButton img_back;
     Button btnLayViTri;
 
+    private Handler handler = new Handler();  // Khai báo handler
+    private Runnable fetchLocationRunnable;   // Khai báo runnable
+
+
     private static final int LOCATION_REQUEST_CODE = 100;
     private FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -82,12 +87,31 @@ public class ActivityLocation extends AppCompatActivity {
         });
         apiService = RetrofitClient.getClient().create(ApiService.class);
 
+        // Khởi tạo Runnable để tải tin nhắn định kỳ
+        fetchLocationRunnable = new Runnable() {
+            @Override
+            public void run() {
+                getListLocationById(); // Gọi API để tải tin nhắn
+                handler.postDelayed(this, 1000); // Lặp lại sau mỗi giây
+            }
+        };
+
         // Khởi tạo FusedLocationProviderClient
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
-
-        getListLocationById();
         findViewById(R.id.btn_add_location).setOnClickListener(v -> showAddLocationDialog());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        handler.post(fetchLocationRunnable); // Bắt đầu tải tin nhắn định kỳ
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        handler.removeCallbacks(fetchLocationRunnable); // Dừng tải tin nhắn khi Activity dừng
     }
 
     private void getListLocationById() {
@@ -178,7 +202,7 @@ public class ActivityLocation extends AppCompatActivity {
                                   .show();
 
                         }
-                    });
+                    }, true);
                     rcvLocation.setAdapter(adapter);
                 } else {
                     Toast.makeText(ActivityLocation.this, "Không thể lấy địa chỉ", Toast.LENGTH_SHORT).show();

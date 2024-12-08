@@ -13,10 +13,13 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Product;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.RemoveItemsRequest;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ResetPasswordRequest;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Review;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ReviewResponse;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.TemporaryVerificationCode;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ChatMessage;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Thongbao;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.UpdateStatusRequest;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Voucher;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -177,13 +180,34 @@ public interface ApiService {
     // ------------------- Thong bao APIs ------------------------
     @GET("routes/notifications/{tentaikhoan}")
     Call<List<Thongbao>> getNotifications(@Path("tentaikhoan") String tentaikhoan);
-
     @DELETE("routes/notifications/{id}")
     Call<Void> deleteNotification(@Path("id") String notificationId);
-
     @PUT("routes/notifications/{id}/read")  // Địa chỉ API của bạn
     Call<Void> markNotificationAsRead(@Path("id") String notificationId);
-
     @GET("routes/notifications/{tentaikhoan}/tongtb")
     Call<ApiResponse> getUnreadNotificationCount(@Path("tentaikhoan") String tentaikhoan);
+
+    //review
+    @POST("/reviews/add-reviews/{Tentaikhoan}")
+    Call<Review> addReview(
+            @Path("Tentaikhoan") String tentaikhoan,
+            @Body Review review
+    );
+
+    @GET("/reviews/get-reviews-product/{MaSanPham}")
+    Call<Response<ArrayList<Review>>> getReviewsByProduct(@Path("MaSanPham") String maSanPham);
+
+    @GET("/reviews/get-reviews-account/{Tentaikhoan}")
+    Call<List<Review>> getReviewsByAccount(@Path("Tentaikhoan") String tentaikhoan);
+
+    @DELETE("/reviews/reviews/{id}")
+    Call<Void> deleteReview(@Path("id") String reviewId);
+
+    @GET("/reviews/get-reviews-for-product-and-user/{MaSanPham}/{Tentaikhoan}")
+    Call<ReviewResponse<List<Review>>> getReviewsForProductAndUser(@Path("MaSanPham") String MaSanPham, @Path("Tentaikhoan") String Tentaikhoan);
+
+    //Voucher
+    @GET("/voucher/get-list-vouchers")
+    Call<Response<ArrayList<Voucher>>> getListVouchers();
 }
+

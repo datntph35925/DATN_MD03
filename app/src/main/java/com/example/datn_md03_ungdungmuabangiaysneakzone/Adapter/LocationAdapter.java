@@ -27,14 +27,16 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
     private List<Location> locationList;
     Callback callback;
     Context context;
+    private boolean isOrderDelivered;
 
     // Constructor để nhận dữ liệu và userId
 
 
-    public LocationAdapter(Context context, List<Location> locationList, Callback callback) {
+    public LocationAdapter(Context context, List<Location> locationList, Callback callback, boolean isOrderDelivered) {
         this.context = context;
         this.locationList = locationList;
         this.callback = callback;
+        this.isOrderDelivered = isOrderDelivered;
     }
 
     @Override
