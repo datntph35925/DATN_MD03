@@ -12,7 +12,7 @@ import OrderBeenDelivered from "./Famework/Order_BeenDelivered/index";
 import OrderBeenCancalled from "./Famework/Order_BeenCancelled/index";
 import HistoryOutlined from "./Famework/Transaction_history";
 import History from "./Famework/Transaction/index";
-
+import Vochers from "./Famework/Vocher";
 import Profile from "./Famework/Account_Management/Index";
 import Chat from "./Famework/chat";
 import store from "./Router/store";
@@ -42,6 +42,7 @@ const App = () => {
             />
             <Route path="/quanlydonhang/huy" element={<OrderBeenCancalled />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/vocher" element={<Vochers />} />
             <Route path="/chat" element={<Chat />} />
           </Route>
         </Routes>

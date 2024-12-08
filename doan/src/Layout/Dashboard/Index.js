@@ -9,6 +9,7 @@ import {
   OrderedListOutlined,
   LogoutOutlined,
   HistoryOutlined,
+  TagsOutlined,
 } from "@ant-design/icons";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
@@ -24,6 +25,8 @@ const Dashboard = () => {
     if (location.pathname.startsWith("/chat")) return "4";
     if (location.pathname.startsWith("/quanlydonhang")) return "5";
     if (location.pathname.startsWith("/lichsugiaodich")) return "6";
+    if (location.pathname.startsWith("/vocher")) return "7";
+    if (location.pathname.startsWith("/logout")) return "8";
     return "";
   };
 
@@ -100,9 +103,12 @@ const Dashboard = () => {
           <Link to="/lichsugiaodich/dathanhtoan">Đã thanh toán</Link>
         </Menu.Item>
       </Menu.SubMenu>
+      <Menu.Item key="7" icon={<TagsOutlined />}>
+        <Link to="/vocher">Voucher</Link>
+      </Menu.Item>
 
       {/* Đăng xuất */}
-      <Menu.Item key="7" icon={<LogoutOutlined />} onClick={handleLogout}>
+      <Menu.Item key="8" icon={<LogoutOutlined />} onClick={handleLogout}>
         Đăng xuất
       </Menu.Item>
     </Menu>
