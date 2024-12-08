@@ -8,7 +8,7 @@ import {
   BarChartOutlined,
   OrderedListOutlined,
   LogoutOutlined,
-  HistoryOutlined, // Import icon cho lịch sử giao dịch
+  HistoryOutlined,
 } from "@ant-design/icons";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
@@ -23,7 +23,7 @@ const Dashboard = () => {
     if (location.pathname.startsWith("/products")) return "3";
     if (location.pathname.startsWith("/chat")) return "4";
     if (location.pathname.startsWith("/quanlydonhang")) return "5";
-    if (location.pathname.startsWith("/transaction-history")) return "6"; // Thêm điều kiện cho mục lịch sử giao dịch
+    if (location.pathname.startsWith("/lichsugiaodich")) return "6";
     return "";
   };
 
@@ -35,8 +35,8 @@ const Dashboard = () => {
       okText: "Đăng xuất",
       cancelText: "Hủy",
       onOk: () => {
-        localStorage.removeItem("isLoggedIn"); // Xóa trạng thái đăng nhập
-        navigate("/login"); // Chuyển hướng về trang đăng nhập
+        localStorage.removeItem("isLoggedIn");
+        navigate("/login");
       },
     });
   };
@@ -47,19 +47,27 @@ const Dashboard = () => {
       selectedKeys={[getSelectedKey()]}
       className="custom-menu"
     >
+      {/* Trang chủ */}
       <Menu.Item key="1" icon={<HomeOutlined />}>
         <Link to="/home">Trang chủ</Link>
       </Menu.Item>
+
+      {/* Quản lý tài khoản */}
       <Menu.Item key="2" icon={<UserOutlined />}>
-        <Link to="/profile">Quản lí tài khoản</Link>
+        <Link to="/profile">Quản lý tài khoản</Link>
       </Menu.Item>
+
+      {/* Sản phẩm */}
       <Menu.Item key="3" icon={<ShoppingOutlined />}>
         <Link to="/products">Sản phẩm</Link>
       </Menu.Item>
+
+      {/* Hỗ trợ khách hàng */}
       <Menu.Item key="4" icon={<BarChartOutlined />}>
         <Link to="/chat">Hỗ trợ khách hàng</Link>
       </Menu.Item>
 
+      {/* Quản lý đơn hàng */}
       <Menu.SubMenu
         key="5"
         icon={<OrderedListOutlined />}
@@ -78,9 +86,22 @@ const Dashboard = () => {
           <Link to="/quanlydonhang/huy">Đã hủy</Link>
         </Menu.Item>
       </Menu.SubMenu>
-      <Menu.Item key="6" icon={<HistoryOutlined />}>
-        <Link to="/lichsugiaodich">Lịch sử giao dịch</Link>
-      </Menu.Item>
+
+      {/* Lịch sử giao dịch */}
+      <Menu.SubMenu
+        key="6"
+        icon={<HistoryOutlined />}
+        title="Lịch sử giao dịch"
+      >
+        <Menu.Item key="6-1">
+          <Link to="/lichsugiaodich/dangxuly">Đang xử lý</Link>
+        </Menu.Item>
+        <Menu.Item key="6-2">
+          <Link to="/lichsugiaodich/dathanhtoan">Đã thanh toán</Link>
+        </Menu.Item>
+      </Menu.SubMenu>
+
+      {/* Đăng xuất */}
       <Menu.Item key="7" icon={<LogoutOutlined />} onClick={handleLogout}>
         Đăng xuất
       </Menu.Item>

@@ -10,7 +10,8 @@ import QlDonHang from "./Famework/Order_Management/index";
 import OrderDeingDelivered from "./Famework/Order_DeingDelivered/index";
 import OrderBeenDelivered from "./Famework/Order_BeenDelivered/index";
 import OrderBeenCancalled from "./Famework/Order_BeenCancelled/index";
-import HistoryOutlined from "./Famework/Transaction_history/index";
+import HistoryOutlined from "./Famework/Transaction_history";
+import History from "./Famework/Transaction/index";
 
 import Profile from "./Famework/Account_Management/Index";
 import Chat from "./Famework/chat";
@@ -26,7 +27,11 @@ const App = () => {
             <Route path="products" element={<Products />} />
             <Route path="/home" element={<Homes />} />
             <Route path="/quanlydonhang/dangxuly" element={<QlDonHang />} />
-            <Route path="/lichsugiaodich" element={<HistoryOutlined />} />
+            <Route
+              path="/lichsugiaodich/dangxuly"
+              element={<HistoryOutlined />}
+            />
+            <Route path="/lichsugiaodich/dathanhtoan" element={<History />} />
             <Route
               path="/quanlydonhang/danggiao"
               element={<OrderDeingDelivered />}
