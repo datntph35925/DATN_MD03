@@ -765,6 +765,15 @@ router.put('/doi-anh', upload.single('AnhtkMoi'), async (req, res) => {
         user.Anhtk = avatarFile.path.replace(/\\/g, '/'); // Thay '\\' thành '/'
         await user.save();
 
+        // Tạo thông báo
+        const notification = new Notification({
+            tentaikhoan: Tentaikhoan,
+            title: 'Cập nhật ảnh thành công',
+            message: `Ảnh của bạn đã được cập nhật thành công thành`,
+        });
+        await notification.save();
+
+
         res.status(200).json({ 
             message: 'Ảnh đại diện đã được cập nhật thành công', 
             avatarUrl: user.Anhtk 

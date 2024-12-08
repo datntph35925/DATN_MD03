@@ -86,8 +86,18 @@ router.post('/add-location/:userId', async (req, res) => {
             sdt,
         });
 
+      
         // Lưu địa chỉ mới
         await newLocation.save();
+
+        // Tạo thông báo
+          const notification = new Notification({
+            tentaikhoan: userId,
+            title: 'Thêm địa chỉ mới',
+            message: `Địa chỉ mới với người nhận là ${tenNguoiNhan} đã được thêm thành công.`,
+            read: false,
+        });
+        await notification.save();
 
         res.status(200).json({ message: 'Địa chỉ được thêm thành công', location: newLocation });
     } catch (error) {
@@ -113,6 +123,15 @@ router.delete('/remove-location/:userId', async (req, res) => {
         if (!location) {
             return res.status(404).json({ message: 'Địa chỉ không tồn tại' });
         }
+
+         // Tạo thông báo
+         const notification = new Notification({
+            tentaikhoan: userId,
+            title: 'Xóa địa chỉ',
+            message: `Địa chỉ với người nhận là ${location.tenNguoiNhan} đã được xóa.`,
+            read: false,
+        });
+        await notification.save();
 
         res.status(200).json({ message: 'Địa chỉ đã được xóa thành công' });
     } catch (error) {
@@ -148,6 +167,14 @@ router.put('/update-location/:userId', async (req, res) => {
         if (!updatedLocation) {
             return res.status(404).json({ message: 'Địa chỉ không tồn tại' });
         }
+        // Tạo thông báo
+        const notification = new Notification({
+            tentaikhoan: userId,
+            title: 'Cập nhật địa chỉ',
+            message: `Địa chỉ với người nhận là ${tenNguoiNhan} đã được cập nhật.`,
+            read: false,
+        });
+        await notification.save();
 
         res.status(200).json({ message: 'Địa chỉ đã được cập nhật thành công', location: updatedLocation });
     } catch (error) {

@@ -5,6 +5,7 @@ const CustomerAccounts = require('../models/CustomerAccounts');
 const Products = require('../models/Products');
 const Carts = require('../models/Carts');
 const Vouchers = require('../models/Vouchers');
+const Notification = require('../models/Notification'); 
 
 
 router.get("/get-list-order", async (req, res) => {
@@ -345,6 +346,15 @@ router.post('/add-order-directly/:userId', async (req, res) => {
         // Lưu đơn hàng vào cơ sở dữ liệu
         const savedOrder = await newOrder.save();
 
+
+        // Tạo thông báo
+        const notification = new Notification({
+            tentaikhoan: Tentaikhoan,
+            title: 'Trạng thái đơn hàng của bạn ',
+            message: `Đơn hàng của bạn đang chờ xử lý !`,
+        });
+        await notification.save();
+
         // Trả về kết quả
         res.status(201).json({
             message: 'Đơn hàng đã được tạo thành công từ sản phẩm trực tiếp!',
@@ -386,6 +396,35 @@ router.put('/update-order-status/:id', async (req, res) => {
                 message: 'Không tìm thấy đơn hàng với ID đã cung cấp.',
             });
         }
+
+        // Cập nhật trạng thái đơn hàng
+        order.TrangThai = TrangThai;
+        await order.save();
+
+        // Tạo thông báo dựa trên trạng thái
+        let notificationMessage = '';
+        switch (TrangThai) {
+            case 'Đang giao':
+                notificationMessage = `Đơn hàng ${order.MaDonHang} đang được giao. Vui lòng kiểm tra thông tin vận chuyển.`;
+                break;
+            case 'Đã giao':
+                notificationMessage = `Đơn hàng ${order.MaDonHang} đã được giao thành công. Cảm ơn bạn đã mua sắm!`;
+                break;
+            case 'Hủy':
+                notificationMessage = `Đơn hàng ${order.MaDonHang} đã bị hủy. Nếu bạn cần hỗ trợ, vui lòng liên hệ chúng tôi.`;
+                break;
+            default:
+                notificationMessage = `Trạng thái đơn hàng ${order.MaDonHang} đã được cập nhật thành: ${TrangThai}.`;
+        }
+
+        // Lưu thông báo vào cơ sở dữ liệu
+        const notification = new Notification({
+            tentaikhoan: order.Tentaikhoan,
+            title: 'Cập nhật trạng thái đơn hàng',
+            message: notificationMessage,
+            read: false,
+        });
+        await notification.save();
 
         // Trả về kết quả thành công
         res.status(200).json({
