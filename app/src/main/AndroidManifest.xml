@@ -28,6 +28,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DATN_MD03_UngDungMuaBanGiaySneakZone"
         android:usesCleartextTraffic="true">
+        <service
+            android:name=".MyForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="location|dataSync" />
+
         <activity
             android:name=".Activity.Activity_ShowList_Voucher"
             android:exported="false" />

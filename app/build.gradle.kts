@@ -70,6 +70,8 @@ dependencies {
     implementation ("androidx.recyclerview:recyclerview:1.2.1")
     implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
+    implementation ("androidx.work:work-runtime-ktx:2.8.1")
+
     //gg map
     implementation ("com.google.android.gms:play-services-maps:18.1.0")
     implementation ("com.google.android.gms:play-services-location:21.0.1")
@@ -77,4 +79,5 @@ dependencies {
     //gg map
     implementation ("com.google.android.gms:play-services-maps:18.1.0")
     implementation ("com.google.android.gms:play-services-location:21.0.1")
+
 }

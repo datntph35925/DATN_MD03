@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter.SanPhamAdapter;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.MyForegroundService;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.ThongbaodsActivity;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiResponse;
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         // Khởi tạo các view
         bottomNavigationView = findViewById(R.id.bottomnavigation);
         imageViewSlider = findViewById(R.id.imageViewSlider); // ImageView cho slideshow
@@ -76,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
         });
         // Khởi tạo API service
         apiService = RetrofitClient.getClient().create(ApiService.class);
+        Intent serviceIntent = new Intent(this, MyForegroundService.class);
+        startService(serviceIntent);
 
         // Lấy tài khoản từ SharedPreferences
         SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
@@ -123,7 +127,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             finish(); // Đảm bảo không quay lại màn hình đăng nhập
         });
-        createNotificationChannel();
+//        createNotificationChannel();
+
     }
     private void createNotificationChannel() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -169,9 +174,9 @@ public class MainActivity extends AppCompatActivity {
                     hienthiso.setText(String.valueOf(unreadCount));
 
                     // Hiển thị thông báo (giả sử API trả về thông báo mới trong danh sách)
-                    if (unreadCount > 0) {
-                        showNotification("Thông báo mới", "Bạn có " + unreadCount + " thông báo chưa đọc.");
-                    }
+//                    if (unreadCount > 0) {
+//                        showNotification("Thông báo mới", "Bạn có " + unreadCount + " thông báo chưa đọc.");
+//                    }
                 } else {
                     Toast.makeText(MainActivity.this, "Không thể lấy thông báo", Toast.LENGTH_SHORT).show();
                 }
