@@ -59,10 +59,6 @@ router.get("/get-list-order/:Tentaikhoan", async (req, res) => {
     }
 });
 
-
-
-
-
 router.post('/add-order-from-cart/:userId', async (req, res) => {
     try {
         const { userId } = req.params; // Lấy userId từ URL params

@@ -20,6 +20,37 @@ router.get('/get-list-vouchers', async (req, res) => {
     }
 });
 
+//lấy danh sách voucher cho Tentaikhoan
+
+// Lấy danh sách voucher theo Tentaikhoan từ req.params
+router.get('/get-list-vouchers-acount/:Tentaikhoan?', async (req, res) => {
+    try {
+        // Lấy Tentaikhoan từ params
+        const { Tentaikhoan } = req.params;
+
+        // Kiểm tra nếu Tentaikhoan được cung cấp
+        let vouchers;
+        if (Tentaikhoan) {
+            vouchers = await Vouchers.find({ UsedBy: Tentaikhoan }); // Tìm voucher dựa trên Tentaikhoan
+        } else {
+            vouchers = await Vouchers.find(); // Lấy tất cả voucher nếu không có Tentaikhoan
+        }
+
+        res.status(200).json({
+            status: 200,
+            message: 'Lấy danh sách voucher thành công',
+            data: vouchers
+        });
+    } catch (error) {
+        console.error('Lỗi khi lấy danh sách voucher:', error);
+        res.status(500).json({
+            status: 500,
+            message: 'Lỗi server khi lấy danh sách voucher'
+        });
+    }
+});
+
+
 // Thêm một voucher mới
 router.post('/add-vouchers', async (req, res) => {
     try {
