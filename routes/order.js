@@ -4,6 +4,7 @@ const Orders = require('../models/Orders');
 const CustomerAccounts = require('../models/CustomerAccounts');
 const Products = require('../models/Products');
 const Carts = require('../models/Carts');
+const Vouchers = require('../models/Vouchers');
 
 
 router.get("/get-list-order", async (req, res) => {
@@ -66,14 +67,14 @@ router.post('/add-order-from-cart/:userId', async (req, res) => {
     try {
         const { userId } = req.params; // Lấy userId từ URL params
 
-        // Lấy dữ liệu từ body của request (địa chỉ, phương thức thanh toán, voucher, v.v.)
+        // Lấy dữ liệu từ body của request
         const {
             MaDonHang,
             TenNguoiNhan,
             DiaChiGiaoHang,
             SoDienThoai,
             PhuongThucThanhToan,
-            selectedProducts, // Các sản phẩm đã chọn từ giỏ hàng (danh sách ID sản phẩm)
+            selectedProducts, // Danh sách ID sản phẩm được chọn từ giỏ hàng
             Voucher // Mã voucher (nếu có)
         } = req.body;
 
@@ -97,77 +98,83 @@ router.post('/add-order-from-cart/:userId', async (req, res) => {
             return res.status(400).json({ message: 'Không có sản phẩm nào được chọn cho đơn hàng!' });
         }
 
-        // Kiểm tra giỏ hàng có đủ số lượng sản phẩm không
-        const productIds = cartProducts.map(item => item.MaSanPham); // Lấy tất cả IDs của sản phẩm
+        // Kiểm tra sản phẩm trong giỏ hàng với cơ sở dữ liệu
+        const productIds = cartProducts.map(item => item.MaSanPham); // Lấy IDs của sản phẩm
         const productsInDb = await Products.find({ _id: { $in: productIds } });
 
-        // Kiểm tra xem tất cả sản phẩm trong giỏ hàng có tồn tại không
         const invalidProducts = cartProducts.filter(item =>
             !productsInDb.some(product => product._id.toString() === item.MaSanPham.toString())
         );
         if (invalidProducts.length > 0) {
             return res.status(400).json({
-                message: `Các sản phẩm sau không tồn tại trong cơ sở dữ liệu: ${invalidProducts.map(item => item.TenSP).join(", ")}`
+                message: `Các sản phẩm sau không tồn tại trong cơ sở dữ liệu: ${invalidProducts.map(item => item.TenSP).join(", ")}`,
             });
         }
 
-        // Kiểm tra số lượng sản phẩm trong giỏ hàng có hợp lệ không
-        const invalidQuantityProducts = cartProducts.filter(item => !item.SoLuongGioHang || item.SoLuongGioHang <= 0);
-        if (invalidQuantityProducts.length > 0) {
-            return res.status(400).json({
-                message: `Sản phẩm sau không có số lượng hợp lệ: ${invalidQuantityProducts.map(item => item.TenSP).join(", ")}`
-            });
-        }
-
-        // Cập nhật lại các sản phẩm trong giỏ hàng với trường SoLuongGioHang và Size (nếu cần)
+        // Cập nhật lại các sản phẩm trong giỏ hàng
         const updatedProducts = cartProducts.map(item => {
-            if (!item.SoLuongGioHang) {
-                item.SoLuongGioHang = 1; // Gán số lượng mặc định nếu không có
-            }
-
-            // Lấy thông tin sản phẩm từ cơ sở dữ liệu (bao gồm cả Size)
             const productDetails = productsInDb.find(product => product._id.toString() === item.MaSanPham.toString());
 
             if (productDetails) {
-                // Lấy thông tin hình ảnh và size từ sản phẩm trong cơ sở dữ liệu
-                item.HinhAnh = productDetails.HinhAnh;
-
-                // Nếu sản phẩm có nhiều size, thì bạn cần kiểm tra và gán size từ giỏ hàng vào sản phẩm
-                const productSize = item.Size || productDetails.Size; // Gán size từ giỏ hàng hoặc cơ sở dữ liệu
-                item.Size = productSize;
+                item.HinhAnh = productDetails.HinhAnh || [];
+                item.Size = item.Size || productDetails.Size; // Gán size từ giỏ hàng hoặc cơ sở dữ liệu
+                item.TongTien = item.Gia * item.SoLuongGioHang; // Tính lại tổng tiền sản phẩm
             }
 
             return item;
         });
 
-        // Tính tổng số lượng và tổng tiền cho các sản phẩm đã chọn
+        // Tính tổng số lượng và tổng tiền trước khi áp dụng voucher
         const TongSoLuong = updatedProducts.reduce((total, item) => total + item.SoLuongGioHang, 0);
-        const TongTien = updatedProducts.reduce((total, item) => total + item.TongTien, 0);
+        let TongTien = updatedProducts.reduce((total, item) => total + item.TongTien, 0);
 
-        // Kiểm tra voucher nếu có
+        // Kiểm tra và áp dụng voucher
         let voucherApplied = null;
+        let discountAmount = 0; // Số tiền giảm giá
         if (Voucher) {
-            // Tìm voucher trong hệ thống
-            const orderWithVoucher = await Orders.findOne({ Voucher });
-            if (orderWithVoucher && orderWithVoucher.VoucherUsedBy.includes(userAccount.Tentaikhoan)) {
+            const voucher = await Vouchers.findOne({ MaVoucher: Voucher });
+
+            if (!voucher) {
+                return res.status(400).json({ message: 'Voucher không hợp lệ hoặc không tồn tại.' });
+            }
+
+            // Kiểm tra thời gian hiệu lực của voucher
+            const currentDate = new Date();
+            if (currentDate < voucher.NgayBatDau || currentDate > voucher.NgayKetThuc) {
+                return res.status(400).json({ message: 'Voucher đã hết hạn.' });
+            }
+
+            // Kiểm tra xem voucher đã được sử dụng chưa
+            if (voucher.UsedBy.includes(userAccount.Tentaikhoan)) {
                 return res.status(400).json({ message: 'Voucher này đã được sử dụng cho tài khoản này.' });
             }
 
-            // Áp dụng voucher
-            voucherApplied = Voucher;
+            // Áp dụng giảm giá
+            if (voucher.LoaiVoucher === 'Giảm giá theo %') {
+                discountAmount = TongTien * (voucher.GiaTri / 100);
+            } else if (voucher.LoaiVoucher === 'Giảm giá cố định') {
+                discountAmount = voucher.GiaTri;
+            }
 
-            // Thêm tài khoản vào danh sách đã sử dụng voucher
-            await Orders.updateMany(
-                { Voucher: voucherApplied },
-                { $addToSet: { VoucherUsedBy: userAccount.Tentaikhoan } }
-            );
+            // Đảm bảo số tiền giảm giá không vượt quá tổng tiền
+            if (discountAmount > TongTien) {
+                discountAmount = TongTien;
+            }
+
+            // Cập nhật voucher đã sử dụng
+            voucherApplied = voucher.MaVoucher;
+            voucher.UsedBy.push(userAccount.Tentaikhoan);
+            await voucher.save();
+
+            // Trừ tiền giảm giá vào tổng tiền
+            TongTien -= discountAmount;
         }
 
         // Tạo đơn hàng mới
         const newOrder = new Orders({
             MaDonHang,
             Tentaikhoan: userAccount.Tentaikhoan,
-            SanPham: updatedProducts,  // Các sản phẩm đã được cập nhật
+            SanPham: updatedProducts, // Các sản phẩm đã được cập nhật
             TenNguoiNhan,
             DiaChiGiaoHang,
             SoDienThoai,
@@ -175,7 +182,7 @@ router.post('/add-order-from-cart/:userId', async (req, res) => {
             TongSoLuong,
             TongTien,
             PhuongThucThanhToan,
-            Voucher: voucherApplied  // Thêm voucher vào đơn hàng nếu có
+            Voucher: voucherApplied // Thêm voucher vào đơn hàng nếu có
         });
 
         // Lưu đơn hàng vào cơ sở dữ liệu
@@ -184,7 +191,8 @@ router.post('/add-order-from-cart/:userId', async (req, res) => {
         // Trả về kết quả
         res.status(201).json({
             message: 'Đơn hàng đã được tạo thành công từ giỏ hàng!',
-            order: savedOrder
+            order: savedOrder,
+            discount: discountAmount // Số tiền giảm giá
         });
 
     } catch (error) {
@@ -256,7 +264,7 @@ router.post('/add-order-directly/:userId', async (req, res) => {
             }
 
             if (!item.HinhAnh) {
-                item.HinhAnh = productInDb.HinhAnh || []; // Đảm bảo có HìnhAnh
+                item.HinhAnh = productInDb.HinhAnh || []; // Đảm bảo có HinhAnh
             }
 
             return false;
@@ -268,27 +276,51 @@ router.post('/add-order-directly/:userId', async (req, res) => {
             });
         }
 
-        // Tính tổng số lượng và tổng tiền
+        // Tính tổng số lượng và tổng tiền trước khi áp dụng voucher
         const TongSoLuong = SanPham.reduce((total, item) => total + item.SoLuongGioHang, 0);
-        const TongTien = SanPham.reduce((total, item) => total + item.TongTien, 0);
+        let TongTien = SanPham.reduce((total, item) => total + (item.Gia * item.SoLuongGioHang), 0);
 
         // Kiểm tra voucher nếu có
         let voucherApplied = null;
+        let discountAmount = 0; // Số tiền giảm giá
         if (Voucher) {
             // Tìm voucher trong hệ thống
-            const orderWithVoucher = await Orders.findOne({ Voucher });
-            if (orderWithVoucher && orderWithVoucher.VoucherUsedBy.includes(userAccount.Tentaikhoan)) {
+            const voucher = await Vouchers.findOne({ MaVoucher: Voucher });
+
+            if (!voucher) {
+                return res.status(400).json({ message: 'Voucher không hợp lệ hoặc không tồn tại.' });
+            }
+
+            // Kiểm tra xem voucher có còn hiệu lực không
+            const currentDate = new Date();
+            if (currentDate < voucher.NgayBatDau || currentDate > voucher.NgayKetThuc) {
+                return res.status(400).json({ message: 'Voucher đã hết hạn.' });
+            }
+
+            // Kiểm tra xem voucher đã được sử dụng chưa
+            if (voucher.UsedBy.includes(userAccount.Tentaikhoan)) {
                 return res.status(400).json({ message: 'Voucher này đã được sử dụng cho tài khoản này.' });
             }
 
-            // Áp dụng voucher
-            voucherApplied = Voucher;
+            // Áp dụng giảm giá theo loại voucher
+            if (voucher.LoaiVoucher === 'Giảm giá theo %') {
+                discountAmount = TongTien * (voucher.GiaTri / 100);
+            } else if (voucher.LoaiVoucher === 'Giảm giá cố định') {
+                discountAmount = voucher.GiaTri;
+            }
 
-            // Thêm tài khoản vào danh sách đã sử dụng voucher
-            await Orders.updateMany(
-                { Voucher: voucherApplied },
-                { $addToSet: { VoucherUsedBy: userAccount.Tentaikhoan } }
-            );
+            // Đảm bảo số tiền giảm giá không lớn hơn tổng tiền
+            if (discountAmount > TongTien) {
+                discountAmount = TongTien;
+            }
+
+            // Cập nhật voucher đã sử dụng
+            voucherApplied = voucher.MaVoucher;
+            voucher.UsedBy.push(userAccount.Tentaikhoan);
+            await voucher.save();
+
+            // Trừ tiền giảm giá vào tổng tiền
+            TongTien -= discountAmount;
         }
 
         // Tạo đơn hàng mới
@@ -301,7 +333,7 @@ router.post('/add-order-directly/:userId', async (req, res) => {
                 SoLuongGioHang: item.SoLuongGioHang,
                 Size: item.Size,
                 Gia: item.Gia,
-                TongTien: item.TongTien,
+                TongTien: item.Gia * item.SoLuongGioHang,
                 HinhAnh: item.HinhAnh || [] // Đảm bảo HinhAnh là một mảng
             })),
             TenNguoiNhan,
@@ -320,7 +352,8 @@ router.post('/add-order-directly/:userId', async (req, res) => {
         // Trả về kết quả
         res.status(201).json({
             message: 'Đơn hàng đã được tạo thành công từ sản phẩm trực tiếp!',
-            order: savedOrder
+            order: savedOrder,
+            discount: discountAmount // Thông tin giảm giá áp dụng
         });
 
     } catch (error) {

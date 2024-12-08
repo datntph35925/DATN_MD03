@@ -20,6 +20,7 @@ const locationRouter = require("./routes/locations");
 const paymentAuthenticationRouter = require("./routes/paymentAuthentication");
 const favoriteRouter = require("./routes/favorite")
 const notificationRouter = require('./routes/NotificationRouter'); 
+const voucherRouter = require('./routes/voucher'); 
 
 const app = express();
 const server = http.createServer(app); // Tạo server từ app
@@ -71,6 +72,7 @@ app.use("/locations", locationRouter)
 app.use("/paymentAuthentication", paymentAuthenticationRouter)
 app.use("/favorite", favoriteRouter)
 app.use('/routes/notifications', notificationRouter);
+app.use('/voucher', voucherRouter);
 // Socket.io để xử lý chat thời gian thực
 io.on("connection", (socket) => {
   console.log("Có người dùng kết nối:", socket.id);
