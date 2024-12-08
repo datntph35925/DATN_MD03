@@ -55,7 +55,7 @@ public class ThongbaodsActivity extends AppCompatActivity {
     private static final long REFRESH_INTERVAL = 1000; //
 
     // Khai báo CHANNEL_ID cho kênh thông báo
-    private static final String CHANNEL_ID = "my_notification_channel";
+    public static final String CHANNEL_ID = "my_notification_channel";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
