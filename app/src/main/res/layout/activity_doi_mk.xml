@@ -89,7 +89,7 @@
             android:hint="Nhập mật khẩu cũ của bạn"
             android:inputType="text"
             android:padding="12dp"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="18sp"
             />
     </androidx.cardview.widget.CardView>
@@ -133,7 +133,7 @@
             android:hint="Nhập mật khẩu mới của bạn"
             android:inputType="text"
             android:padding="12dp"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="18sp"
             />
     </androidx.cardview.widget.CardView>
@@ -176,7 +176,7 @@
             android:hint="Nhập lại mật khẩu mới của bạn"
             android:inputType="text"
             android:padding="12dp"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="18sp"
             />
     </androidx.cardview.widget.CardView>
