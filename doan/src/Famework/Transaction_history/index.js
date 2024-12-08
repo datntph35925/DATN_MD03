@@ -8,59 +8,53 @@ import {
 const TransactionHistory = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
   const [error, setError] = useState(null);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
 
   // Fetch transaction history data from API
+  const fetchTransactions = async () => {
+    try {
+      setLoading(true);
+      const data = await gethistory();
+      const filteredData = data.filter(
+        (transaction) => transaction.TrangThai === "Chưa thanh toán"
+      );
+
+      const sanitizedData = filteredData.map((transaction) => ({
+        ...transaction,
+        SoTien: transaction.SoTien || 0,
+        TrangThai: transaction.TrangThai || "Không xác định",
+      }));
+      setTransactions(sanitizedData || []);
+    } catch (err) {
+      console.error("Error fetching transaction history:", err);
+      setError("Không thể tải lịch sử giao dịch. Vui lòng thử lại sau.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        setLoading(true);
-        const data = await gethistory();
-        const filteredData = data.filter(
-          (transaction) => transaction.TrangThai === "Chưa thanh toán"
-        );
-
-        const sanitizedData = filteredData.map((transaction) => ({
-          ...transaction,
-          SoTien: transaction.SoTien || 0,
-          TrangThai: transaction.TrangThai || "Không xác định",
-        }));
-        setTransactions(sanitizedData || []);
-      } catch (err) {
-        console.error("Error fetching transaction history:", err);
-        setError("Không thể tải lịch sử giao dịch. Vui lòng thử lại sau.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchTransactions();
   }, []);
 
   // Update transaction status
   const handleUpdateStatus = async (_id, newStatus) => {
     try {
-      setLoading(true);
+      setUpdating(true);
       const response = await updateTransactionStatus(_id, newStatus);
-      console.log("Updated transaction: ", response);
 
       if (response) {
-        message.success(`Giao dịch ${_id} đã được cập nhật thành công!`);
-        // Update transaction list after successful status update
-        setTransactions((prevTransactions) =>
-          prevTransactions.map((transaction) =>
-            transaction._id === _id
-              ? { ...transaction, TrangThai: newStatus }
-              : transaction
-          )
-        );
+        message.success(`Giao dịch  đã được cập nhật thành công!`);
+        // Refresh the transaction list after a successful update
+        await fetchTransactions();
       }
     } catch (error) {
       console.error("Error updating transaction status:", error);
       message.error("Không thể cập nhật trạng thái giao dịch.");
     } finally {
-      setLoading(false);
+      setUpdating(false);
     }
   };
 
@@ -119,9 +113,11 @@ const TransactionHistory = () => {
         <Button
           type="primary"
           onClick={() => handleUpdateClick(record)}
-          disabled={record.TrangThai === "Đã thanh toán"}
+          disabled={record.TrangThai === "Đã thanh toán" || updating}
         >
-          Xác nhận thanh toán
+          {updating && record._id === selectedTransaction?._id
+            ? "Đang cập nhật..."
+            : "Xác nhận thanh toán"}
         </Button>
       ),
     },
@@ -141,7 +137,8 @@ const TransactionHistory = () => {
 
   // Display transaction table and modal for transaction details
   return (
-    <>
+    <div>
+      <h2>Giao dịch chờ xác nhận</h2>
       <Table
         dataSource={transactions}
         columns={columns}
@@ -156,6 +153,7 @@ const TransactionHistory = () => {
         onCancel={() => setSelectedTransaction(null)}
         okText="Xác nhận"
         cancelText="Hủy"
+        confirmLoading={updating}
       >
         {selectedTransaction && (
           <>
@@ -174,7 +172,7 @@ const TransactionHistory = () => {
           </>
         )}
       </Modal>
-    </>
+    </div>
   );
 };
 

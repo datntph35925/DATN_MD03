@@ -67,11 +67,14 @@ const Transaction = () => {
     return <p style={{ textAlign: "center", color: "red" }}>{error}</p>;
   }
   return (
-    <Table
-      dataSource={filteredTransactions}
-      columns={columns}
-      rowKey="MaDonHang"
-    />
+    <div>
+      <h1 style={{ textAlign: "center" }}>Lịch sử giao dịch đã thanh toán</h1>
+      <Table
+        dataSource={filteredTransactions}
+        columns={columns}
+        rowKey="MaDonHang"
+      />
+    </div>
   );
 };
 
