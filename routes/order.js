@@ -447,4 +447,71 @@ router.get('/total-orders', async (req, res) => {
     }
 });
 
+
+router.get('/revenue-statistics', async (req, res) => {
+    const { startDate, endDate } = req.query;
+
+    try {
+        // Xử lý khoảng thời gian
+        const dateFilter = {};
+        if (startDate) dateFilter.$gte = new Date(startDate);
+        if (endDate) dateFilter.$lte = new Date(endDate);
+
+        // Tính doanh thu từ COD (trạng thái Đã giao)
+        const codRevenue = await Orders.aggregate([
+            {
+                $match: {
+                    PhuongThucThanhToan: 'Thanh toán khi nhận hàng (COD)',
+                    TrangThai: 'Đã giao',
+                    ...(startDate || endDate ? { NgayDatHang: dateFilter } : {}),
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalRevenue: { $sum: '$TongTien' },
+                },
+            },
+        ]);
+
+        // Tính doanh thu từ thanh toán qua ngân hàng (trạng thái Đang giao)
+        const bankRevenue = await Orders.aggregate([
+            {
+                $match: {
+                    PhuongThucThanhToan: 'Thanh toán qua ngân hàng',
+                    TrangThai: { $in: ['Đang giao', 'Đã giao'] },
+                    ...(startDate || endDate ? { NgayDatHang: dateFilter } : {}),
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalRevenue: { $sum: '$TongTien' },
+                },
+            },
+        ]);
+
+        const totalCODRevenue = codRevenue.length > 0 ? codRevenue[0].totalRevenue : 0;
+        const totalBankRevenue = bankRevenue.length > 0 ? bankRevenue[0].totalRevenue : 0;
+
+        res.status(200).json({
+            status: 200,
+            message: "Thống kê doanh thu thành công",
+            data: {
+                codRevenue: totalCODRevenue,
+                bankRevenue: totalBankRevenue,
+                totalRevenue: totalCODRevenue + totalBankRevenue,
+            },
+        });
+    } catch (error) {
+        console.error('Lỗi khi thống kê doanh thu:', error);
+        res.status(500).json({
+            status: 500,
+            message: "Lỗi khi thống kê doanh thu",
+            error: error.message,
+        });
+    }
+});
+
+
 module.exports = router;
