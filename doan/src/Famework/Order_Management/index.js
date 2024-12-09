@@ -21,6 +21,7 @@ const Order_Management = () => {
       const fetchedOrders = await getListOrders();
       if (Array.isArray(fetchedOrders)) {
         setOrders(fetchedOrders);
+        console.log(fetchedOrders);
       } else {
         console.error("The response data is not an array:", fetchedOrders);
       }

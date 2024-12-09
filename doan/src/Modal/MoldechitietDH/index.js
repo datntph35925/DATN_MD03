@@ -15,6 +15,11 @@ const OrderDetailModal = ({ visible, onClose, order }) => {
       key: "SoLuongGioHang",
     },
     {
+      title: "Size",
+      dataIndex: "Size",
+      key: "Size",
+    },
+    {
       title: "Đơn giá",
       dataIndex: "Gia",
       key: "Gia",

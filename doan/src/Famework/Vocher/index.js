@@ -1,63 +1,125 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, message } from "antd";
+import { Table, Button, message, Modal } from "antd";
 import AddVoucherModal from "../../Modal/ModalAddVoucher";
-import { getlistVouchers } from "../../Server/Vouchers"; // Import the delete API function
+import {
+  getlistVouchers,
+  deleteVoucher,
+  updateVoucher,
+  addVoucher,
+} from "../../Server/Vouchers";
 import "./index.scss";
+
+const { confirm } = Modal;
 
 function VoucherList() {
   const [vouchers, setVouchers] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editingVoucher, setEditingVoucher] = useState(null); // Voucher đang chỉnh sửa
 
-  // Fetch vouchers from API
+  // Fetch danh sách vouchers
   useEffect(() => {
     const fetchVouchers = async () => {
       try {
         const data = await getlistVouchers();
-        console.log(data); // Log the API response
-        setVouchers(data); // Set vouchers state with API data
+        setVouchers(data.map((voucher) => ({ ...voucher, key: voucher._id })));
       } catch (error) {
         console.error("Error fetching vouchers:", error);
+        message.error(
+          "Lỗi: Không thể tải danh sách voucher. Vui lòng thử lại sau!"
+        );
       }
     };
 
     fetchVouchers();
-  }, []); // Empty dependency array ensures it runs once on mount
+  }, []);
 
+  // Hiển thị modal thêm voucher
   const handleAddVoucherClick = () => {
+    setEditingVoucher(null); // Reset voucher đang chỉnh sửa
     setIsModalVisible(true);
   };
 
-  const handleModalOk = (newVoucher) => {
-    // Add the new voucher to the list of vouchers
-    setVouchers((prevVouchers) => [...prevVouchers, newVoucher]);
-    setIsModalVisible(false);
-    alert("Voucher đã được thêm!");
+  // Hiển thị modal chỉnh sửa voucher
+  const handleEditVoucherClick = (voucher) => {
+    setEditingVoucher(voucher);
+    setIsModalVisible(true);
   };
 
-  const handleModalCancel = () => {
-    setIsModalVisible(false);
+  // Xử lý thêm hoặc cập nhật voucher
+  const handleModalOk = async (updatedVoucher) => {
+    if (!updatedVoucher || Object.keys(updatedVoucher).length === 0) {
+      message.error("Lỗi: Dữ liệu không hợp lệ. Vui lòng kiểm tra và thử lại!");
+      return;
+    }
+
+    try {
+      if (editingVoucher) {
+        // Cập nhật voucher
+        const updated = await updateVoucher(editingVoucher._id, updatedVoucher);
+        setVouchers((prevVouchers) =>
+          prevVouchers.map((voucher) =>
+            voucher._id === editingVoucher._id
+              ? { ...updated, key: updated._id }
+              : voucher
+          )
+        );
+        message.success(`Cập nhật voucher "${updated.MaVoucher}" thành công!`);
+      } else {
+        // Thêm mới voucher
+        const newVoucher = await addVoucher(updatedVoucher);
+        setVouchers((prevVouchers) => [
+          ...prevVouchers,
+          { ...newVoucher, key: newVoucher._id },
+        ]);
+        message.success(
+          `Thêm mới voucher "${newVoucher.MaVoucher}" thành công!`
+        );
+      }
+    } catch (error) {
+      console.error("Error adding/updating voucher:", error);
+      message.error(
+        `Lỗi: ${
+          error.response?.data?.message ||
+          "Không thể hoàn tất yêu cầu. Vui lòng thử lại!"
+        }`
+      );
+    } finally {
+      setIsModalVisible(false);
+    }
   };
 
-  // Handle the delete functionality
-  // const handleDeleteVoucher = async (id) => {
-  //   try {
-  //     const response = await deleteVoucher(id);
-  //     if (response.success) {
-  //       // Remove the deleted voucher from the state
-  //       setVouchers((prevVouchers) =>
-  //         prevVouchers.filter((voucher) => voucher.id !== id)
-  //       );
-  //       message.success("Voucher đã được xóa thành công!");
-  //     } else {
-  //       message.error("Lỗi khi xóa voucher!");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error deleting voucher:", error);
-  //     message.error("Lỗi khi xóa voucher. Vui lòng thử lại!");
-  //   }
-  // };
+  // Đóng modal
+  const handleModalCancel = () => setIsModalVisible(false);
 
-  // Define table columns
+  // Xóa voucher
+  const handleDeleteVoucher = async (id) => {
+    try {
+      await deleteVoucher(id);
+      setVouchers((prevVouchers) =>
+        prevVouchers.filter((voucher) => voucher._id !== id)
+      );
+      message.success("Xóa voucher thành công!");
+    } catch (error) {
+      console.error("Error deleting voucher:", error);
+      message.error("Lỗi: Không thể xóa voucher. Vui lòng thử lại!");
+    }
+  };
+
+  // Hiển thị xác nhận xóa
+  const showDeleteConfirm = (id) => {
+    confirm({
+      title: "Bạn có chắc chắn muốn xóa voucher này?",
+      content: "Thao tác này sẽ xóa vĩnh viễn voucher và không thể hoàn tác.",
+      okText: "Xác nhận",
+      okType: "danger",
+      cancelText: "Hủy",
+      onOk() {
+        handleDeleteVoucher(id);
+      },
+    });
+  };
+
+  // Cấu hình cột cho bảng
   const columns = [
     {
       title: "Mã Voucher",
@@ -68,20 +130,16 @@ function VoucherList() {
       title: "Giảm Giá",
       dataIndex: "GiaTri",
       key: "GiaTri",
-      render: (GiaTri, record) => {
-        if (record.LoaiVoucher === "Giảm giá cố định") {
-          return `${GiaTri.toLocaleString("vi-VN")} VND`;
-        } else if (record.LoaiVoucher === "Giảm giá theo %") {
-          return `${GiaTri}%`;
-        }
-        return "N/A";
-      },
+      render: (GiaTri, record) =>
+        record.LoaiVoucher === "Giảm giá cố định"
+          ? `${GiaTri.toLocaleString("vi-VN")} VND`
+          : `${GiaTri}%`,
     },
     {
       title: "Hạn Sử Dụng",
       dataIndex: "NgayKetThuc",
       key: "NgayKetThuc",
-      render: (date) => new Date(date).toLocaleDateString("vi-VN"), // Định dạng ngày tháng năm
+      render: (date) => new Date(date).toLocaleDateString("vi-VN"),
     },
     {
       title: "Trạng thái",
@@ -95,15 +153,18 @@ function VoucherList() {
         <>
           <Button
             type="primary"
-            style={{
-              backgroundColor: "#28a745",
-              borderColor: "#28a745",
-              marginRight: 8,
-            }}
+            style={{ marginRight: 8 }}
+            onClick={() => handleEditVoucherClick(record)}
           >
-            Áp dụng
+            Cập nhật
           </Button>
-          <Button type="danger">Xóa</Button>
+          <Button
+            type="danger"
+            style={{ background: "#FF0000" }}
+            onClick={() => showDeleteConfirm(record._id)}
+          >
+            Xóa
+          </Button>
         </>
       ),
     },
@@ -114,22 +175,23 @@ function VoucherList() {
       <header className="voucher-header">
         <h2>Danh Sách Voucher</h2>
       </header>
-      <Button type="primary" onClick={handleAddVoucherClick}>
+      <Button
+        type="primary"
+        onClick={handleAddVoucherClick}
+        style={{ marginBottom: 16 }}
+      >
         Thêm Voucher
       </Button>
-      {/* Ant Design Table */}
       <Table
         dataSource={vouchers}
         columns={columns}
-        rowKey="id" // Ensure that the rowKey corresponds to the unique identifier
         pagination={{ pageSize: 5 }}
       />
-
-      {/* Modal Component */}
       <AddVoucherModal
         isVisible={isModalVisible}
         onOk={handleModalOk}
         onCancel={handleModalCancel}
+        voucher={editingVoucher}
       />
     </div>
   );

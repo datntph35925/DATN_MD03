@@ -17,4 +17,20 @@ const addVoucher = async (voucher) => {
     console.error("Lỗi khi thêm voucher:", error);
   }
 };
-export { getlistVouchers, addVoucher };
+const deleteVoucher = async (id) => {
+  try {
+    const response = await axios.delete(`/voucher/delete-vouchers/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Lỗii khi xóa voucher:", error);
+  }
+};
+const updateVoucher = async (id, voucher) => {
+  try {
+    const response = await axios.put(`/voucher/update-vouchers/${id}`, voucher);
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi cập nhật voucher:", error);
+  }
+};
+export { getlistVouchers, addVoucher, deleteVoucher, updateVoucher };

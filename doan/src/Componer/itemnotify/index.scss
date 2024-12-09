@@ -1,0 +1,21 @@
+.notification-item {
+    padding: 16px; /* Add padding for spacing */
+    border-bottom: 1px solid #f0f0f0; /* Separate notifications with a border */
+    text-align: left; /* Align all text to the left */
+    font-size: 14px; /* Set a comfortable font size */
+    line-height: 1.6; /* Improve readability */
+    background-color: #ffffff; /* Set a clean background */
+    
+    &:hover {
+      background-color: #f9f9f9; /* Slight background change on hover */
+    }
+  
+    p {
+      margin: 8px 0; /* Add margin between lines */
+      color: #333; /* Set text color */
+      strong {
+        color: #595959; /* Different color for labels */
+      }
+    }
+  }
+  

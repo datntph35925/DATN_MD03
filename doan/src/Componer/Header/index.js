@@ -1,31 +1,49 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Avatar, Badge, Dropdown, Menu, Tooltip } from "antd";
+import { Avatar, Badge, Dropdown, Menu, Tooltip, Drawer } from "antd";
 import { BellOutlined, UserOutlined } from "@ant-design/icons";
 import logo from "../../Image/logo.png";
-import "./index.scss"; // Import file SCSS
-
-// Thay đổi URL của logo
+import NotificationItem from "../itemnotify";
+import { getNotify } from "../../Server/notify"; // Adjust the API path
+import "./index.scss";
 
 const Header = () => {
-  // Access user data from Redux
   const user = useSelector((state) => state.auth.user);
+
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      setLoading(true); // Start loading
+      try {
+        const data = await getNotify(); // Fetch notifications
+        if (Array.isArray(data)) {
+          setNotifications(data); // Set notifications if response is an array
+        } else if (data?.notifications && Array.isArray(data.notifications)) {
+          setNotifications(data.notifications); // Handle wrapped notifications
+        } else {
+          console.warn("Unexpected API response structure:", data);
+        }
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      } finally {
+        setLoading(false); // Stop loading
+      }
+    };
+
+    fetchNotifications();
+  }, []);
+
+  const showDrawer = () => setDrawerVisible(true); // Open drawer
+  const closeDrawer = () => setDrawerVisible(false); // Close drawer
 
   const userMenu = (
     <Menu>
       <Menu.Item key="1" icon={<UserOutlined />}>
-        {user?.email || "No email available"}
+        {user?.email || "No Email"}
       </Menu.Item>
-    </Menu>
-  );
-
-  const notificationsMenu = (
-    <Menu>
-      <Menu.Item key="1">You have a new message</Menu.Item>
-      <Menu.Item key="2">Your order has been shipped</Menu.Item>
-      <Menu.Item key="3">Reminder: Meeting at 3 PM</Menu.Item>
-      <Menu.Divider />
-      <Menu.Item key="4">View all notifications</Menu.Item>
     </Menu>
   );
 
@@ -37,22 +55,46 @@ const Header = () => {
       </div>
 
       <div className="custom-header-actions">
+        {/* Notifications Bell */}
         <Tooltip title="Notifications">
-          <Dropdown
-            overlay={notificationsMenu}
-            trigger={["click"]}
-            placement="bottomRight"
-            arrow
+          <Badge
+            count={notifications.length} // Show notification count
+            offset={[0, 5]} // Badge position
+            style={{ backgroundColor: "#f5222d" }}
           >
-            <Badge
-              count={3}
-              offset={[0, 5]}
-              style={{ backgroundColor: "#f5222d" }}
-            >
-              <BellOutlined className="custom-header-bell" />
-            </Badge>
-          </Dropdown>
+            <BellOutlined className="custom-header-bell" onClick={showDrawer} />
+          </Badge>
         </Tooltip>
+
+        {/* Notifications Drawer */}
+        <Drawer
+          title="Thông báo"
+          placement="right"
+          closable
+          visible={drawerVisible}
+          onClose={closeDrawer}
+          destroyOnClose
+          width={400}
+          footer={<button onClick={closeDrawer}>Close</button>}
+        >
+          {loading ? (
+            <p>Loading...</p> // Show loading indicator
+          ) : notifications.length === 0 ? (
+            <p>No new notifications.</p> // Show if no notifications
+          ) : (
+            notifications.map((notification, index) => (
+              <NotificationItem
+                key={index}
+                tenTaiKhoan={notification.tentaikhoan}
+                title={notification.title}
+                message={notification.message}
+                timestamp={notification.timestamp}
+              />
+            ))
+          )}
+        </Drawer>
+
+        {/* User Menu */}
         <Dropdown overlay={userMenu} placement="bottomRight" arrow>
           <div className="custom-header-avatar">
             <Avatar
