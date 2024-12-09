@@ -552,5 +552,45 @@ router.get('/revenue-statistics', async (req, res) => {
     }
 });
 
+router.get('/total-sold-quantity', async (req, res) => {
+    try {
+        // Tìm tất cả các đơn hàng có trạng thái "Đã giao"
+        const orders = await Orders.find({ TrangThai: 'Đã giao' });
+
+        if (!orders || orders.length === 0) {
+            return res.status(404).json({
+                status: 404,
+                message: 'Không có đơn hàng đã giao.',
+                data: 0,
+            });
+        }
+
+        // Tính tổng số lượng bán ra của tất cả sản phẩm trong các đơn hàng đã giao
+        let totalSoldQuantity = 0;
+
+        orders.forEach(order => {
+            order.SanPham.forEach(product => {
+                // Cộng số lượng của từng sản phẩm trong đơn hàng
+                totalSoldQuantity += product.SoLuongGioHang;
+            });
+        });
+
+        // Trả về tổng số lượng bán ra
+        res.status(200).json({
+            status: 200,
+            message: 'Thống kê tổng số lượng sản phẩm đã bán thành công.',
+            totalSoldQuantity: totalSoldQuantity, // Tổng số lượng bán ra của tất cả các sản phẩm
+        });
+    } catch (error) {
+        console.error('Lỗi khi thống kê tổng số lượng sản phẩm đã bán:', error);
+        res.status(500).json({
+            status: 500,
+            message: 'Lỗi khi thống kê tổng số lượng sản phẩm đã bán.',
+            error: error.message,
+        });
+    }
+});
+
+
 
 module.exports = router;
