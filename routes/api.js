@@ -191,6 +191,9 @@ router.put('/update-product-by-id/:id', upload.array('HinhAnh', 10), async (req,
     // Cập nhật các trường thông tin sản phẩm
     product.TenSP = data.TenSP ?? product.TenSP;
     product.ThuongHieu = data.ThuongHieu ?? product.ThuongHieu;
+    product.GiaBan = data.GiaBan ?? product.GiaBan;
+    product.MoTa = data.MoTa ?? product.MoTa;
+    product.TrangThaiYeuThich = data.TrangThaiYeuThich ?? product.TrangThaiYeuThich;
 
     // Xử lý KichThuoc
     if (data.KichThuoc) {
