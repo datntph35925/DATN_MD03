@@ -397,34 +397,40 @@ router.put('/update-order-status/:id', async (req, res) => {
             });
         }
 
-        // Cập nhật trạng thái đơn hàng
-        order.TrangThai = TrangThai;
-        await order.save();
+        // Kiểm tra nếu trạng thái được cập nhật là "Đang giao"
+        if (TrangThai === 'Đang giao') {
+            // Duyệt qua các sản phẩm trong đơn hàng
+            for (const product of updatedOrder.SanPham) {
+                const productInDb = await Products.findById(product.MaSanPham);
+                if (productInDb) {
+                    const size = product.Size; // Lấy thông tin size sản phẩm
+                    const quantityInCart = product.SoLuongGioHang; // Số lượng sản phẩm trong giỏ hàng
 
-        // Tạo thông báo dựa trên trạng thái
-        let notificationMessage = '';
-        switch (TrangThai) {
-            case 'Đang giao':
-                notificationMessage = `Đơn hàng ${order.MaDonHang} đang được giao. Vui lòng kiểm tra thông tin vận chuyển.`;
-                break;
-            case 'Đã giao':
-                notificationMessage = `Đơn hàng ${order.MaDonHang} đã được giao thành công. Cảm ơn bạn đã mua sắm!`;
-                break;
-            case 'Hủy':
-                notificationMessage = `Đơn hàng ${order.MaDonHang} đã bị hủy. Nếu bạn cần hỗ trợ, vui lòng liên hệ chúng tôi.`;
-                break;
-            default:
-                notificationMessage = `Trạng thái đơn hàng ${order.MaDonHang} đã được cập nhật thành: ${TrangThai}.`;
+                    // Kiểm tra và giảm số lượng sản phẩm theo size
+                    const productSize = productInDb.KichThuoc.find(item => item.size === size);
+                    if (productSize) {
+                        // Kiểm tra số lượng tồn kho đủ để giảm
+                        if (productSize.soLuongTon >= quantityInCart) {
+                            productSize.soLuongTon -= quantityInCart; // Giảm số lượng sản phẩm theo size
+                            await productInDb.save();
+                        } else {
+                            console.log(`Số lượng tồn kho không đủ cho size ${size} của sản phẩm ${product.MaSanPham}`);
+                            // Xử lý nếu số lượng tồn kho không đủ
+                            return res.status(400).json({
+                                status: 400,
+                                message: `Số lượng tồn kho không đủ cho sản phẩm ${product.MaSanPham} (Size: ${size}).`,
+                            });
+                        }
+                    } else {
+                        console.log(`Không tìm thấy size ${size} cho sản phẩm ${product.MaSanPham}`);
+                        return res.status(400).json({
+                            status: 400,
+                            message: `Không tìm thấy size ${size} cho sản phẩm ${product.MaSanPham}.`,
+                        });
+                    }
+                }
+            }
         }
-
-        // Lưu thông báo vào cơ sở dữ liệu
-        const notification = new Notification({
-            tentaikhoan: order.Tentaikhoan,
-            title: 'Cập nhật trạng thái đơn hàng',
-            message: notificationMessage,
-            read: false,
-        });
-        await notification.save();
 
         // Trả về kết quả thành công
         res.status(200).json({
