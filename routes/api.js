@@ -6,12 +6,12 @@ const Products = require('../models/Products');
 
 // Cấu hình Multer để lưu ảnh vào thư mục 'uploads'
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // Thư mục lưu ảnh
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // Thư mục lưu trữ các file tải lên
   },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // Tên file là timestamp + extension
-  }
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.originalname); // Tên file sau khi tải lên
+  },
 });
 
 const fileFilter = (req, file, cb) => {
@@ -20,9 +20,9 @@ const fileFilter = (req, file, cb) => {
   const mimeType = fileTypes.test(file.mimetype);
 
   if (extName && mimeType) {
-    cb(null, true);
+    cb(null, true); // Chấp nhận file
   } else {
-    cb(new Error('Chỉ chấp nhận file ảnh định dạng jpeg, jpg, png, gif!'), false);
+    cb(new Error('Chỉ chấp nhận file ảnh định dạng jpeg, jpg, png, gif!'), false); // Từ chối file
   }
 };
 
@@ -71,9 +71,11 @@ router.get("/get-list-product", async (req, res) => {
 
 
 
-router.post('/add-product', upload.single('HinhAnh'), async (req, res) => {
+router.post('/add-product', upload.array('HinhAnh', 10), async (req, res) => {
   try {
     const data = req.body;
+
+    // Kiểm tra xem sản phẩm đã tồn tại chưa
     const existingProduct = await Products.findOne({ TenSP: data.TenSP });
 
     if (existingProduct) {
@@ -83,6 +85,26 @@ router.post('/add-product', upload.single('HinhAnh'), async (req, res) => {
       });
     }
 
+    // Lấy các đường dẫn ảnh từ Multer (upload từ máy tính)
+    const imageLinksFromUpload = req.files ? req.files.map(file => file.path) : [];
+
+    // Lấy các link ảnh từ yêu cầu của người dùng (thường là từ frontend)
+    let imageLinksFromUrls = [];
+    if (data.HinhAnh) {
+      // Kiểm tra xem HinhAnh có phải là chuỗi hay mảng
+      if (typeof data.HinhAnh === 'string') {
+        // Nếu là chuỗi, tách nó thành mảng URL
+        imageLinksFromUrls = data.HinhAnh.split(',');
+      } else if (Array.isArray(data.HinhAnh)) {
+        // Nếu là mảng, sử dụng trực tiếp
+        imageLinksFromUrls = data.HinhAnh;
+      }
+    }
+
+    // Kết hợp tất cả các link ảnh (upload từ máy và link từ URL)
+    const allImageLinks = [...imageLinksFromUpload, ...imageLinksFromUrls];
+
+    // Tạo sản phẩm mới với các đường dẫn ảnh kết hợp
     const newProduct = new Products({
       MaSanPham: data.MaSanPham,
       TenSP: data.TenSP,
@@ -90,14 +112,16 @@ router.post('/add-product', upload.single('HinhAnh'), async (req, res) => {
       KichThuoc: data.KichThuoc,
       GiaBan: data.GiaBan,
       MoTa: data.MoTa,
-      HinhAnh: req.file ? req.file.path : null,
+      HinhAnh: allImageLinks, // Lưu mảng các đường dẫn ảnh
       TrangThaiYeuThich: data.TrangThaiYeuThich
     });
 
+    // Lưu sản phẩm mới vào cơ sở dữ liệu
     const result = await newProduct.save();
+    
     res.status(200).json({
       status: 200,
-      messenger: 'Thêm thành công',
+      messenger: 'Thêm sản phẩm thành công',
       data: result
     });
   } catch (error) {
@@ -133,23 +157,39 @@ router.delete("/delete-product-by-id/:id", async (req, res) => {
 });
 
 
-router.put('/update-product-by-id/:id', upload.single('HinhAnh'), async (req, res) => {
+router.put('/update-product-by-id/:id', upload.array('HinhAnh', 10), async (req, res) => {
   try {
     const { id } = req.params;
     const data = req.body;
+
+    // Tìm sản phẩm theo ID
     const product = await Products.findById(id);
 
     if (product) {
+      // Cập nhật các trường thông tin sản phẩm từ dữ liệu nhận được
       product.MaSanPham = data.MaSanPham ?? product.MaSanPham;
       product.TenSP = data.TenSP ?? product.TenSP;
       product.ThuongHieu = data.ThuongHieu ?? product.ThuongHieu;
-      product.KichThuoc = data.KichThuoc ?? product.KichThuoc;
+      product.KichThuoc = data.KichThuoc ? JSON.parse(data.KichThuoc) : product.KichThuoc;  // Xử lý KichThuoc nếu có
       product.GiaBan = data.GiaBan ?? product.GiaBan;
       product.MoTa = data.MoTa ?? product.MoTa;
-      product.HinhAnh = req.file ? req.file.path : product.HinhAnh;
       product.TrangThaiYeuThich = data.TrangThaiYeuThich ?? product.TrangThaiYeuThich;
 
+      // Lấy các đường dẫn ảnh từ Multer (upload từ máy tính)
+      const imageLinksFromUpload = req.files ? req.files.map(file => file.path) : [];
+
+      // Lấy các link ảnh từ yêu cầu của người dùng (URL được gửi từ frontend)
+      const imageLinksFromUrls = data.HinhAnh ? data.HinhAnh.split(',').map(url => url.trim()) : [];  // Chuẩn hóa các URL (xóa khoảng trắng nếu có)
+
+      // Kết hợp các link ảnh từ Multer và link ảnh URL
+      const allImageLinks = [...imageLinksFromUpload, ...imageLinksFromUrls];
+
+      // Cập nhật mảng đường dẫn ảnh
+      product.HinhAnh = allImageLinks.length > 0 ? allImageLinks : product.HinhAnh;
+
+      // Lưu sản phẩm đã cập nhật
       const result = await product.save();
+      
       res.status(200).json({
         status: 200,
         messenger: 'Cập nhật thành công',
