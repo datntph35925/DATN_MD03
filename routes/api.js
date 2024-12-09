@@ -69,7 +69,7 @@ router.post('/add-product', upload.array('HinhAnh', 10), async (req, res) => {
     }
 
     // Lấy các đường dẫn ảnh từ Multer (upload từ máy tính)
-    const imageLinksFromUpload = req.files ? req.files.map(file => file.path) : [];
+    const imageLinksFromUpload = req.files ? req.files.map(file => file.path.replace(/\\/g, '/')) : [];
 
     // Lấy các link ảnh từ yêu cầu của người dùng (thường là từ frontend)
     let imageLinksFromUrls = [];
@@ -77,10 +77,10 @@ router.post('/add-product', upload.array('HinhAnh', 10), async (req, res) => {
       // Kiểm tra xem HinhAnh có phải là chuỗi hay mảng
       if (typeof data.HinhAnh === 'string') {
         // Nếu là chuỗi, tách nó thành mảng URL
-        imageLinksFromUrls = data.HinhAnh.split(',');
+        imageLinksFromUrls = data.HinhAnh.split(',').map(url => url.trim());
       } else if (Array.isArray(data.HinhAnh)) {
         // Nếu là mảng, sử dụng trực tiếp
-        imageLinksFromUrls = data.HinhAnh;
+        imageLinksFromUrls = data.HinhAnh.map(url => url.trim());
       }
     }
 
@@ -153,22 +153,34 @@ router.put('/update-product-by-id/:id', upload.array('HinhAnh', 10), async (req,
       product.MaSanPham = data.MaSanPham ?? product.MaSanPham;
       product.TenSP = data.TenSP ?? product.TenSP;
       product.ThuongHieu = data.ThuongHieu ?? product.ThuongHieu;
-      product.KichThuoc = data.KichThuoc ? JSON.parse(data.KichThuoc) : product.KichThuoc;  // Xử lý KichThuoc nếu có
+
+      // Xử lý KichThuoc nếu có
+      if (data.KichThuoc) {
+        try {
+          product.KichThuoc = JSON.parse(data.KichThuoc); // Chuyển chuỗi JSON thành đối tượng
+        } catch (error) {
+          return res.status(400).json({
+            status: 400,
+            messenger: 'Kích thước không hợp lệ'
+          });
+        }
+      }
+
       product.GiaBan = data.GiaBan ?? product.GiaBan;
       product.MoTa = data.MoTa ?? product.MoTa;
       product.TrangThaiYeuThich = data.TrangThaiYeuThich ?? product.TrangThaiYeuThich;
 
       // Lấy các đường dẫn ảnh từ Multer (upload từ máy tính)
-      const imageLinksFromUpload = req.files ? req.files.map(file => file.path) : [];
+      const imageLinksFromUpload = req.files ? req.files.map(file => file.path.replace(/\\/g, '/')) : [];
 
-      // Lấy các link ảnh từ yêu cầu của người dùng (URL được gửi từ frontend)
-      const imageLinksFromUrls = data.HinhAnh ? data.HinhAnh.split(',').map(url => url.trim()) : [];  // Chuẩn hóa các URL (xóa khoảng trắng nếu có)
+      // Lấy các link ảnh từ yêu cầu của người dùng (URL gửi từ frontend)
+      const imageLinksFromUrls = data.HinhAnh ? data.HinhAnh.split(',').map(url => url.trim()) : [];
 
       // Kết hợp các link ảnh từ Multer và link ảnh URL
       const allImageLinks = [...imageLinksFromUpload, ...imageLinksFromUrls];
 
-      // Cập nhật mảng đường dẫn ảnh
-      product.HinhAnh = allImageLinks.length > 0 ? allImageLinks : product.HinhAnh;
+      // Loại bỏ các đường dẫn ảnh trùng lặp (nếu có)
+      product.HinhAnh = Array.from(new Set([...product.HinhAnh, ...allImageLinks]));
 
       // Lưu sản phẩm đã cập nhật
       const result = await product.save();
