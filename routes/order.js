@@ -597,6 +597,80 @@ router.get('/total-sold-quantity', async (req, res) => {
     }
 });
 
+router.get('/top-10-best-selling-products', async (req, res) => {
+    const { startDate, endDate } = req.query;
+
+    try {
+        // Xử lý khoảng thời gian từ request query
+        const dateFilter = {};
+        if (startDate) dateFilter.$gte = new Date(startDate);
+        if (endDate) dateFilter.$lte = new Date(endDate);
+
+        // Tìm tất cả các đơn hàng có trạng thái "Đã giao" trong khoảng thời gian (nếu có)
+        const orders = await Orders.aggregate([
+            {
+                $match: {
+                    TrangThai: 'Đã giao',
+                    ...(startDate || endDate ? { NgayDatHang: dateFilter } : {}),
+                },
+            },
+            {
+                $unwind: "$SanPham", // Mở rộng mảng sản phẩm trong mỗi đơn hàng
+            },
+            {
+                $group: {
+                    _id: "$SanPham.MaSanPham", // Nhóm theo ID sản phẩm
+                    totalSold: { $sum: "$SanPham.SoLuongGioHang" }, // Tính tổng số lượng bán ra
+                },
+            },
+            {
+                $sort: { totalSold: -1 }, // Sắp xếp theo số lượng bán ra giảm dần
+            },
+            {
+                $limit: 10, // Lấy 10 sản phẩm bán chạy nhất
+            },
+        ]);
+
+        // Lấy danh sách các sản phẩm bán chạy
+        const productIds = orders.map(order => order._id);
+
+        // Lấy thông tin chi tiết các sản phẩm từ cơ sở dữ liệu `Products`
+        const productsInDb = await Products.find({ _id: { $in: productIds } });
+
+        // Lọc ra các sản phẩm bán chạy có tồn tại trong cơ sở dữ liệu
+        const topSellingProducts = orders
+            .map(order => {
+                // Tìm thông tin chi tiết của sản phẩm từ cơ sở dữ liệu
+                const product = productsInDb.find(p => p._id.toString() === order._id.toString());
+
+                if (product) {
+                    return {
+                        productId: product._id,
+                        name: product.TenSP,
+                        quantitySold: order.totalSold,
+                        price: product.GiaBan,
+                        image: product.HinhAnh[0] || null,
+                    };
+                }
+                return null;
+            })
+            .filter(product => product !== null); // Loại bỏ những sản phẩm không có trong cơ sở dữ liệu
+
+        // Trả về kết quả
+        res.status(200).json({
+            status: 200,
+            message: 'Lấy danh sách top 10 sản phẩm bán chạy thành công',
+            data: topSellingProducts,
+        });
+    } catch (error) {
+        console.error('Lỗi khi lấy top 10 sản phẩm bán chạy:', error);
+        res.status(500).json({
+            status: 500,
+            message: 'Lỗi khi lấy top 10 sản phẩm bán chạy',
+            error: error.message,
+        });
+    }
+});
 
 
 module.exports = router;

@@ -87,12 +87,35 @@ router.post('/add-product', upload.array('HinhAnh', 10), async (req, res) => {
     // Kết hợp tất cả các link ảnh (upload từ máy và link từ URL)
     const allImageLinks = [...imageLinksFromUpload, ...imageLinksFromUrls];
 
+    // Kiểm tra và xử lý KichThuoc
+    let kichThuoc = data.KichThuoc;
+    if (typeof kichThuoc === 'string') {
+      // Nếu KichThuoc là chuỗi, cố gắng chuyển nó thành mảng đối tượng
+      try {
+        kichThuoc = JSON.parse(kichThuoc); // Chuyển đổi chuỗi JSON thành mảng đối tượng
+      } catch (error) {
+        return res.status(400).json({
+          status: 400,
+          messenger: 'Lỗi: Dữ liệu KichThuoc không hợp lệ',
+          error: error.message
+        });
+      }
+    }
+
+    // Kiểm tra nếu KichThuoc đã là mảng đối tượng hợp lệ
+    if (!Array.isArray(kichThuoc)) {
+      return res.status(400).json({
+        status: 400,
+        messenger: 'Lỗi: KichThuoc phải là mảng đối tượng'
+      });
+    }
+
     // Tạo sản phẩm mới với các đường dẫn ảnh kết hợp
     const newProduct = new Products({
       MaSanPham: data.MaSanPham,
       TenSP: data.TenSP,
       ThuongHieu: data.ThuongHieu,
-      KichThuoc: data.KichThuoc,
+      KichThuoc: kichThuoc, // Đảm bảo KichThuoc là mảng đối tượng hợp lệ
       GiaBan: data.GiaBan,
       MoTa: data.MoTa,
       HinhAnh: allImageLinks, // Lưu mảng các đường dẫn ảnh
