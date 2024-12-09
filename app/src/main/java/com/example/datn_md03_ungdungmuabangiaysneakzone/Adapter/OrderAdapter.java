@@ -44,7 +44,6 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         holder.tvDate.setText(order.getNgayDatHang());
         holder.tvTongTien.setText("Tổng tiền: " + String.format("%.2f", order.getTongTien()));
 
-
         holder.tvSoLuong.setText("Tổng số lượng: " + String.valueOf(order.getTongSoLuong()));
     }
 

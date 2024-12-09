@@ -63,6 +63,13 @@ public class Activity_ThanhToan extends AppCompatActivity {
     Order order;
 
     EditText edVoicher;
+
+    private Button btnXoaVoucher;
+
+    private double originalTotalCost;  // Lưu tổng tiền ban đầu của giỏ hàng
+    private String voucherType; // Loại voucher (Giảm giá theo % hoặc Giảm giá cố định)
+    private double voucherValue; // Giá trị voucher (số tiền hoặc phần trăm)
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +87,7 @@ public class Activity_ThanhToan extends AppCompatActivity {
         lraddressGone = findViewById(R.id.idlr_gone);
         edVoicher = findViewById(R.id.edtVoicher);
         tvVoucher = findViewById(R.id.txtTax);
+        btnXoaVoucher = findViewById(R.id.btnXoaVoucher);
 
         btnOrder = findViewById(R.id.btnOrder);
         poppuGetListPayment();
@@ -135,7 +143,9 @@ public class Activity_ThanhToan extends AppCompatActivity {
             for (ProductItemCart item : selectedCartItems) {
                 totalCost += item.getGia() * item.getSoLuongGioHang();
             }
-            tvTotalCost.setText(String.format("$%.2f", totalCost));
+            originalTotalCost = totalCost;  // Lưu tổng tiền ban đầu
+
+            tvTotalCost.setText(String.format("%.2f", totalCost));
         }
 
         btnOrder.setOnClickListener(new View.OnClickListener() {
@@ -215,9 +225,13 @@ public class Activity_ThanhToan extends AppCompatActivity {
         order.setDiaChiGiaoHang(address);
         order.setSoDienThoai(phone);
         order.setPhuongThucThanhToan(tvPayMent.getText().toString());
-        order.setTongTien(totalCost);
         order.setVoucher(edVoicher.getText().toString());
         order.setMaDonHang(result);
+
+        // Lấy tổng tiền sau khi áp dụng voucher
+        double finalTotalPrice = Double.parseDouble(tvTotalCost.getText().toString());
+        order.setTongTien(finalTotalPrice);  // Cập nhật tổng tiền vào đơn hàng
+
 
         Call<Order> call = apiService.createOrderFromCart(email, order);
         call.enqueue(new Callback<Order>() {
@@ -297,6 +311,8 @@ public class Activity_ThanhToan extends AppCompatActivity {
         }
     }
 
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -318,11 +334,18 @@ public class Activity_ThanhToan extends AppCompatActivity {
             String loaiVoucher = data.getStringExtra("loaiVoucher");
             double giaTriVoucher = data.getDoubleExtra("giaTri", 0.0);
 
+            btnXoaVoucher.setVisibility(View.VISIBLE);
+            btnXoaVoucher.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    removeVoucherAndRecalculate();
+                    btnXoaVoucher.setVisibility(View.GONE);
+                }
+            });
             // Hiển thị mã voucher
             edVoicher.setText(maVoucher);
 
             // Hiển thị loại voucher
-            // Định dạng giá trị voucher
             if (giaTriVoucher % 1 == 0) {
                 giaTri = String.valueOf((int) giaTriVoucher);
             } else {
@@ -337,24 +360,39 @@ public class Activity_ThanhToan extends AppCompatActivity {
             } else {
                 tvVoucher.setText(giaTri);
             }
-            // Tính toán lại tổng tiền
-            double totalCost = 0;
-            for (ProductItemCart item : selectedCartItems) {
-                totalCost += item.getGia() * item.getSoLuongGioHang();
-            }
 
-            if ("Giảm giá theo %".equals(loaiVoucher)) {
-                totalCost -= totalCost * (giaTriVoucher / 100);
-            } else if ("Giảm giá cố định".equals(loaiVoucher)) {
-                totalCost -= giaTriVoucher;
-            }
-
-            // Đảm bảo tổng tiền không âm
-            totalCost = Math.max(0, totalCost);
-
-            // Hiển thị tổng tiền mới
-            tvTotalCost.setText(String.format("$%.2f", totalCost));
+            // Cập nhật lại tổng tiền sau khi áp dụng voucher
+            updateTotalCostAfterVoucher(giaTriVoucher, loaiVoucher);
         }
+    }
+
+    private void removeVoucherAndRecalculate() {
+        // Xóa voucher
+        edVoicher.setText("");  // Xóa mã voucher
+        tvVoucher.setText("0");  // Xóa hiển thị giá trị voucher
+
+        // Tính lại tổng tiền mà không có voucher
+        double totalCost = originalTotalCost;  // Lấy tổng tiền ban đầu
+
+        // Cập nhật lại giao diện
+        tvTotalCost.setText(String.format("%.2f", totalCost));  // Hiển thị tổng tiền ban đầu
+        Toast.makeText(Activity_ThanhToan.this, "Voucher đã được xóa. Tổng tiền đã khôi phục!", Toast.LENGTH_SHORT).show();
+    }
+
+    private void updateTotalCostAfterVoucher(double voucherValue, String voucherType) {
+        double totalCost = originalTotalCost;  // Lấy tổng tiền ban đầu
+
+        if ("Giảm giá theo %".equals(voucherType)) {
+            totalCost -= totalCost * (voucherValue / 100);  // Giảm theo phần trăm
+        } else if ("Giảm giá cố định".equals(voucherType)) {
+            totalCost -= voucherValue;  // Giảm theo số tiền cố định
+        }
+
+        // Đảm bảo tổng tiền không âm
+        totalCost = Math.max(0, totalCost);
+
+        // Cập nhật tổng tiền mới lên giao diện
+        tvTotalCost.setText(String.format("%.2f", totalCost));
     }
 
     private void poppuGetListPayment() {

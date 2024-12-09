@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Activity.Activity_CTDH_ChoXacNhan;
@@ -49,6 +50,7 @@ public class Fragment_DangGiao extends Fragment {
         dangGiaoList = new ArrayList<>();
         rcvDangGiao = view.findViewById(R.id.rcv_dangGiao);
         rcvDangGiao.setLayoutManager(new LinearLayoutManager(getContext()));
+
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
         email = sharedPreferences.getString("Tentaikhoan", ""); // Retrieve the email
@@ -98,9 +100,6 @@ public class Fragment_DangGiao extends Fragment {
                         }
                     }
 
-                    if (dangGiaoList.isEmpty()) {
-                        Toast.makeText(getContext(), "No orders in 'Đang giao' status", Toast.LENGTH_SHORT).show();
-                    }
 
                     hoaDonAdapter.notifyDataSetChanged(); // Update RecyclerView
                 } else {

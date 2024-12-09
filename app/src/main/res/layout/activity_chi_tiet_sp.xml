@@ -76,14 +76,52 @@
             android:paddingBottom="8dp">
 
             <!-- Hình ảnh sản phẩm -->
-            <ImageView
-                android:id="@+id/img_SPCT"
+<!--            <ImageView-->
+<!--                android:id="@+id/img_SPCT"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="200dp"-->
+<!--                android:layout_marginTop="16dp"-->
+<!--                android:scaleType="centerCrop"-->
+<!--                app:srcCompat="@drawable/nice_shoe"-->
+<!--                android:contentDescription="Product Image" />-->
+
+            <!-- Slideshow Section -->
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginTop="16dp"
-                android:scaleType="centerCrop"
-                app:srcCompat="@drawable/nice_shoe"
-                android:contentDescription="Product Image" />
+                android:layout_height="180dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/rounded_corners"
+                android:clipToOutline="true">
+
+                <!-- Slideshow Image -->
+                <ImageView
+                    android:id="@+id/imageViewSlider"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="Slideshow Image" />
+
+                <!-- Previous Button -->
+                <ImageButton
+                    android:id="@+id/btnPrev"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="start|center_vertical"
+                    android:src="@drawable/ic_prev"
+                    android:background="@color/lightGrey"
+                    android:contentDescription="Previous Slide" />
+
+                <!-- Next Button -->
+                <ImageButton
+                    android:id="@+id/btnNext"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="end|center_vertical"
+                    android:src="@drawable/ic_next"
+                    android:background="@color/light_gray"
+                    android:contentDescription="Next Slide" />
+            </FrameLayout>
 
             <!-- Tên sản phẩm -->
             <TextView

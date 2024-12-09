@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Activity.Activity_CTDH_DaGiao;
@@ -51,7 +52,6 @@ public class Fragment_DaGiao extends Fragment {
         daGiaoList = new ArrayList<>();
         rcvDaGiao = view.findViewById(R.id.rcv_done);
         rcvDaGiao.setLayoutManager(new LinearLayoutManager(getContext()));
-
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
         email = sharedPreferences.getString("Tentaikhoan", ""); // Retrieve the email
@@ -98,10 +98,6 @@ public class Fragment_DaGiao extends Fragment {
                         if ("Đã giao".equals(order.getTrangThai())) {
                             daGiaoList.add(order);
                         }
-                    }
-
-                    if (daGiaoList.isEmpty()) {
-                        Toast.makeText(getContext(), "No orders in 'Đã giao' status", Toast.LENGTH_SHORT).show();
                     }
 
                     hoaDonAdapter.notifyDataSetChanged(); // Update RecyclerView

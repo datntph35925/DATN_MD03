@@ -1,16 +1,10 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 
-import static com.example.datn_md03_ungdungmuabangiaysneakzone.ThongbaodsActivity.CHANNEL_ID;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
@@ -21,12 +15,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter.SanPhamAdapter;
-import com.example.datn_md03_ungdungmuabangiaysneakzone.MyForegroundService;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.ThongbaodsActivity;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiResponse;
@@ -56,13 +48,10 @@ public class MainActivity extends AppCompatActivity {
     int currentImageIndex = 0; // Chỉ mục ảnh hiện tại
     Handler handler = new Handler(); // Handler để quản lý thời gian trễ cho slideshow
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         // Khởi tạo các view
         bottomNavigationView = findViewById(R.id.bottomnavigation);
@@ -78,8 +67,6 @@ public class MainActivity extends AppCompatActivity {
         });
         // Khởi tạo API service
         apiService = RetrofitClient.getClient().create(ApiService.class);
-        Intent serviceIntent = new Intent(this, MyForegroundService.class);
-        startService(serviceIntent);
 
         // Lấy tài khoản từ SharedPreferences
         SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
@@ -127,35 +114,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             finish(); // Đảm bảo không quay lại màn hình đăng nhập
         });
-//        createNotificationChannel();
-
-    }
-    private void createNotificationChannel() {
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                    CHANNEL_ID,
-                    "Thông báo",
-                    NotificationManager.IMPORTANCE_HIGH
-            );
-            channel.setDescription("Thông báo từ ứng dụng");
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
-    private void showNotification(String title, String message) {
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.bell)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true)
-                .build();
-
-        // Sử dụng một ID cố định (ví dụ: 1)
-        notificationManager.notify(1, notification);
     }
 
 
@@ -166,17 +124,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getUnreadNotificationCount(String tentaikhoan) {
+        ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
+
+        // Gọi API để lấy tổng số thông báo chưa đọc
         apiService.getUnreadNotificationCount(tentaikhoan).enqueue(new Callback<ApiResponse>() {
             @Override
             public void onResponse(Call<ApiResponse> call, retrofit2.Response<ApiResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
+                    // Lấy số lượng thông báo chưa đọc từ API
                     int unreadCount = response.body().getUnreadCount();
-                    hienthiso.setText(String.valueOf(unreadCount));
 
-                    // Hiển thị thông báo (giả sử API trả về thông báo mới trong danh sách)
-//                    if (unreadCount > 0) {
-//                        showNotification("Thông báo mới", "Bạn có " + unreadCount + " thông báo chưa đọc.");
-//                    }
+                    // Hiển thị số lượng thông báo chưa đọc lên giao diện
+                    hienthiso.setText(String.valueOf(unreadCount));
                 } else {
                     Toast.makeText(MainActivity.this, "Không thể lấy thông báo", Toast.LENGTH_SHORT).show();
                 }
@@ -184,11 +143,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ApiResponse> call, Throwable t) {
+                // Xử lý lỗi kết nối
                 Toast.makeText(MainActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
-
+    // Thêm Handler để tự động cập nhật thông báo chưa đọc mỗi 30 giây
     private void startNotificationUpdate(String tentaikhoan) {
         Runnable notificationRunnable = new Runnable() {
             @Override

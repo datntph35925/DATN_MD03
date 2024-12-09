@@ -27,6 +27,7 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.api.RetrofitClient;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Order;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ProductItemCart;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -41,7 +42,7 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
     private TextView tvNameLocation, tvLocation, tvPhoneLocation, tvVoucher;
     private ImageView imgProduct, imgAddress;
     private LinearLayout lrlAddress, lraddressGone;
-    private Button btnOrder;
+    private Button btnOrder, btnXoaVoucher;
 
     EditText edtVoicher;
     private Order order;
@@ -50,6 +51,8 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
     private ProductItemCart productItem;
 
     String result;
+    String[] imageList;
+    private double originalTotalCost;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,20 +120,54 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
         lraddressGone = findViewById(R.id.idlr_gone);
         edtVoicher = findViewById(R.id.edtVoicher);
         tvVoucher = findViewById(R.id.txtTax);
+        btnXoaVoucher = findViewById(R.id.btnXoaVoucher);
         apiService = RetrofitClient.getClient().create(ApiService.class);
         order = new Order();
     }
 
+    private void removeVoucherAndRecalculate() {
+        // Xóa voucher
+        edtVoicher.setText("");  // Xóa mã voucher
+        tvVoucher.setText("");  // Xóa hiển thị giá trị voucher
+
+        // Tính lại tổng tiền mà không có voucher
+        double totalCost = originalTotalCost;  // Lấy tổng tiền ban đầu
+
+        // Cập nhật lại giao diện
+        tvTotalPrice.setText(String.format("%.2f", totalCost));  // Hiển thị tổng tiền ban đầu
+        Toast.makeText(ActivityCTSP_To_ThanhToan.this, "Voucher đã được xóa. Tổng tiền đã khôi phục!", Toast.LENGTH_SHORT).show();
+    }
+
+
     private void displayProductInfo(ProductItemCart productItem) {
         tvProductName.setText(productItem.getTenSP());
-        tvProductPrice.setText(String.format("$%.2f", productItem.getGia()));
+        tvProductPrice.setText(String.format("%.2f", productItem.getGia()));
         tvProductQuantity.setText(String.format("Quantity: %d", productItem.getSoLuongGioHang()));
         tvProductSize.setText(String.format("Size: %d", productItem.getSize()));
         tvTotalPrice.setText(String.format("%.2f", productItem.getTongTien()));
 
+        originalTotalCost = productItem.getTongTien();
+
         List<String> productImages = productItem.getHinhAnh();
         if (productImages != null && !productImages.isEmpty()) {
-            Glide.with(this).load(productImages.get(0)).into(imgProduct);
+            String firstImage = productImages.get(0);
+            String[] imageUrls = firstImage.split(",");  // Tách theo dấu phẩy
+
+            // Lấy URL đầu tiên
+            String imageUrl = imageUrls[0].trim();  // Loại bỏ khoảng trắng dư thừa
+
+            String baseUrl = "http://10.0.2.2:3000/"; // Thay thế bằng base URL thực tế
+            String firstImageUrl  = baseUrl + imageUrl;
+            // Log lại URL để kiểm tra
+            Log.d("CartAdapter", "Primeira imagem: " + imageUrl);
+
+            // Tải ảnh từ URL đầu tiên
+            Glide.with(this)
+                    .load(firstImageUrl )
+                    .placeholder(R.drawable.nice_shoe) // Hình mặc định khi đang tải
+                    .error(R.drawable.nike2) // Hình mặc định khi lỗi
+                    .into(imgProduct);
+            productItem.setHinhAnh(Collections.singletonList(firstImageUrl));
         }
     }
 
@@ -160,6 +197,15 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
                     loaiVoucher = data.getStringExtra("loaiVoucher");
                     double giaTriDouble = data.getDoubleExtra("giaTri", 0.0);
 
+                    btnXoaVoucher.setVisibility(View.VISIBLE);
+                    btnXoaVoucher.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            removeVoucherAndRecalculate();
+                            btnXoaVoucher.setVisibility(View.GONE);
+                        }
+                    });
+
                     // Định dạng giá trị voucher
                     if (giaTriDouble % 1 == 0) {
                         giaTri = String.valueOf((int) giaTriDouble);
@@ -176,19 +222,7 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
                         tvVoucher.setText(giaTri);
                     }
 
-                    // Cập nhật tổng tiền sau khi áp dụng voucher
-                    double totalPrice = productItem.getTongTien();
-                    if ("Giảm giá theo %".equals(loaiVoucher)) {
-                        totalPrice -= totalPrice * (giaTriDouble / 100);
-                    } else if ("Giảm giá cố định".equals(loaiVoucher)) {
-                        totalPrice -= giaTriDouble;
-                    }
-
-                    // Đảm bảo tổng tiền không âm
-                    totalPrice = Math.max(0, totalPrice);
-
-                    // Hiển thị tổng tiền mới
-                    tvTotalPrice.setText(String.format("%.2f", totalPrice));
+                    applyVoucher(loaiVoucher, giaTriDouble);
 
                     // Cập nhật UI mã voucher
                     if (maVoucher != null) {
@@ -199,6 +233,22 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
         }
     }
 
+    private void applyVoucher(String loaiVoucher, double giaTriDouble) {
+        double totalPrice = originalTotalCost;  // Lấy tổng tiền ban đầu
+
+        // Kiểm tra loại voucher và tính toán lại tổng tiền
+        if ("Giảm giá theo %".equals(loaiVoucher)) {
+            totalPrice -= totalPrice * (giaTriDouble / 100);  // Giảm theo phần trăm
+        } else if ("Giảm giá cố định".equals(loaiVoucher)) {
+            totalPrice -= giaTriDouble;  // Giảm theo số tiền cố định
+        }
+
+        // Đảm bảo tổng tiền không âm
+        totalPrice = Math.max(0, totalPrice);
+
+        // Hiển thị tổng tiền mới
+        tvTotalPrice.setText(String.format("%.2f", totalPrice));
+    }
 
     private void poppuGetListPayment() {
         String[] listPayment = {"Thanh toán khi nhận hàng (COD)", "Thanh toán qua ngân hàng"};
@@ -225,7 +275,8 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
         order.setVoucher(edtVoicher.getText().toString());
         order.setMaDonHang(result);
 
-        order.setTongTien(productItem.getTongTien());
+        double finalTotalPrice = Double.parseDouble(tvTotalPrice.getText().toString());
+        order.setTongTien(finalTotalPrice);  // Cập nhật tổng tiền vào đơn hàng
         // Thêm email vào order
         order.setTentaikhoan(email);
 
