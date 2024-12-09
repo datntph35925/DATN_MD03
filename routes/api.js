@@ -1,26 +1,60 @@
 var express = require('express');
 var router = express.Router();
+const multer = require('multer');
+const path = require('path');
 const Products = require('../models/Products');
+
+// Cấu hình Multer để lưu ảnh vào thư mục 'uploads'
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/'); // Thư mục lưu ảnh
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname)); // Tên file là timestamp + extension
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  const fileTypes = /jpeg|jpg|png|gif/;
+  const extName = fileTypes.test(path.extname(file.originalname).toLowerCase());
+  const mimeType = fileTypes.test(file.mimetype);
+
+  if (extName && mimeType) {
+    cb(null, true);
+  } else {
+    cb(new Error('Chỉ chấp nhận file ảnh định dạng jpeg, jpg, png, gif!'), false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+});
 
 router.get("/get-list-product", async (req, res) => {
   try {
-    // Lấy tất cả sản phẩm và đếm tổng số sản phẩm
-    const data = await Products.find().sort({ createdAt: -1 }); // Lấy tất cả sản phẩm
-    const totalCount = await Products.countDocuments(); // Đếm tổng số sản phẩm
+    const data = await Products.find().sort({ createdAt: -1 });
+    const totalCount = await Products.countDocuments();
 
     if (data) {
+      // Thêm tiền tố URL vào đường dẫn ảnh nếu cần
+      const productsWithImageURLs = data.map(product => ({
+        ...product.toObject(),
+        HinhAnh: req.protocol + '://' + req.get('host') + '/' + product.HinhAnh // Tạo URL hoàn chỉnh
+      }));
+
       res.json({
         status: 200,
         messenger: "Lấy danh sách thành công",
-        data: data, // Danh sách sản phẩm
-        totalCount: totalCount // Tổng số sản phẩm
+        data: productsWithImageURLs, // Danh sách sản phẩm với đường dẫn ảnh hoàn chỉnh
+        totalCount: totalCount
       });
     } else {
       res.json({
         status: 400,
         messenger: "Lấy danh sách thất bại",
         data: [],
-        totalCount: 0 // Nếu không có sản phẩm thì tổng số là 0
+        totalCount: 0
       });
     }
   } catch (error) {
@@ -36,53 +70,41 @@ router.get("/get-list-product", async (req, res) => {
 
 
 
-router.post('/add-product', async (req, res) => {
-  try {
-    const data = req.body; // Lấy dữ liệu từ body 
 
+router.post('/add-product', upload.single('HinhAnh'), async (req, res) => {
+  try {
+    const data = req.body;
     const existingProduct = await Products.findOne({ TenSP: data.TenSP });
+
     if (existingProduct) {
       return res.status(401).json({
         status: 401,
-        messenger: "Lỗi, sản phẩm đã tồn tại",
+        messenger: 'Lỗi, sản phẩm đã tồn tại'
       });
     }
 
-    // Tạo một đối tượng sản phẩm mới với dữ liệu từ body
-    const newProducts = new Products({
+    const newProduct = new Products({
       MaSanPham: data.MaSanPham,
       TenSP: data.TenSP,
       ThuongHieu: data.ThuongHieu,
       KichThuoc: data.KichThuoc,
       GiaBan: data.GiaBan,
       MoTa: data.MoTa,
-      HinhAnh: data.HinhAnh,
+      HinhAnh: req.file ? req.file.path : null,
       TrangThaiYeuThich: data.TrangThaiYeuThich
     });
 
-    // Lưu sản phẩm vào cơ sở dữ liệu
-    const result = await newProducts.save();
-
-    // Nếu thêm thành công, trả về dữ liệu
-    if (result) {
-      res.json({
-        status: 200,
-        messenger: "Thêm thành công",
-        data: result
-      });
-    } else {
-      // Nếu thêm không thành công, thông báo lỗi
-      res.json({
-        status: 400,
-        messenger: "Lỗi, thêm không thành công",
-        data: []
-      });
-    }
+    const result = await newProduct.save();
+    res.status(200).json({
+      status: 200,
+      messenger: 'Thêm thành công',
+      data: result
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({
       status: 500,
-      messenger: "Lỗi server",
+      messenger: 'Lỗi server',
       error: error.message
     });
   }
@@ -111,75 +133,43 @@ router.delete("/delete-product-by-id/:id", async (req, res) => {
 });
 
 
-  router.put('/update-product-by-id/:id', async (req, res) => {
-    try {
-        const {id} = req.params
-        const data = req.body; // lấy dữ liệu từ body
-        const updateProduct = await Products.findById(id)
-        let result = null;
-        if(updateProduct){
-          updateProduct.MaSanPham = data.MaSanPham ?? updateProduct.MaSanPham;
-          updateProduct.TenSP = data.TenSP ?? updateProduct.TenSP,
-          updateProduct.ThuongHieu = data.ThuongHieu ?? updateProduct.ThuongHieu,
-          updateProduct.KichThuoc = data.KichThuoc ?? updateProduct.KichThuoc,
-          updateProduct.GiaBan = data.GiaBan ?? updateProduct.GiaBan,
-          updateProduct.MoTa = data.MoTa ?? updateProduct.MoTa,
-          updateProduct.HinhAnh = data.HinhAnh ?? updateProduct.HinhAnh,
-          updateProduct.TrangThaiYeuThich = data.TrangThaiYeuThich ?? updateProduct.TrangThaiYeuThich,
-            result = await updateProduct.save();
-        }
-        if(result)
-        {
-        // Nếu thêm thành công result Inull trở về dữ liệu
-            res.json({
-                "status": 200,
-                "messenger": "Cập nhật thành công",
-                "data": result
-            })
-        }else{
-            // Nếu thêm không thành công result null, thông báo không thành công
-            res.json({
-                "status": 400,
-                "messenger": "Lỗi, Cập nhật không thành công",
-                "data":[]
-            })
-        }
-    } catch (error) {
-        console.log(error);
-    }
-  });
+router.put('/update-product-by-id/:id', upload.single('HinhAnh'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = req.body;
+    const product = await Products.findById(id);
 
+    if (product) {
+      product.MaSanPham = data.MaSanPham ?? product.MaSanPham;
+      product.TenSP = data.TenSP ?? product.TenSP;
+      product.ThuongHieu = data.ThuongHieu ?? product.ThuongHieu;
+      product.KichThuoc = data.KichThuoc ?? product.KichThuoc;
+      product.GiaBan = data.GiaBan ?? product.GiaBan;
+      product.MoTa = data.MoTa ?? product.MoTa;
+      product.HinhAnh = req.file ? req.file.path : product.HinhAnh;
+      product.TrangThaiYeuThich = data.TrangThaiYeuThich ?? product.TrangThaiYeuThich;
 
-  router.put('/update-product-trangThai-by-id/:id', async (req, res) => {
-    try {
-        const {id} = req.params
-        const data = req.body; // lấy dữ liệu từ body
-        const updateProduct = await Products.findById(id)
-        let result = null;
-        if(updateProduct){
-          updateProduct.TrangThaiYeuThich = data.TrangThaiYeuThich ?? updateProduct.TrangThaiYeuThich,
-            result = await updateProduct.save();
-        }
-        if(result)
-        {
-        // Nếu thêm thành công result Inull trở về dữ liệu
-            res.json({
-                "status": 200,
-                "messenger": "Cập nhật thành công",
-                "data": result
-            })
-        }else{
-            // Nếu thêm không thành công result null, thông báo không thành công
-            res.json({
-                "status": 400,
-                "messenger": "Lỗi, Cập nhật không thành công",
-                "data":[]
-            })
-        }
-    } catch (error) {
-        console.log(error);
+      const result = await product.save();
+      res.status(200).json({
+        status: 200,
+        messenger: 'Cập nhật thành công',
+        data: result
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        messenger: 'Không tìm thấy sản phẩm'
+      });
     }
-  });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: 500,
+      messenger: 'Lỗi server',
+      error: error.message
+    });
+  }
+});
 
 router.get('/get-product-by-id/:id', async (req, res) => {
   try {
@@ -211,17 +201,38 @@ router.get('/get-product-by-id/:id', async (req, res) => {
 
 router.get('/total-products', async (req, res) => {
   try {
-      const totalProducts = await Products.countDocuments();
-      res.status(200).json({
-          success: true,
-          totalProducts: totalProducts
-      });
+    const totalProducts = await Products.countDocuments();
+    res.status(200).json({
+      success: true,
+      totalProducts: totalProducts
+    });
   } catch (error) {
-      res.status(500).json({
-          success: false,
-          message: 'Lỗi khi lấy tổng số lượng tài khoản khách hàng',
-          error: error.message
-      });
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi khi lấy tổng số lượng tài khoản khách hàng',
+      error: error.message
+    });
+  }
+});
+
+router.post('/check-upload', upload.single('image'), async (req, res) => {
+  // Nếu upload thành công, Multer sẽ tự động đưa file vào req.file
+  if (req.file) {
+    res.json({
+      status: 200,
+      message: 'Upload thành công!',
+      fileInfo: {
+        filename: req.file.filename, // Tên file đã lưu
+        path: req.file.path, // Đường dẫn lưu file trên server
+        size: req.file.size, // Kích thước file
+        mimeType: req.file.mimetype // Kiểu file (ví dụ: image/jpeg)
+      }
+    });
+  } else {
+    res.status(400).json({
+      status: 400,
+      message: 'Lỗi, không có file nào được upload!'
+    });
   }
 });
 
