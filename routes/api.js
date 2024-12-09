@@ -165,66 +165,82 @@ router.delete("/delete-product-by-id/:id", async (req, res) => {
 
 router.put('/update-product-by-id/:id', upload.array('HinhAnh', 10), async (req, res) => {
   try {
-    const { id } = req.params;
-    const data = req.body;
+    const { id } = req.params; // Lấy ID từ params
+    const data = req.body; // Lấy dữ liệu từ body
 
     // Tìm sản phẩm theo ID
     const product = await Products.findById(id);
 
-    if (product) {
-      // Cập nhật các trường thông tin sản phẩm từ dữ liệu nhận được
-      product.MaSanPham = data.MaSanPham ?? product.MaSanPham;
-      product.TenSP = data.TenSP ?? product.TenSP;
-      product.ThuongHieu = data.ThuongHieu ?? product.ThuongHieu;
-
-      // Xử lý KichThuoc nếu có
-      if (data.KichThuoc) {
-        try {
-          product.KichThuoc = JSON.parse(data.KichThuoc); // Chuyển chuỗi JSON thành đối tượng
-        } catch (error) {
-          return res.status(400).json({
-            status: 400,
-            messenger: 'Kích thước không hợp lệ'
-          });
-        }
-      }
-
-      product.GiaBan = data.GiaBan ?? product.GiaBan;
-      product.MoTa = data.MoTa ?? product.MoTa;
-      product.TrangThaiYeuThich = data.TrangThaiYeuThich ?? product.TrangThaiYeuThich;
-
-      // Lấy các đường dẫn ảnh từ Multer (upload từ máy tính)
-      const imageLinksFromUpload = req.files ? req.files.map(file => file.path.replace(/\\/g, '/')) : [];
-
-      // Lấy các link ảnh từ yêu cầu của người dùng (URL gửi từ frontend)
-      const imageLinksFromUrls = data.HinhAnh ? data.HinhAnh.split(',').map(url => url.trim()) : [];
-
-      // Kết hợp các link ảnh từ Multer và link ảnh URL
-      const allImageLinks = [...imageLinksFromUpload, ...imageLinksFromUrls];
-
-      // Loại bỏ các đường dẫn ảnh trùng lặp (nếu có)
-      product.HinhAnh = Array.from(new Set([...product.HinhAnh, ...allImageLinks]));
-
-      // Lưu sản phẩm đã cập nhật
-      const result = await product.save();
-      
-      res.status(200).json({
-        status: 200,
-        messenger: 'Cập nhật thành công',
-        data: result
-      });
-    } else {
-      res.status(404).json({
+    if (!product) {
+      return res.status(404).json({
         status: 404,
-        messenger: 'Không tìm thấy sản phẩm'
+        messenger: 'Không tìm thấy sản phẩm',
       });
     }
+
+    // Kiểm tra và cập nhật MaSanPham
+    if (data.MaSanPham) {
+      product.MaSanPham = data.MaSanPham;
+    } else {
+      return res.status(400).json({
+        status: 400,
+        messenger: 'Trường MaSanPham bị thiếu hoặc không hợp lệ',
+      });
+    }
+
+    // Cập nhật các trường thông tin sản phẩm
+    product.TenSP = data.TenSP ?? product.TenSP;
+    product.ThuongHieu = data.ThuongHieu ?? product.ThuongHieu;
+
+    // Xử lý KichThuoc
+    if (data.KichThuoc) {
+      try {
+        const parsedSizes = Array.isArray(data.KichThuoc)
+          ? data.KichThuoc // Nếu đã là mảng, sử dụng trực tiếp
+          : JSON.parse(data.KichThuoc); // Nếu là chuỗi JSON, parse thành mảng
+
+        if (!Array.isArray(parsedSizes)) {
+          throw new Error('KichThuoc phải là mảng đối tượng');
+        }
+
+        // Gán kích thước mới vào sản phẩm
+        product.KichThuoc = parsedSizes;
+      } catch (error) {
+        return res.status(400).json({
+          status: 400,
+          messenger: 'Dữ liệu KichThuoc không hợp lệ, phải là mảng hoặc JSON hợp lệ',
+          error: error.message,
+        });
+      }
+    }
+
+    // Xử lý cập nhật HinhAnh (thay thế hoàn toàn)
+    const imageLinksFromUpload = req.files ? req.files.map(file => file.path.replace(/\\/g, '/')) : [];
+    if (imageLinksFromUpload.length > 0) {
+      product.HinhAnh = imageLinksFromUpload; // Thay thế toàn bộ hình ảnh hiện tại
+    } else if (data.HinhAnh) {
+      // Nếu không upload file nhưng gửi URL ảnh từ frontend
+      const imageLinksFromUrls = Array.isArray(data.HinhAnh)
+        ? data.HinhAnh
+        : data.HinhAnh.split(',').map(url => url.trim()); // Chuyển đổi thành mảng nếu cần
+
+      product.HinhAnh = imageLinksFromUrls;
+    }
+
+    // Lưu sản phẩm đã cập nhật
+    const result = await product.save();
+
+    res.status(200).json({
+      status: 200,
+      messenger: 'Cập nhật sản phẩm thành công',
+      data: result,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({
       status: 500,
       messenger: 'Lỗi server',
-      error: error.message
+      error: error.message,
     });
   }
 });
