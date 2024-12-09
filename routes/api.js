@@ -33,42 +33,25 @@ const upload = multer({
 
 router.get("/get-list-product", async (req, res) => {
   try {
-    const data = await Products.find().sort({ createdAt: -1 });
-    const totalCount = await Products.countDocuments();
-
-    if (data) {
-      // Thêm tiền tố URL vào đường dẫn ảnh nếu cần
-      const productsWithImageURLs = data.map(product => ({
-        ...product.toObject(),
-        HinhAnh: req.protocol + '://' + req.get('host') + '/' + product.HinhAnh // Tạo URL hoàn chỉnh
-      }));
-
-      res.json({
-        status: 200,
-        messenger: "Lấy danh sách thành công",
-        data: productsWithImageURLs, // Danh sách sản phẩm với đường dẫn ảnh hoàn chỉnh
-        totalCount: totalCount
-      });
-    } else {
-      res.json({
-        status: 400,
-        messenger: "Lấy danh sách thất bại",
-        data: [],
-        totalCount: 0
-      });
-    }
+      //lấy ds sản phẩm
+      const data = await Products.find().sort({ createdAt: -1 });
+      if (data) {
+          res.json({
+              status: 200,
+              messenger: "Lấy danh sách thành công",
+              data: data,
+          });
+      } else {
+          res.json({
+              status: 400,
+              messenger: "lấy danh sách thất bại",
+              data: [],
+          });
+      }
   } catch (error) {
-    console.log(error);
-    res.json({
-      status: 500,
-      messenger: "Lỗi server",
-      data: [],
-      totalCount: 0
-    });
+      console.log(error);
   }
 });
-
-
 
 
 router.post('/add-product', upload.array('HinhAnh', 10), async (req, res) => {
