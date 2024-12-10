@@ -65,8 +65,7 @@ public class Fragment_ChoXacNhan extends Fragment {
             @Override
             public void onItemClick(View view, int position) {
                Order order = hoaDonList.get(position);
-
-
+                Log.d("Fragment_ChoXacNhan", "Full Image URL: " + order.getSanPham().get(0).getHinhAnh().get(0));
                Intent intent = new Intent(getContext(), Activity_CTDH_ChoXacNhan.class);
                intent.putExtra("order_id", order.getId());
                intent.putExtra("order_sp", (Serializable) order.getSanPham());

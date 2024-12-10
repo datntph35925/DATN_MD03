@@ -57,7 +57,7 @@
                 String fullImageUrl = baseUrl + imageUrl;  // Kết hợp URL server với URL ảnh
 
                 // In ra log để kiểm tra URL
-                Log.d("CartAdapter", "Full Image URL: " + fullImageUrl);
+                Log.d("SanPhamAdapter", "Full Image URL: " + fullImageUrl);
 
                 // Sử dụng Glide để tải ảnh từ URL đầy đủ
                 Glide.with(context)

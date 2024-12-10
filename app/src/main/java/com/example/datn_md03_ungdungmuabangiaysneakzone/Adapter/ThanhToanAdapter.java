@@ -66,9 +66,17 @@ public class ThanhToanAdapter extends RecyclerView.Adapter<ThanhToanAdapter.View
         holder.tvProductSize.setText(String.format("Size: %d", item.getSize()));
 
         // Load ảnh sản phẩm
-        String baseUrl = "http://10.0.2.2:3000/";
         if (item.getHinhAnh() != null && !item.getHinhAnh().isEmpty()) {
-            String imageUrl = baseUrl + item.getHinhAnh().get(0).trim();
+            String baseUrl = "http://10.0.2.2:3000/";
+            String imageUrl = item.getHinhAnh().get(0).trim();
+
+            // Kiểm tra URL đầy đủ hay tương đối
+            if (!imageUrl.startsWith("http://") && !imageUrl.startsWith("https://")) {
+                imageUrl = baseUrl + imageUrl;
+            }
+
+            Log.d("ThanhToanAdapter", "Full Image URL: " + imageUrl);
+
             Glide.with(context)
                     .load(imageUrl)
                     .placeholder(R.drawable.nice_shoe)

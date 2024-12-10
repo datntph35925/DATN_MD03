@@ -42,6 +42,10 @@
         <activity
             android:name=".Activity.QRCodeCartActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".Activity.QRCodeActivity"
+            android:exported="false" />
         <activity
             android:name=".Activity.QRCodeActivity"
             android:exported="false" />

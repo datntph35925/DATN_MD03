@@ -56,8 +56,6 @@
         String email;
         TextView tvTotalCost;
 
-        ImageView imgBack_cart;
-
         BottomNavigationView bottomNavigationView;
 
         @Override

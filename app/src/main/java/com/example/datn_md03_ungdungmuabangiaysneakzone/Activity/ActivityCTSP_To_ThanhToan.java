@@ -51,7 +51,8 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
     private ProductItemCart productItem;
 
     String result;
-    String[] imageList;
+
+    String firstImageUrl;
     private double originalTotalCost;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,9 +158,10 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
             String imageUrl = imageUrls[0].trim();  // Loại bỏ khoảng trắng dư thừa
 
             String baseUrl = "http://10.0.2.2:3000/"; // Thay thế bằng base URL thực tế
-            String firstImageUrl  = baseUrl + imageUrl;
+             firstImageUrl  = baseUrl + imageUrl;
+
             // Log lại URL để kiểm tra
-            Log.d("CartAdapter", "Primeira imagem: " + imageUrl);
+            Log.d("ActivityCTSP_To_ThanhToan", "Primeira imagem: " + imageUrl);
 
             // Tải ảnh từ URL đầu tiên
             Glide.with(this)
@@ -167,8 +169,8 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
                     .placeholder(R.drawable.nice_shoe) // Hình mặc định khi đang tải
                     .error(R.drawable.nike2) // Hình mặc định khi lỗi
                     .into(imgProduct);
-            productItem.setHinhAnh(Collections.singletonList(firstImageUrl));
         }
+        productItem.setHinhAnh(Collections.singletonList(firstImageUrl));
     }
 
     @Override
