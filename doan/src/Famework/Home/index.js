@@ -10,14 +10,22 @@ import {
 import { useNavigate } from "react-router-dom";
 import { getTotalAccounts } from "../../Server/Auth";
 import { totalListProducts } from "../../Server/ProductsApi";
-import { totalOrders } from "../../Server/Order";
+import {
+  totalOrders,
+  totalOrdersQuantity,
+  totalOrdersRevenue,
+} from "../../Server/Order";
+import dayjs from "dayjs";
 import "./index.scss";
-import Bieudo from "../../Componer/Bieudo";
+import ApexChart from "../../Componer/Bieudo";
 
 const Dashboard = () => {
   const [accountCount, setAccountCount] = useState(null);
   const [productCount, setProductCount] = useState(null);
-  const [orderCount, setOrderCount] = useState(null); // State for unprocessed orders
+  const [orderCount, setOrderCount] = useState(null);
+  const [soldQuantity, setSoldQuantity] = useState(null);
+  const [revenue, setRevenue] = useState(null);
+  const [revenueData, setRevenueData] = useState({ dates: [], prices: [] });
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -25,16 +33,37 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [accountResponse, productResponse, unprocessedOrdersCount] =
-          await Promise.all([
-            getTotalAccounts(),
-            totalListProducts(),
-            totalOrders(), // Fetch total orders
-          ]);
-        console.log("abc", unprocessedOrdersCount);
+        const today = dayjs();
+        const lastWeek = today.add(-7, "d");
+
+        const [
+          accountResponse,
+          productResponse,
+          unprocessedOrdersCount,
+          soldQuantityResponse,
+          revenueResponse,
+        ] = await Promise.all([
+          getTotalAccounts(),
+          totalListProducts(),
+          totalOrders(),
+          totalOrdersQuantity(),
+          totalOrdersRevenue(
+            lastWeek.format("YYYY-MM-DD"),
+            today.format("YYYY-MM-DD")
+          ),
+        ]);
+
         setAccountCount(accountResponse.totalAccounts || 0);
         setProductCount(productResponse.totalProducts || 0);
-        setOrderCount(unprocessedOrdersCount.unprocessedOrders || 0); // Assume API returns `unprocessedOrders`
+        setOrderCount(unprocessedOrdersCount.unprocessedOrders || 0);
+        setSoldQuantity(soldQuantityResponse.totalSoldQuantity || 0);
+        setRevenue(revenueResponse.totalRevenue || 0);
+
+        // Lưu dữ liệu doanh thu để truyền xuống biểu đồ
+        setRevenueData({
+          dates: revenueResponse.dates || [],
+          prices: revenueResponse.prices || [],
+        });
       } catch (error) {
         message.error(error.message || "Lấy dữ liệu thất bại");
       } finally {
@@ -47,12 +76,12 @@ const Dashboard = () => {
 
   const data = [
     {
-      count: 363,
+      count: revenue !== null ? `$${revenue.toLocaleString()}` : "Đang tải...",
       label: "Doanh thu",
       icon: <BarChartOutlined />,
     },
     {
-      count: 12,
+      count: soldQuantity !== null ? soldQuantity : "Đang tải...",
       label: "Đã Bán",
       icon: <EuroCircleOutlined />,
     },
@@ -72,7 +101,7 @@ const Dashboard = () => {
       count: orderCount !== null ? orderCount : "Đang tải...",
       label: "ĐH chưa xử lý",
       icon: <ProductOutlined />,
-      onClick: () => navigate("/quanlydonhang/dangxuly"), // Navigate to orders page
+      onClick: () => navigate("/quanlydonhang/dangxuly"),
     },
   ];
 
@@ -114,7 +143,7 @@ const Dashboard = () => {
         </Row>
       </div>
       <div className="bieudo">
-        <Bieudo />
+        <ApexChart revenueData={revenueData} />
       </div>
     </div>
   );

@@ -1,12 +1,30 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Form, Input, Space, InputNumber, message } from "antd";
-import { CloseOutlined } from "@ant-design/icons";
+import {
+  Modal,
+  Button,
+  Form,
+  Input,
+  Space,
+  InputNumber,
+  Upload,
+  message,
+} from "antd";
+import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
+
+// Helper function to convert a file to Base64
+const getBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
 
 const AddProductModal = ({ visible, onAdd, onCancel, initialValues }) => {
   const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fileList, setFileList] = useState([]);
 
-  // Set giá trị ban đầu hoặc reset form khi `initialValues` thay đổi
   useEffect(() => {
     if (initialValues) {
       const initialData = {
@@ -14,43 +32,86 @@ const AddProductModal = ({ visible, onAdd, onCancel, initialValues }) => {
         HinhAnh: initialValues.HinhAnh?.join(", ") || "",
       };
       form.setFieldsValue(initialData);
+      setFileList(
+        initialValues.HinhAnh?.map((url, index) => ({
+          uid: `${index}`,
+          name: `Image ${index + 1}`,
+          status: "done",
+          url,
+        })) || []
+      );
     } else {
       form.resetFields();
+      setFileList([]);
     }
   }, [initialValues, form]);
 
-  // Xử lý sự kiện khi người dùng nhấn "OK" để thêm/sửa sản phẩm
+  const handleUploadChange = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+  };
+
   const handleAddProduct = async () => {
     try {
+      // Validate form fields
       const values = await form.validateFields();
       setIsSubmitting(true);
 
-      // Chuẩn hóa dữ liệu trước khi gửi
+      // Extract uploaded file URLs
+      const uploadedUrls = fileList
+        .filter((file) => file.status === "done")
+        .map((file) => file.url || file.response?.url);
+
+      // Handle manual URLs safely
+      const manualUrls =
+        typeof values.HinhAnh === "string" && values.HinhAnh.trim()
+          ? values.HinhAnh.split(",").map((url) => url.trim())
+          : [];
+
+      // Combine all image URLs
+      const combinedUrls = [...uploadedUrls, ...manualUrls];
+
+      // Format sizes safely
+      const formattedSizes =
+        values.KichThuoc?.map((item) => ({
+          size: item?.size || 0,
+          soLuongTon: parseInt(item?.soLuongTon || "0", 10),
+        })) || [];
+
+      // Prepare the final payload
       const formattedValues = {
         ...values,
-        HinhAnh: values.HinhAnh
-          ? values.HinhAnh.split(",").map((url) => url.trim())
-          : [],
-        KichThuoc:
-          values.KichThuoc?.map((item) => ({
-            size: item?.size || 0,
-            soLuongTon: parseInt(item?.soLuongTon || "0", 10),
-          })) || [],
+        HinhAnh: combinedUrls,
+        KichThuoc: formattedSizes,
       };
 
-      onAdd(formattedValues); // Gửi dữ liệu đến callback
+      // Pass the formatted values to the `onAdd` callback
+      onAdd(formattedValues);
+
+      // Success message
       message.success(
         initialValues
           ? "Sản phẩm đã được cập nhật thành công!"
           : "Sản phẩm đã được thêm thành công!"
       );
+
+      // Reset the form and file list
       form.resetFields();
+      setFileList([]);
     } catch (error) {
+      console.error("Error during product submission:", error);
       message.error("Vui lòng kiểm tra lại thông tin nhập!");
     } finally {
+      // Reset the submission state
       setIsSubmitting(false);
     }
   };
+
+  const uploadButton = (
+    <div>
+      <PlusOutlined />
+      <div style={{ marginTop: 8 }}>Upload</div>
+    </div>
+  );
 
   return (
     <Modal
@@ -131,9 +192,20 @@ const AddProductModal = ({ visible, onAdd, onCancel, initialValues }) => {
           </Form.List>
         </Form.Item>
         <Form.Item
+          label="Upload Ảnh"
+          extra="Bạn có thể tải lên ảnh hoặc nhập URL bên dưới."
+        >
+          <Upload
+            listType="picture-card"
+            fileList={fileList}
+            onChange={handleUploadChange}
+          >
+            {fileList.length >= 8 ? null : uploadButton}
+          </Upload>
+        </Form.Item>
+        <Form.Item
           name="HinhAnh"
-          label="Ảnh sản phẩm (URL cách nhau bằng dấu phẩy)"
-          rules={[{ required: true, message: "Vui lòng nhập URL ảnh!" }]}
+          label="Thêm URL ảnh (cách nhau bằng dấu phẩy)"
         >
           <Input placeholder="Nhập URL ảnh" />
         </Form.Item>

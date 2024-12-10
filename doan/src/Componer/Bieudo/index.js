@@ -1,31 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
-import { DatePicker, Space, ConfigProvider } from "antd";
-import dayjs from "dayjs";
-import viVN from "antd/es/locale/vi_VN"; // Import Vietnamese locale
+import { ConfigProvider, DatePicker } from "antd";
+import viVN from "antd/es/locale/vi_VN";
 import "./index.scss";
 
 const { RangePicker } = DatePicker;
 
-const ApexChart = () => {
-  // Initial data
-  const initialData = {
-    prices: [31, 40, 28, 51, 42, 109, 100],
-    dates: [
-      "2023-01-01",
-      "2023-02-01",
-      "2023-03-01",
-      "2023-04-01",
-      "2023-05-01",
-      "2023-06-01",
-      "2023-07-01",
-    ],
-  };
-
-  const [selectedRange, setSelectedRange] = useState([
-    dayjs().add(-7, "d"),
-    dayjs(),
-  ]);
+const ApexChart = ({ revenueData }) => {
   const [options, setOptions] = useState({
     chart: {
       type: "area",
@@ -41,12 +22,12 @@ const ApexChart = () => {
       curve: "straight",
     },
     title: {
-      text: "Thống kê doanh thu", // Vietnamese title
+      text: "Thống kê doanh thu",
       align: "left",
     },
-    labels: initialData.dates,
     xaxis: {
       type: "datetime",
+      categories: revenueData.dates || [],
     },
     yaxis: {
       opposite: true,
@@ -58,91 +39,61 @@ const ApexChart = () => {
 
   const [series, setSeries] = useState([
     {
-      name: "STOCK ABC", // Vietnamese name for series
-      data: initialData.prices,
+      name: "Doanh thu",
+      data: revenueData.prices || [],
     },
   ]);
 
-  const onRangeChange = (dates, dateStrings) => {
-    // Check if the user has selected a valid range
-    if (dates && dates.length === 2) {
-      setSelectedRange(dates);
+  const handleDateChange = (dates) => {
+    if (!dates || dates.length < 2) return;
 
-      // Update the chart with filtered data based on the selected range
-      const filteredData = filterDataByRange(dates[0], dates[1]);
-      setOptions({
-        ...options,
-        labels: filteredData.dates,
-      });
-      setSeries([
-        {
-          name: "STOCK ABC", // Vietnamese name for series
-          data: filteredData.prices,
-        },
-      ]);
-    }
-  };
+    const [start, end] = dates;
+    const startDate = start.startOf("day").valueOf();
+    const endDate = end.endOf("day").valueOf();
 
-  // Function to filter the data based on the selected range
-  const filterDataByRange = (startDate, endDate) => {
-    // Filter the dates and prices based on the range
-    const start = startDate.format("YYYY-MM-DD");
-    const end = endDate.format("YYYY-MM-DD");
-
-    const filteredDates = initialData.dates.filter(
-      (date) => date >= start && date <= end
+    const filteredDates = revenueData.dates.filter(
+      (date) =>
+        new Date(date).getTime() >= startDate &&
+        new Date(date).getTime() <= endDate
+    );
+    const filteredPrices = revenueData.prices.slice(
+      revenueData.dates.findIndex(
+        (date) => new Date(date).getTime() >= startDate
+      ),
+      revenueData.dates.findIndex(
+        (date) => new Date(date).getTime() <= endDate
+      ) + 1
     );
 
-    const filteredPrices = initialData.prices.slice(
-      initialData.dates.indexOf(filteredDates[0]),
-      initialData.dates.indexOf(filteredDates[filteredDates.length - 1]) + 1
-    );
-
-    return { dates: filteredDates, prices: filteredPrices };
+    // Cập nhật biểu đồ ngay lập tức
+    setOptions((prev) => ({
+      ...prev,
+      xaxis: {
+        ...prev.xaxis,
+        categories: filteredDates,
+      },
+    }));
+    setSeries([
+      {
+        name: "Doanh thu",
+        data: filteredPrices,
+      },
+    ]);
   };
-
-  const rangePresets = [
-    {
-      label: "7 Ngày qua", // Vietnamese preset label
-      value: [dayjs().add(-7, "d"), dayjs()],
-    },
-    {
-      label: "14 Ngày qua", // Vietnamese preset label
-      value: [dayjs().add(-14, "d"), dayjs()],
-    },
-    {
-      label: "30 Ngày qua", // Vietnamese preset label
-      value: [dayjs().add(-30, "d"), dayjs()],
-    },
-    {
-      label: "90 Ngày qua", // Vietnamese preset label
-      value: [dayjs().add(-90, "d"), dayjs()],
-    },
-  ];
 
   return (
     <ConfigProvider locale={viVN}>
-      {/* Wrap with Vietnamese locale */}
       <div className="chart-wrapper">
-        {/* Date Pickers Outside the Chart */}
-        <div className="chart-filters">
-          <Space direction="vertical" size={12}>
-            <RangePicker
-              value={selectedRange}
-              presets={rangePresets}
-              onChange={onRangeChange}
-            />
-          </Space>
-        </div>
-
-        <div className="apex-chart-container">
-          <ReactApexChart
-            options={options}
-            series={series}
-            type="area"
-            height={350}
-          />
-        </div>
+        <RangePicker
+          onChange={handleDateChange}
+          format="DD/MM/YYYY" // Định dạng ngày hiển thị
+        />
+        <ReactApexChart
+          options={options}
+          series={series}
+          type="area"
+          height={350}
+        />
       </div>
     </ConfigProvider>
   );

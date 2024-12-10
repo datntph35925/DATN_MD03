@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Image, message, Modal, Input, Carousel } from "antd";
+import { Table, Button, Image, message, Modal, Input } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import AddProductModal from "../../Modal/ModalAddProduct";
 import {
   addProduct,
@@ -7,6 +8,7 @@ import {
   deleteProductById,
   updateProductById,
 } from "../../Server/ProductsApi";
+import { getComment } from "../../Server/comment"; // Import the getComment function
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -16,24 +18,41 @@ const Products = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { confirm } = Modal;
 
-  // Fetch sản phẩm khi component mount
+  // Fetch products on component mount
   useEffect(() => {
     const fetchProducts = async () => {
       setIsLoading(true);
       try {
         const response = await getProduct();
         if (response.status === 200) {
-          const data = response.data.data.map((product) => ({
-            ...product,
-            key: product._id,
-            HinhAnh: Array.isArray(product.HinhAnh)
-              ? product.HinhAnh
-              : [product.HinhAnh],
-            soLuongTon: product.KichThuoc.reduce(
-              (total, size) => total + size.soLuongTon,
-              0
-            ),
-          }));
+          const defaultImageUrl =
+            "http://localhost:3000/uploads/default-avatar.jpg";
+          const data = await Promise.all(
+            response.data.data.map(async (product) => {
+              const comments = await getComment(product._id);
+              console.log(
+                "Fetched comments for product:",
+                product._id,
+                comments
+              ); // Fetch comments for each product
+              return {
+                ...product,
+                key: product._id,
+                HinhAnh:
+                  Array.isArray(product.HinhAnh) && product.HinhAnh.length > 0
+                    ? product.HinhAnh.map(
+                        (url) => `http://localhost:3000/${url}`
+                      )
+                    : [defaultImageUrl],
+                soLuongTon: product.KichThuoc.reduce(
+                  (total, size) => total + size.soLuongTon,
+                  0
+                ),
+                comments: comments || [], // Add comments to the product data
+              };
+            })
+          );
+
           setProducts(data);
         } else {
           message.error("Lấy danh sách sản phẩm không thành công!");
@@ -48,7 +67,7 @@ const Products = () => {
     fetchProducts();
   }, []);
 
-  // Hàm thêm hoặc sửa sản phẩm
+  // Add or edit product
   const handleAddOrEditProduct = async (product) => {
     if (product.GiaBan < 1000) {
       message.error("Giá bán phải lớn hơn hoặc bằng 1,000 VND!");
@@ -57,7 +76,7 @@ const Products = () => {
     setIsAddModalVisible(false);
 
     if (editingProduct) {
-      // Cập nhật sản phẩm
+      // Update product
       try {
         const response = await updateProductById(editingProduct._id, product);
         if (response.status === 200) {
@@ -75,7 +94,7 @@ const Products = () => {
         message.error(error.response?.data?.message || "Cập nhật thất bại!");
       }
     } else {
-      // Thêm mới sản phẩm
+      // Add new product
       try {
         const response = await addProduct(product);
         if (response.status === 201) {
@@ -94,7 +113,7 @@ const Products = () => {
     setEditingProduct(null);
   };
 
-  // Hàm xóa sản phẩm
+  // Delete product
   const handleDelete = (key) => {
     const productToDelete = products.find((item) => item.key === key);
     confirm({
@@ -117,13 +136,13 @@ const Products = () => {
     });
   };
 
-  // Hiển thị modal thêm sản phẩm
+  // Show add product modal
   const showAddProductModal = () => {
     setIsAddModalVisible(true);
     setEditingProduct(null);
   };
 
-  // Hiển thị modal chỉnh sửa sản phẩm
+  // Show edit product modal
   const showEditProductModal = (product) => {
     setEditingProduct(product);
     setIsAddModalVisible(true);
@@ -134,7 +153,7 @@ const Products = () => {
     setEditingProduct(null);
   };
 
-  // Tìm kiếm sản phẩm
+  // Search products
   const handleSearch = (e) => {
     setSearchTerm(e.target.value.toLowerCase());
   };
@@ -149,25 +168,15 @@ const Products = () => {
       title: "Hình Ảnh",
       dataIndex: "HinhAnh",
       key: "HinhAnh",
-      render: (HinhAnh) =>
-        Array.isArray(HinhAnh) && HinhAnh.length > 0 ? (
-          <Image.PreviewGroup>
-            <Image
-              width={50}
-              src={HinhAnh[0]} // Display only the first image as a thumbnail
-              preview={{
-                src: HinhAnh[0], // The main preview will start with the first image
-              }}
-            />
-            {HinhAnh.slice(1).map((url, index) => (
-              <Image key={index} src={url} style={{ display: "none" }} />
-            ))}
-          </Image.PreviewGroup>
-        ) : (
-          "Không có hình ảnh"
-        ),
+      render: (HinhAnh) => (
+        <Image.PreviewGroup>
+          <Image width={50} src={HinhAnh[0]} style={{ cursor: "pointer" }} />
+          {HinhAnh.slice(1).map((url, index) => (
+            <Image key={index} src={url} style={{ display: "none" }} />
+          ))}
+        </Image.PreviewGroup>
+      ),
     },
-
     { title: "Thương Hiệu", dataIndex: "ThuongHieu", key: "ThuongHieu" },
     {
       title: "Giá Bán",
@@ -225,6 +234,16 @@ const Products = () => {
               </ul>
               <h4>Mô tả sản phẩm:</h4>
               <p>{record.MoTa}</p>
+              <h4>Danh sách Comment:</h4>
+              {record.comments && record.comments.length > 0 ? (
+                <ul>
+                  {record.comments.map((comment, index) => (
+                    <li key={index}>{comment}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>Chưa có bình luận nào</p>
+              )}
             </div>
           ),
         }}
