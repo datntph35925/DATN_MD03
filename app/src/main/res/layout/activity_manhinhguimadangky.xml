@@ -22,7 +22,7 @@
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Email xác thưc dang ký"
+        android:text="Email xác thực đăng ký"
         android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="@android:color/black"
