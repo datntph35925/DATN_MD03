@@ -21,16 +21,11 @@ import com.bumptech.glide.Glide;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiService;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.RetrofitClient;
-import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Product;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ProductItemCart;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Review;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ReviewResponse;
 
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,19 +35,21 @@ public class ThanhToanAdapter extends RecyclerView.Adapter<ThanhToanAdapter.View
 
     private Context context;
     private List<ProductItemCart> productItemList;
-
     private boolean isOrderDelivered;
-
-    ApiService apiService;
-    String email;
-
-    private Map<String, Boolean> reviewedProducts = new HashMap<>();
+    private ApiService apiService;
+    private String email;
 
     public ThanhToanAdapter(Context context, List<ProductItemCart> productItemList, boolean isOrderDelivered) {
         this.context = context;
         this.productItemList = productItemList;
         this.isOrderDelivered = isOrderDelivered;
+        this.apiService = RetrofitClient.getClient().create(ApiService.class);
+
+        // Lấy email từ SharedPreferences
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+        this.email = sharedPreferences.getString("Tentaikhoan", "");
     }
+
     @NonNull
     @Override
     public ThanhToanAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -68,109 +65,97 @@ public class ThanhToanAdapter extends RecyclerView.Adapter<ThanhToanAdapter.View
         holder.tvProductPrice.setText(String.format("$%.2f", item.getGia()));
         holder.tvProductSize.setText(String.format("Size: %d", item.getSize()));
 
-        Glide.with(context).load(item.getHinhAnh().get(0)).into(holder.imgProduct);
+        // Load ảnh sản phẩm
+        String baseUrl = "http://10.0.2.2:3000/";
+        if (item.getHinhAnh() != null && !item.getHinhAnh().isEmpty()) {
+            String imageUrl = baseUrl + item.getHinhAnh().get(0).trim();
+            Glide.with(context)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.nice_shoe)
+                    .error(R.drawable.errorr)
+                    .into(holder.imgProduct);
+        } else {
+            Glide.with(context)
+                    .load(R.drawable.errorr)
+                    .into(holder.imgProduct);
+        }
 
-        SharedPreferences sharedPreferences = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
-        email = sharedPreferences.getString("Tentaikhoan", ""); // Retrieve the emai
-
-        // Sử dụng Handler để đảm bảo kiểm tra đánh giá sau khi email đã sẵn sàng
-
+        // Xử lý hiển thị đánh giá
         if (isOrderDelivered) {
             holder.edDanhGia.setVisibility(View.GONE);
             holder.ratingBar.setVisibility(View.GONE);
-            holder.btnDanhGia.setVisibility(View.GONE);// Hoặc View.INVISIBLE
+            holder.btnDanhGia.setVisibility(View.GONE);
         } else {
-            holder.edDanhGia.setVisibility(View.VISIBLE);
-            holder.ratingBar.setVisibility(View.VISIBLE);
-            holder.btnDanhGia.setVisibility(View.VISIBLE);
+            checkIfReviewed(item.getMaSanPham(), holder);
 
-            Handler handler = new Handler();
-            handler.postDelayed(() -> {
-                checkIfReviewed(item.getMaSanPham(), holder);
-            }, 1000);  // Delay một chút để đảm bảo email đã sẵn sàng
+            holder.btnDanhGia.setOnClickListener(view -> {
+                String reviewText = holder.edDanhGia.getText().toString().trim();
+                float rating = holder.ratingBar.getRating();
 
+                if (reviewText.isEmpty()) {
+                    Toast.makeText(context, "Vui lòng nhập nội dung đánh giá", Toast.LENGTH_SHORT).show();
+                } else if (rating == 0) {
+                    Toast.makeText(context, "Vui lòng chọn mức đánh giá", Toast.LENGTH_SHORT).show();
+                } else {
+                    Review review = new Review();
+                    review.setBinhLuan(reviewText);
+                    review.setDanhGia(rating);
+                    review.setMaSanPham(item.getMaSanPham());
+                    review.setTentaikhoan(email);
 
-            holder.btnDanhGia.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String reviewText = holder.edDanhGia.getText().toString().trim();
-                    float rating = holder.ratingBar.getRating();
-
-                    if (reviewText.isEmpty()) {
-                        Toast.makeText(context, "Vui lòng nhập nội dung đánh giá", Toast.LENGTH_SHORT).show();
-                    } else if (rating == 0) {
-                        Toast.makeText(context, "Vui lòng chọn mức đánh giá", Toast.LENGTH_SHORT).show();
-                    } else {
-                        // Tạo đối tượng Review
-                        Review review = new Review();
-                        review.setBinhLuan(reviewText);
-                        review.setDanhGia(rating);
-                        review.setMaSanPham(item.getMaSanPham()); // Giả sử bạn có mã sản phẩm trong ProductItemCart
-                        review.setTentaikhoan(email); // Thay thế bằng tên tài khoản người dùng hiện tại
-
-                        addReviewToApi(holder,review);
-
-                    }
+                    addReviewToApi(holder, review);
                 }
             });
         }
     }
 
     private void checkIfReviewed(String productId, ViewHolder holder) {
-        apiService = RetrofitClient.getClient().create(ApiService.class);// Khởi tạo service API
+        apiService.getReviewsForProductAndUser(productId, email).enqueue(new Callback<ReviewResponse<List<Review>>>() {
+            @Override
+            public void onResponse(Call<ReviewResponse<List<Review>>> call, Response<ReviewResponse<List<Review>>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    List<Review> reviews = response.body().getData();
+                    if (reviews != null && !reviews.isEmpty()) {
+                        holder.edDanhGia.setVisibility(View.GONE);
+                        holder.ratingBar.setVisibility(View.GONE);
+                        holder.btnDanhGia.setVisibility(View.GONE);
+                    } else {
+                        holder.edDanhGia.setVisibility(View.VISIBLE);
+                        holder.ratingBar.setVisibility(View.VISIBLE);
+                        holder.btnDanhGia.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    Log.e("ThanhToanAdapter", "Failed to check review.");
+                }
+            }
 
-         apiService.getReviewsForProductAndUser(productId, email).enqueue(new Callback<ReviewResponse<List<Review>>>() {
-             @Override
-             public void onResponse(Call<ReviewResponse<List<Review>>> call, Response<ReviewResponse<List<Review>>> response) {
-                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                     ReviewResponse<List<Review>> apiResponse = response.body();
-                     List<Review> reviews = apiResponse.getData();
-
-                     if (reviews != null && !reviews.isEmpty()) {
-                         holder.edDanhGia.setVisibility(View.GONE);
-                         holder.ratingBar.setVisibility(View.GONE);
-                         holder.btnDanhGia.setVisibility(View.GONE);
-                         Toast.makeText(context, "Bạn đã đánh giá sản phẩm này trước đó", Toast.LENGTH_SHORT).show();
-                     } else {
-                         holder.edDanhGia.setVisibility(View.VISIBLE);
-                         holder.ratingBar.setVisibility(View.VISIBLE);
-                         holder.btnDanhGia.setVisibility(View.VISIBLE);
-                     }
-                 } else {
-                     Toast.makeText(context, "Lỗi khi kiểm tra đánh giá, vui lòng thử lại.", Toast.LENGTH_SHORT).show();
-                 }
-             }
-
-             @Override
-             public void onFailure(Call<ReviewResponse<List<Review>>> call, Throwable t) {
-                 Toast.makeText(context, "Lỗi kết nối mạng. Không thể kiểm tra đánh giá.", Toast.LENGTH_SHORT).show();
-                 Log.e("ThanhToanAdapter", "Error checking review: " + t.getMessage());
-             }
-         });
+            @Override
+            public void onFailure(Call<ReviewResponse<List<Review>>> call, Throwable t) {
+                Log.e("ThanhToanAdapter", "Error checking review: " + t.getMessage());
+            }
+        });
     }
 
     private void addReviewToApi(ViewHolder holder, Review review) {
-        apiService.addReview(email,review).enqueue(new Callback<Review>() {
+        apiService.addReview(email, review).enqueue(new Callback<Review>() {
             @Override
             public void onResponse(Call<Review> call, Response<Review> response) {
                 if (response.isSuccessful()) {
-                    // Cập nhật trạng thái đã đánh giá cho sản phẩm
                     Toast.makeText(context, "Đánh giá thành công!", Toast.LENGTH_SHORT).show();
                     holder.edDanhGia.setVisibility(View.GONE);
                     holder.ratingBar.setVisibility(View.GONE);
                     holder.btnDanhGia.setVisibility(View.GONE);
                 } else {
-                    Toast.makeText(context, "Đánh giá không thành công. Vui lòng thử lại", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Đánh giá không thành công. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Review> call, Throwable t) {
-                Toast.makeText(context, "Lỗi khi gửi đánh giá", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Lỗi khi gửi đánh giá.", Toast.LENGTH_SHORT).show();
             }
         });
     }
-
 
     @Override
     public int getItemCount() {
@@ -183,6 +168,7 @@ public class ThanhToanAdapter extends RecyclerView.Adapter<ThanhToanAdapter.View
         EditText edDanhGia;
         Button btnDanhGia;
         RatingBar ratingBar;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvProductName = itemView.findViewById(R.id.NameProduct_dt);
@@ -190,7 +176,6 @@ public class ThanhToanAdapter extends RecyclerView.Adapter<ThanhToanAdapter.View
             tvProductPrice = itemView.findViewById(R.id.priceOrder_dt);
             tvProductSize = itemView.findViewById(R.id.tvSize_dt);
             imgProduct = itemView.findViewById(R.id.img_Order_Dt);
-
             edDanhGia = itemView.findViewById(R.id.edDanhGia);
             btnDanhGia = itemView.findViewById(R.id.btnDanhGia);
             ratingBar = itemView.findViewById(R.id.ratingBar);

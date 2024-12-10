@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,8 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Domain.SanPham;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
-import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiService;
-import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Cart;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ProductItemCart;
 
 import java.util.ArrayList;
@@ -30,12 +27,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     private Context context;
     private ArrayList<ProductItemCart> cartItems;
     private OnCartItemActionListener actionListener;
-    private ArrayList<Cart> cartArrayList;
-    private ArrayList<SanPham> sanPhams;
-
     private Set<ProductItemCart> selectedItems = new HashSet<>();
-    TextView tv_totalbill;
-    ApiService apiService;
 
     public CartAdapter(Context context, ArrayList<ProductItemCart> cartItems, OnCartItemActionListener actionListener) {
         this.context = context;
@@ -58,65 +50,78 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         holder.cartItemPrice.setText("$" + item.getGia());
         holder.cartItemQuantity.setText(String.valueOf(item.getSoLuongGioHang()));
         holder.cartItemSize.setText(String.valueOf(item.getSize()));
+
+        // Hiển thị ảnh sản phẩm
         if (item.getHinhAnh() != null && !item.getHinhAnh().isEmpty()) {
-            // Lấy ảnh đầu tiên từ danh sách
+            String imageUrl = item.getHinhAnh().get(0);
+
+            // Nếu URL là tương đối, ghép với baseUrl
+            if (!imageUrl.startsWith("http")) {
+                String baseUrl = "http://10.0.2.2:3000/";
+                imageUrl = baseUrl + imageUrl;
+            }
+
+            // Log URL để kiểm tra
+            Log.d("CartAdapter", "Full Image URL: " + imageUrl);
+
+            // Tải ảnh với Glide
             Glide.with(context)
-                    .load(item.getHinhAnh().get(0))
+                    .load(imageUrl)
+                    .placeholder(R.drawable.nice_shoe) // Hình mặc định khi đang tải
+                    .error(R.drawable.nike2) // Hình lỗi nếu không tải được
                     .into(holder.cartItemImage);
         } else {
-            // Nếu không có ảnh, tải ảnh mặc định
+            // Hiển thị ảnh mặc định nếu không có ảnh
             Glide.with(context)
-                    .load(R.drawable.errorr) // Thay bằng ảnh mặc định của bạn
+                    .load(R.drawable.errorr) // Hình mặc định
                     .into(holder.cartItemImage);
         }
 
-        // Handle click events
+        // Xử lý tăng số lượng
         holder.btnIncrease.setOnClickListener(v -> {
-            Log.d("CartAdapter", "Current Quantity: " + item.getSoLuongGioHang());
-            Log.d("CartAdapter", "Max Quantity: " + item.getSoLuongTon());
-            Log.d("CartAdapter", "Size: " + item.getSize());
-
-            if (item.getSoLuongGioHang() < item.getSoLuongTon()) { // Kiểm tra tồn kho
-                item.setSoLuongGioHang(item.getSoLuongGioHang() + 1); // Tăng số lượng
+            if (item.getSoLuongGioHang() < item.getSoLuongTon()) {
+                item.setSoLuongGioHang(item.getSoLuongGioHang() + 1);
                 holder.cartItemQuantity.setText(String.valueOf(item.getSoLuongGioHang()));
-                notifyItemChanged(position);// Cập nhật UI
+                notifyItemChanged(position);
                 if (actionListener != null) {
-                    actionListener.onIncreaseQuantity(item); // Gọi callback để cập nhật tổng tiền
+                    actionListener.onIncreaseQuantity(item);
                 }
             } else {
                 Toast.makeText(context, "Số lượng đã đạt tối đa trong kho", Toast.LENGTH_SHORT).show();
             }
         });
 
+        // Xử lý giảm số lượng
         holder.btnDecrease.setOnClickListener(v -> {
             if (item.getSoLuongGioHang() > 1) {
-                item.setSoLuongGioHang(item.getSoLuongGioHang() - 1); // Giảm số lượng
+                item.setSoLuongGioHang(item.getSoLuongGioHang() - 1);
                 holder.cartItemQuantity.setText(String.valueOf(item.getSoLuongGioHang()));
-                notifyItemChanged(position);// Cập nhật UI
+                notifyItemChanged(position);
                 if (actionListener != null) {
-                    actionListener.onDecreaseQuantity(item); // Gọi callback để cập nhật tổng tiền
+                    actionListener.onDecreaseQuantity(item);
                 }
             } else {
                 Toast.makeText(context, "Số lượng tối thiểu là 1", Toast.LENGTH_SHORT).show();
             }
         });
 
+        // Xử lý xóa sản phẩm
         holder.btnDelete.setOnClickListener(view -> {
             if (actionListener != null) {
                 actionListener.onDeleteItem(item);
             }
         });
 
-        holder.checkGH.setOnCheckedChangeListener(null); // Tránh gọi lại không cần thiết
-        holder.checkGH.setChecked(item.isChecked()); // Set trạng thái hiện tại của checkbox
+        // Xử lý checkbox
+        holder.checkGH.setOnCheckedChangeListener(null);
+        holder.checkGH.setChecked(item.isChecked());
         holder.checkGH.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            item.setChecked(isChecked); // Cập nhật trạng thái checkbox
+            item.setChecked(isChecked);
             if (actionListener != null) {
-                actionListener.onItemChecked(item, isChecked); // Gọi callback để xử lý
+                actionListener.onItemChecked(item, isChecked);
             }
         });
     }
-
 
     @Override
     public int getItemCount() {
@@ -152,5 +157,3 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         void onItemChecked(ProductItemCart item, boolean isChecked);
     }
 }
-//            @Query("productId") String productId,
-//            @Query("size") int size

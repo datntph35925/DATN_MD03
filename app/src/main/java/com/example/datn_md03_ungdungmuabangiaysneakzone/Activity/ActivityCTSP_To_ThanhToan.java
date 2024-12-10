@@ -201,7 +201,7 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
                     btnXoaVoucher.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            removeVoucherAndRecalculate();
+//                            removeVoucherAndRecalculate();
                             btnXoaVoucher.setVisibility(View.GONE);
                         }
                     });

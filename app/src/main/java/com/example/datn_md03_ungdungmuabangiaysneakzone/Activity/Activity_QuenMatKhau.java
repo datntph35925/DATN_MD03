@@ -1,10 +1,12 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,6 +25,7 @@ public class Activity_QuenMatKhau extends AppCompatActivity {
     private EditText edtEmail;
     private Button btnSend;
     private ProgressBar progressBar;
+    private ImageButton img_back ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,12 +36,17 @@ public class Activity_QuenMatKhau extends AppCompatActivity {
         edtEmail = findViewById(R.id.ed_email);
         btnSend = findViewById(R.id.btn_send);
         progressBar = findViewById(R.id.progressBar);
+        img_back = findViewById(R.id.img_back);
 
         // Ẩn ProgressBar ban đầu
         progressBar.setVisibility(View.GONE);
 
         // Xử lý sự kiện khi nhấn nút "Gửi"
         btnSend.setOnClickListener(view -> sendForgotPasswordRequest());
+
+        img_back.setOnClickListener(view -> {
+            startActivity(new Intent(Activity_QuenMatKhau.this, DangNhap.class));
+        });
     }
 
     private void sendForgotPasswordRequest() {
@@ -109,4 +117,8 @@ public class Activity_QuenMatKhau extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        // Không làm gì, ngăn không cho quay lại màn hình trước
+    }
 }

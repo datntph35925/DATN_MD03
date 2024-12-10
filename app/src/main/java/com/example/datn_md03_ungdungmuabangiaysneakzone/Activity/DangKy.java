@@ -133,4 +133,9 @@ public class DangKy extends AppCompatActivity {
             startActivity(new Intent(DangKy.this, DangNhap.class));
         });
     }
+
+    @Override
+    public void onBackPressed() {
+        // Không làm gì, ngăn không cho quay lại màn hình trước
+    }
 }

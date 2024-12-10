@@ -34,6 +34,7 @@ public class Activity_DoiMK extends AppCompatActivity {
     // Biến lưu Tentaikhoan
     private String tentaikhoan;
 
+    private String currentPassword;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +53,7 @@ public class Activity_DoiMK extends AppCompatActivity {
         // Lấy Tentaikhoan từ SharedPreferences
         SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
         tentaikhoan = sharedPreferences.getString("Tentaikhoan", null); // Lấy email từ SharedPreferences
+        currentPassword = sharedPreferences.getString("matkhau", null); // Lấy mật khẩu hiện tại
 
         // Kiểm tra nếu không có email
         if (tentaikhoan == null) {
@@ -86,6 +88,10 @@ public class Activity_DoiMK extends AppCompatActivity {
 
         if (!newPassword.equals(confirmPassword)) {
             editConfPass_doiMK.setError("Mật khẩu xác nhận không khớp!");
+            return;
+        }
+        if (!oldPassword.equals(currentPassword)) {
+            editOldPass_doiMK.setError("Mật khẩu cũ không đúng!");
             return;
         }
 

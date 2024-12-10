@@ -42,6 +42,7 @@ public class DangNhap extends AppCompatActivity {
         if (isLoggedIn) {
             // Nếu đã đăng nhập, chuyển sang trang chủ
             Intent intent = new Intent(DangNhap.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK); // Xóa ngăn xếp
             startActivity(intent);
             finish(); // Đảm bảo không quay lại màn hình đăng nhập
         } else {
@@ -116,11 +117,13 @@ public class DangNhap extends AppCompatActivity {
                             // Lưu thông tin tài khoản và trạng thái đăng nhập vào SharedPreferences
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putString("Tentaikhoan", email); // Lưu email vào SharedPreferences
+                            editor.putString("matkhau", password); // Lưu mật khẩu vào SharedPreferences
                             editor.putBoolean("is_logged_in", true); // Lưu trạng thái đăng nhập
                             editor.apply();
 
                             // Chuyển sang MainActivity (Trang chủ)
                             Intent intent = new Intent(DangNhap.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK); // Xóa ngăn xếp
                             startActivity(intent);
                             finish(); // Đảm bảo không quay lại màn hình đăng nhập
                         } else {
@@ -137,5 +140,10 @@ public class DangNhap extends AppCompatActivity {
                 });
             });
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Không làm gì, ngăn không cho quay lại màn hình trước
     }
 }
