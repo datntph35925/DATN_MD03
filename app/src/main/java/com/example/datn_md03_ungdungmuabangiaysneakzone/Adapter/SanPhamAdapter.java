@@ -65,8 +65,6 @@
                         .placeholder(R.drawable.nice_shoe) // Ảnh placeholder khi chưa tải
                         .error(R.drawable.nike2) // Ảnh lỗi nếu không tải được
                         .into(holder.shoeImage); // Đưa ảnh vào ImageView
-            }else {
-                Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
             }
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {

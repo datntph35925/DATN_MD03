@@ -217,15 +217,17 @@ public class Activity_ThanhToan extends AppCompatActivity {
     }
 
     private void saveOrderToDatabase() {
-        double totalCost = Double.parseDouble(tvTotalCost.getText().toString().replace("$", "").trim());
-
         order = new Order();
         order.setSelectedProducts(maSPList);
         order.setTenNguoiNhan(name);
         order.setDiaChiGiaoHang(address);
         order.setSoDienThoai(phone);
         order.setPhuongThucThanhToan(tvPayMent.getText().toString());
-        order.setVoucher(edVoicher.getText().toString());
+        if (edVoicher.getText().toString().isEmpty()) {
+            order.setVoucher(null);
+        } else {
+            order.setVoucher(edVoicher.getText().toString());
+        }
         order.setMaDonHang(result);
 
         // Lấy tổng tiền sau khi áp dụng voucher
@@ -244,7 +246,7 @@ public class Activity_ThanhToan extends AppCompatActivity {
                     Toast.makeText(Activity_ThanhToan.this, "Order thành công", Toast.LENGTH_SHORT).show();
                 } else {
                     // Xử lý lỗi khi tạo đơn hàng
-                    Toast.makeText(Activity_ThanhToan.this, "Failed to place order. Please try again.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Activity_ThanhToan.this, "Voucher đã được dùng hoặc hết hạn sử dụng!", Toast.LENGTH_SHORT).show();
                 }
             }
 

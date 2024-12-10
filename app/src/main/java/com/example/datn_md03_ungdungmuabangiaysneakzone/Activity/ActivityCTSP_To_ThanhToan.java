@@ -128,7 +128,7 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
     private void removeVoucherAndRecalculate() {
         // Xóa voucher
         edtVoicher.setText("");  // Xóa mã voucher
-        tvVoucher.setText("");  // Xóa hiển thị giá trị voucher
+        tvVoucher.setText("0");  // Xóa hiển thị giá trị voucher
 
         // Tính lại tổng tiền mà không có voucher
         double totalCost = originalTotalCost;  // Lấy tổng tiền ban đầu
@@ -201,7 +201,7 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
                     btnXoaVoucher.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-//                            removeVoucherAndRecalculate();
+                            removeVoucherAndRecalculate();
                             btnXoaVoucher.setVisibility(View.GONE);
                         }
                     });
@@ -272,7 +272,12 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
         order.setDiaChiGiaoHang(address);
         order.setSoDienThoai(phone);
         order.setPhuongThucThanhToan(tvPaymentMethods.getText().toString());
-        order.setVoucher(edtVoicher.getText().toString());
+        if (edtVoicher.getText().toString().isEmpty()) {
+            order.setVoucher(null);
+        } else {
+            order.setVoucher(edtVoicher.getText().toString());
+        }
+
         order.setMaDonHang(result);
 
         double finalTotalPrice = Double.parseDouble(tvTotalPrice.getText().toString());
@@ -321,7 +326,7 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
             }
 
             // Ghép 4 ký tự đầu tiên với 4 chữ số ngẫu nhiên
-             result = firstFourChars + randomDigits.toString();
+            result = firstFourChars + randomDigits.toString();
 
             // In ra kết quả
             Log.d("RandomString", "Kết quả: " + result);
