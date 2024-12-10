@@ -261,8 +261,34 @@ public class ActivityLocation extends AppCompatActivity {
             String diaChi = edtDiaChi.getText().toString().trim();
             String sdt = edtSdt.getText().toString().trim();
 
-            if (tenNguoiNhan.isEmpty() || diaChi.isEmpty() || sdt.isEmpty()) {
-                Toast.makeText(ActivityLocation.this, "Vui lòng nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
+            boolean isValid = true;
+            // Validate từng trường
+            if (tenNguoiNhan.isEmpty()) {
+                edtTenNguoiNhan.setError("Vui lòng nhập tên người nhận");
+                isValid = false;
+            } else {
+                edtTenNguoiNhan.setError(null); // Xóa lỗi nếu đã nhập
+            }
+
+            if (diaChi.isEmpty()) {
+                edtDiaChi.setError("Vui lòng nhập địa chỉ");
+                isValid = false;
+            } else {
+                edtDiaChi.setError(null); // Xóa lỗi nếu đã nhập
+            }
+
+            if (sdt.isEmpty()) {
+                edtSdt.setError("Vui lòng nhập số điện thoại");
+                isValid = false;
+            } else if (!sdt.matches("\\d{10,11}")) {
+                edtSdt.setError("Số điện thoại không hợp lệ (chỉ gồm 10-11 chữ số)");
+                isValid = false;
+            } else {
+                edtSdt.setError(null); // Xóa lỗi nếu hợp lệ
+            }
+
+            // Nếu thông tin không hợp lệ, dừng lại
+            if (!isValid) {
                 return;
             }
 
