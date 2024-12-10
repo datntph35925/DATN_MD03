@@ -20,6 +20,8 @@
 
         <!-- Font mặc định -->
 
+        <item name="floatingActionButtonStyle">@style/FloatingActionButtonStyle</item>
+
     </style>
 
     <!-- Application theme -->
@@ -64,4 +66,12 @@
         <item name="cardBackgroundColor">@color/white</item>
     </style>
 
+
+    <style name="FloatingActionButtonStyle" parent="Widget.Design.FloatingActionButton">
+         <item name="shapeAppearanceOverlay">@style/FabShapeStyle1</item>
+    </style>
+    <style name="FabShapeStyle1" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerSize">16dp</item>
+
+    </style>
 </resources>
