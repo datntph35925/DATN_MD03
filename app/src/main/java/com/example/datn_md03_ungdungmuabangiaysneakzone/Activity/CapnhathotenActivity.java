@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +46,15 @@ public class CapnhathotenActivity extends AppCompatActivity {
         tvCurrentName = findViewById(R.id.tvCurrentName);
         edtNewName = findViewById(R.id.edtNewName);
         btnUpdateName = findViewById(R.id.btnChangeName);
+        ImageView imgback = findViewById(R.id.buttonBack_hoten);
+
+        imgback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(CapnhathotenActivity.this, Activity_FixInfor.class);
+                startActivity(intent);
+            }
+        });
 
         // Lấy thông tin tài khoản từ SharedPreferences
         sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
