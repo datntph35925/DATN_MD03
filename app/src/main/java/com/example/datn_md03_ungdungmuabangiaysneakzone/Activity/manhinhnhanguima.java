@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,6 +37,14 @@ public class manhinhnhanguima extends AppCompatActivity {
         tvEmail = findViewById(R.id.tvEmaill);
         btnNext = findViewById(R.id.btnNext);
 
+        ImageButton btnback = findViewById(R.id.btnBack);
+        btnback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(manhinhnhanguima.this,Activity_FixInfor.class);
+                startActivity(intent);
+            }
+        });
         // Lấy tên tài khoản (email) từ SharedPreferences
         sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
         String email = sharedPreferences.getString("Tentaikhoan", "");
