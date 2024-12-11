@@ -4,8 +4,8 @@ import AddVoucherModal from "../../Modal/ModalAddVoucher";
 import {
   getlistVouchers,
   deleteVoucher,
-  updateVoucher,
   addVoucher,
+  updateVoucher,
 } from "../../Server/Vouchers";
 import "./index.scss";
 
@@ -14,84 +14,68 @@ const { confirm } = Modal;
 function VoucherList() {
   const [vouchers, setVouchers] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [editingVoucher, setEditingVoucher] = useState(null); // Voucher đang chỉnh sửa
+  const [editingVoucher, setEditingVoucher] = useState(null);
 
-  // Fetch danh sách vouchers
   useEffect(() => {
     const fetchVouchers = async () => {
       try {
         const data = await getlistVouchers();
         setVouchers(data.map((voucher) => ({ ...voucher, key: voucher._id })));
       } catch (error) {
-        console.error("Error fetching vouchers:", error);
-        message.error(
-          "Lỗi: Không thể tải danh sách voucher. Vui lòng thử lại sau!"
-        );
+        message.error("Không thể tải danh sách voucher. Vui lòng thử lại!");
       }
     };
 
     fetchVouchers();
   }, []);
 
-  // Hiển thị modal thêm voucher
   const handleAddVoucherClick = () => {
-    setEditingVoucher(null); // Reset voucher đang chỉnh sửa
+    setEditingVoucher(null);
     setIsModalVisible(true);
   };
 
-  // Hiển thị modal chỉnh sửa voucher
   const handleEditVoucherClick = (voucher) => {
     setEditingVoucher(voucher);
     setIsModalVisible(true);
   };
 
-  // Xử lý thêm hoặc cập nhật voucher
   const handleModalOk = async (updatedVoucher) => {
     if (!updatedVoucher || Object.keys(updatedVoucher).length === 0) {
-      message.error("Lỗi: Dữ liệu không hợp lệ. Vui lòng kiểm tra và thử lại!");
+      message.error("Dữ liệu không hợp lệ. Vui lòng kiểm tra và thử lại!");
       return;
     }
 
     try {
       if (editingVoucher) {
-        // Cập nhật voucher
         const updated = await updateVoucher(editingVoucher._id, updatedVoucher);
-        setVouchers((prevVouchers) =>
-          prevVouchers.map((voucher) =>
-            voucher._id === editingVoucher._id
-              ? { ...updated, key: updated._id }
-              : voucher
-          )
-        );
-        message.success(`Cập nhật voucher "${updated.MaVoucher}" thành công!`);
+        if (updated) {
+          setVouchers((prevVouchers) =>
+            prevVouchers.map((voucher) =>
+              voucher._id === editingVoucher._id
+                ? { ...updated, key: updated._id }
+                : voucher
+            )
+          );
+          message.success("Cập nhật voucher thành công!");
+        } else {
+          message.error("Không có thay đổi nào để cập nhật!");
+        }
       } else {
-        // Thêm mới voucher
         const newVoucher = await addVoucher(updatedVoucher);
         setVouchers((prevVouchers) => [
           ...prevVouchers,
           { ...newVoucher, key: newVoucher._id },
         ]);
-        message.success(
-          `Thêm mới voucher "${newVoucher.MaVoucher}" thành công!`
-        );
+        message.success("Thêm voucher mới thành công!");
       }
     } catch (error) {
-      console.error("Error adding/updating voucher:", error);
-      message.error(
-        `Lỗi: ${
-          error.response?.data?.message ||
-          "Không thể hoàn tất yêu cầu. Vui lòng thử lại!"
-        }`
-      );
+      console.error("Error processing voucher:", error);
+      message.error("Có lỗi xảy ra. Vui lòng thử lại sau.");
     } finally {
       setIsModalVisible(false);
     }
   };
 
-  // Đóng modal
-  const handleModalCancel = () => setIsModalVisible(false);
-
-  // Xóa voucher
   const handleDeleteVoucher = async (id) => {
     try {
       await deleteVoucher(id);
@@ -101,11 +85,10 @@ function VoucherList() {
       message.success("Xóa voucher thành công!");
     } catch (error) {
       console.error("Error deleting voucher:", error);
-      message.error("Lỗi: Không thể xóa voucher. Vui lòng thử lại!");
+      message.error("Lỗi khi xóa voucher. Vui lòng thử lại!");
     }
   };
 
-  // Hiển thị xác nhận xóa
   const showDeleteConfirm = (id) => {
     confirm({
       title: "Bạn có chắc chắn muốn xóa voucher này?",
@@ -119,7 +102,6 @@ function VoucherList() {
     });
   };
 
-  // Cấu hình cột cho bảng
   const columns = [
     {
       title: "Mã Voucher",
@@ -190,7 +172,7 @@ function VoucherList() {
       <AddVoucherModal
         isVisible={isModalVisible}
         onOk={handleModalOk}
-        onCancel={handleModalCancel}
+        onCancel={() => setIsModalVisible(false)}
         voucher={editingVoucher}
       />
     </div>

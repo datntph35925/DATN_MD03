@@ -2,25 +2,24 @@ import React, { useEffect } from "react";
 import { Modal, Form, Input, Select, DatePicker, message } from "antd";
 import moment from "moment";
 import { addVoucher, updateVoucher } from "../../Server/Vouchers";
+import { CheckCircleOutlined } from "@ant-design/icons";
 
 function AddVoucherModal({ isVisible, onOk, onCancel, voucher }) {
   const [form] = Form.useForm();
 
-  // Load dữ liệu vào form khi voucher thay đổi (chỉnh sửa hoặc thêm mới)
   useEffect(() => {
     if (voucher) {
       form.setFieldsValue({
         ...voucher,
         NgayBatDau: voucher.NgayBatDau ? moment(voucher.NgayBatDau) : null,
         NgayKetThuc: voucher.NgayKetThuc ? moment(voucher.NgayKetThuc) : null,
-        TrangThai: voucher.TrangThai || null, // Đặt giá trị trạng thái
+        TrangThai: voucher.TrangThai || null,
       });
     } else {
       form.resetFields();
     }
   }, [voucher, form]);
 
-  // Xử lý khi nhấn nút OK
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
@@ -34,31 +33,32 @@ function AddVoucherModal({ isVisible, onOk, onCancel, voucher }) {
 
       let response;
       if (voucher) {
-        // Update voucher
         response = await updateVoucher(voucher._id, formattedValues);
       } else {
-        // Add new voucher
         response = await addVoucher(formattedValues);
       }
 
       if (response?.success) {
+        console.log("Voucher added successfully");
         message.success(
-          voucher ? "Voucher đã được cập nhật!" : "Voucher đã được thêm!"
+          voucher ? "Cập nhật voucher thành công!" : "Thêm voucher thành công!"
         );
         form.resetFields();
         onOk(response);
       } else {
-        throw new Error(response?.message || "Lỗi không xác định!");
+        console.log("Error response", response);
+        message.success(
+          response?.message || "Lỗi không xác định! Vui lòng thử lại."
+        );
       }
     } catch (error) {
-      console.error("Error:", error.message || error);
+      console.error("Lỗi xử lý voucher:", error.message || error);
       message.error(
-        "Lỗi khi xử lý voucher: " + (error.message || "Không xác định!")
+        `Lỗi: ${error.message || "Không thể xử lý yêu cầu. Vui lòng thử lại!"}`
       );
     }
   };
 
-  // Đóng modal và reset form
   const handleCancel = () => {
     form.resetFields();
     onCancel();
@@ -81,7 +81,7 @@ function AddVoucherModal({ isVisible, onOk, onCancel, voucher }) {
           MaVoucher: "",
           GiaTri: "",
           LoaiVoucher: "",
-          TrangThai: "Có thể sử dụng", // Giá trị mặc định
+          TrangThai: "Có thể sử dụng",
           NgayBatDau: null,
           NgayKetThuc: null,
         }}
@@ -140,7 +140,7 @@ function AddVoucherModal({ isVisible, onOk, onCancel, voucher }) {
         >
           <DatePicker
             style={{ width: "100%" }}
-            format=" DD-MM-YYYY"
+            format="DD-MM-YYYY"
             placeholder="Chọn ngày bắt đầu"
           />
         </Form.Item>
@@ -152,7 +152,7 @@ function AddVoucherModal({ isVisible, onOk, onCancel, voucher }) {
         >
           <DatePicker
             style={{ width: "100%" }}
-            format=" DD-MM-YYYY"
+            format="DD-MM-YYYY"
             placeholder="Chọn ngày kết thúc"
           />
         </Form.Item>

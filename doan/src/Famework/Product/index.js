@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Image, message, Modal, Input, Spin } from "antd";
+import {
+  Table,
+  Button,
+  Image,
+  message,
+  Modal,
+  Input,
+  Spin,
+  Tooltip,
+  Rate,
+} from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import AddProductModal from "../../Modal/ModalAddProduct";
 import {
@@ -16,7 +26,7 @@ const Products = () => {
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [expandedRows, setExpandedRows] = useState([]);
+  const [loadingComments, setLoadingComments] = useState({});
   const { confirm } = Modal;
 
   useEffect(() => {
@@ -53,6 +63,7 @@ const Products = () => {
 
   const handleRowExpand = async (expanded, record) => {
     if (expanded && !record.comments) {
+      setLoadingComments((prev) => ({ ...prev, [record._id]: true })); // Mark as loading
       try {
         const comments = await getComment(record._id);
         setProducts((prevProducts) =>
@@ -62,6 +73,8 @@ const Products = () => {
         );
       } catch (error) {
         message.error("Không thể tải bình luận!");
+      } finally {
+        setLoadingComments((prev) => ({ ...prev, [record._id]: false })); // Mark as not loading
       }
     }
   };
@@ -172,7 +185,7 @@ const Products = () => {
       dataIndex: "GiaBan",
       key: "GiaBan",
       sorter: (a, b) => a.GiaBan - b.GiaBan,
-      render: (GiaBan) => (GiaBan ? `${GiaBan.toLocaleString()} VND` : "N/A"),
+      render: (GiaBan) => (GiaBan ? `${GiaBan.toLocaleString()}  ` : "N/A"),
     },
     { title: "Số lượng tổng", dataIndex: "soLuongTon", key: "soLuongTon" },
     {
@@ -225,12 +238,20 @@ const Products = () => {
               <h4>Mô tả sản phẩm:</h4>
               <p>{record.MoTa}</p>
               <h4>Danh sách Comment:</h4>
-              {record.comments && record.comments.length > 0 ? (
+              {loadingComments[record._id] ? (
+                <Spin />
+              ) : record.comments && record.comments.length > 0 ? (
                 <ul>
                   {record.comments.map((comment, index) => (
                     <li key={index}>
-                      <strong>{comment.author || "Anonymous"}:</strong>{" "}
-                      {comment.text}
+                      <p>
+                        <strong>{comment.Tentaikhoan || "Anonymous"}:</strong>{" "}
+                        {comment.BinhLuan}
+                      </p>
+                      <p>
+                        <strong>Đánh giá:</strong>{" "}
+                        <Rate disabled defaultValue={comment.DanhGia} />
+                      </p>
                     </li>
                   ))}
                 </ul>

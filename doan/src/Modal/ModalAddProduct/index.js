@@ -25,6 +25,7 @@ const AddProductModal = ({ visible, onAdd, onCancel, initialValues }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fileList, setFileList] = useState([]);
 
+  // Handle initial values and form reset
   useEffect(() => {
     if (initialValues) {
       const initialData = {
@@ -46,10 +47,20 @@ const AddProductModal = ({ visible, onAdd, onCancel, initialValues }) => {
     }
   }, [initialValues, form]);
 
-  const handleUploadChange = ({ fileList: newFileList }) => {
-    setFileList(newFileList);
+  // Handle file upload changes
+  const handleUploadChange = async ({ file, fileList: newFileList }) => {
+    if (file.status === "uploading") {
+      setFileList(newFileList);
+    } else if (file.originFileObj) {
+      const base64 = await getBase64(file.originFileObj);
+      const updatedFileList = newFileList.map((item) =>
+        item.uid === file.uid ? { ...item, url: base64 } : item
+      );
+      setFileList(updatedFileList);
+    }
   };
 
+  // Handle form submission
   const handleAddProduct = async () => {
     try {
       // Validate form fields
@@ -106,6 +117,7 @@ const AddProductModal = ({ visible, onAdd, onCancel, initialValues }) => {
     }
   };
 
+  // Upload button for new file uploads
   const uploadButton = (
     <div>
       <PlusOutlined />
@@ -176,7 +188,10 @@ const AddProductModal = ({ visible, onAdd, onCancel, initialValues }) => {
                       {...restField}
                       name={[name, "soLuongTon"]}
                       rules={[
-                        { required: true, message: "Vui lòng nhập số lượng!" },
+                        {
+                          required: true,
+                          message: "Vui lòng nhập số lượng!",
+                        },
                       ]}
                     >
                       <InputNumber placeholder="Số lượng" min={1} />
@@ -199,6 +214,7 @@ const AddProductModal = ({ visible, onAdd, onCancel, initialValues }) => {
             listType="picture-card"
             fileList={fileList}
             onChange={handleUploadChange}
+            beforeUpload={() => false}
           >
             {fileList.length >= 8 ? null : uploadButton}
           </Upload>

@@ -1,10 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Avatar, Badge, Dropdown, Menu, Tooltip, Drawer } from "antd";
+import {
+  Avatar,
+  Badge,
+  Dropdown,
+  Menu,
+  Tooltip,
+  Drawer,
+  Modal,
+  Button,
+  notification,
+} from "antd";
 import { BellOutlined, UserOutlined } from "@ant-design/icons";
 import logo from "../../Image/logo.png";
 import NotificationItem from "../itemnotify";
-import { getNotify } from "../../Server/notify"; // Adjust the API path
+import { getNotify, addNotification, getUsers } from "../../Server/notify"; // Adjust API path
+import ModalAddNotification from "../../Modal/ModalAddnotifi"; // Import modal component
 import "./index.scss";
 
 const Header = () => {
@@ -13,31 +24,46 @@ const Header = () => {
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false); // Control modal visibility
+  const [accounts, setAccounts] = useState([]); // State for available accounts
 
   useEffect(() => {
     const fetchNotifications = async () => {
-      setLoading(true); // Start loading
+      setLoading(true);
       try {
-        const data = await getNotify(); // Fetch notifications
+        const data = await getNotify();
         if (Array.isArray(data)) {
-          setNotifications(data); // Set notifications if response is an array
+          setNotifications(data);
         } else if (data?.notifications && Array.isArray(data.notifications)) {
-          setNotifications(data.notifications); // Handle wrapped notifications
+          setNotifications(data.notifications);
         } else {
           console.warn("Unexpected API response structure:", data);
         }
       } catch (error) {
         console.error("Error fetching notifications:", error);
       } finally {
-        setLoading(false); // Stop loading
+        setLoading(false);
+      }
+    };
+
+    const fetchAccounts = async () => {
+      try {
+        const data = await getUsers(); // Assuming you have an API to get users
+        setAccounts(data); // Set available accounts (users) for notification
+      } catch (error) {
+        console.error("Error fetching users:", error);
       }
     };
 
     fetchNotifications();
+    fetchAccounts();
   }, []);
 
-  const showDrawer = () => setDrawerVisible(true); // Open drawer
-  const closeDrawer = () => setDrawerVisible(false); // Close drawer
+  const showDrawer = () => setDrawerVisible(true);
+  const closeDrawer = () => setDrawerVisible(false);
+
+  const showModal = () => setModalVisible(true); // Show modal
+  const closeModal = () => setModalVisible(false); // Close modal
 
   const userMenu = (
     <Menu>
@@ -58,8 +84,8 @@ const Header = () => {
         {/* Notifications Bell */}
         <Tooltip title="Notifications">
           <Badge
-            count={notifications.length} // Show notification count
-            offset={[0, 5]} // Badge position
+            count={notifications.length}
+            offset={[0, 5]}
             style={{ backgroundColor: "#f5222d" }}
           >
             <BellOutlined className="custom-header-bell" onClick={showDrawer} />
@@ -75,12 +101,12 @@ const Header = () => {
           onClose={closeDrawer}
           destroyOnClose
           width={400}
-          footer={<button onClick={closeDrawer}>Close</button>}
+          footer={<Button onClick={showModal}>Gửi</Button>} // Show modal when clicked
         >
           {loading ? (
-            <p>Loading...</p> // Show loading indicator
+            <p>Loading...</p>
           ) : notifications.length === 0 ? (
-            <p>No new notifications.</p> // Show if no notifications
+            <p>No new notifications.</p>
           ) : (
             notifications.map((notification, index) => (
               <NotificationItem
@@ -108,6 +134,20 @@ const Header = () => {
           </div>
         </Dropdown>
       </div>
+
+      {/* Modal for adding new notification */}
+      <ModalAddNotification
+        visible={modalVisible}
+        onClose={closeModal}
+        onAddNotification={(values) => {
+          setNotifications((prevNotifications) => [
+            ...prevNotifications,
+            values,
+          ]);
+          closeModal();
+        }}
+        accounts={accounts} // Pass available accounts (users) to modal
+      />
     </header>
   );
 };

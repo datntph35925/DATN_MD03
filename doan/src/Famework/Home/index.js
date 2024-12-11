@@ -115,7 +115,8 @@ const Dashboard = () => {
 
   const data = [
     {
-      count: revenue !== null ? `$${revenue.toLocaleString()}` : "Đang tải...",
+      count:
+        revenue !== null ? `${revenue.toLocaleString()}VND` : "Đang tải...",
       label: "Doanh thu",
       icon: <BarChartOutlined />,
       onClick: () =>
