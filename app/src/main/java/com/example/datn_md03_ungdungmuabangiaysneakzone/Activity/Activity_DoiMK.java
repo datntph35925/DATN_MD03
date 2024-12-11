@@ -70,8 +70,8 @@ public class Activity_DoiMK extends AppCompatActivity {
             return;
         }
 
-        // Xử lý sự kiện quay lại
-        imgBack_doiMK.setOnClickListener(v -> finish());
+//        // Xử lý sự kiện quay lại
+//        imgBack_doiMK.setOnClickListener(v -> finish());
 
         // Xử lý sự kiện khi nhấn nút đổi mật khẩu
         btnChangePass_doiMK.setOnClickListener(v -> handleChangePassword());
@@ -83,25 +83,38 @@ public class Activity_DoiMK extends AppCompatActivity {
         String newPassword = editNewPass_doiMK.getText().toString().trim();
         String confirmPassword = editConfPass_doiMK.getText().toString().trim();
 
-        // Kiểm tra dữ liệu nhập
+        // Kiểm tra tính hợp lệ của dữ liệu nhập
+        boolean isValid = true;
+
+        // Kiểm tra mật khẩu cũ
         if (TextUtils.isEmpty(oldPassword)) {
             editOldPass_doiMK.setError("Vui lòng nhập mật khẩu cũ!");
-            return;
+            isValid = false;
+        } else if (!oldPassword.equals(currentPassword)) {
+            editOldPass_doiMK.setError("Mật khẩu cũ không đúng!");
+            isValid = false;
         }
 
+        // Kiểm tra mật khẩu mới
         if (TextUtils.isEmpty(newPassword)) {
             editNewPass_doiMK.setError("Vui lòng nhập mật khẩu mới!");
-            return;
+            isValid = false;
+        } else if (newPassword.length() < 6) {
+            editNewPass_doiMK.setError("Mật khẩu mới phải có ít nhất 6 ký tự!");
+            isValid = false;
         }
 
-        if (!newPassword.equals(confirmPassword)) {
+        // Kiểm tra mật khẩu xác nhận
+        if (TextUtils.isEmpty(confirmPassword)) {
+            editConfPass_doiMK.setError("Vui lòng nhập lại mật khẩu mới!");
+            isValid = false;
+        } else if (!newPassword.equals(confirmPassword)) {
             editConfPass_doiMK.setError("Mật khẩu xác nhận không khớp!");
-            return;
+            isValid = false;
         }
-        if (!oldPassword.equals(currentPassword)) {
-            editOldPass_doiMK.setError("Mật khẩu cũ không đúng!");
-            return;
-        }
+
+        // Nếu thông tin không hợp lệ thì dừng xử lý
+        if (!isValid) return;
 
         // Tạo đối tượng CustomerAccount bằng Builder
         CustomerAccount customerAccount = new CustomerAccount.Builder()

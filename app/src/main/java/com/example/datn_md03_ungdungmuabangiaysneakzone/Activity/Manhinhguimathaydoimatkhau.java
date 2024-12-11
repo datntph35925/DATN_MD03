@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,7 +39,14 @@ public class Manhinhguimathaydoimatkhau extends AppCompatActivity {
         // Ánh xạ giao diện
         tvEmail = findViewById(R.id.tvEmaill);
         btnNext = findViewById(R.id.btnNext);
-
+        ImageButton btnback = findViewById(R.id.btnBack);
+        btnback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Manhinhguimathaydoimatkhau.this, Activity_DoiMK.class);
+                startActivity(intent);
+            }
+        });
         // Lấy email từ SharedPreferences
         sharedPreferences = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
         String email = sharedPreferences.getString("Tentaikhoan", "");

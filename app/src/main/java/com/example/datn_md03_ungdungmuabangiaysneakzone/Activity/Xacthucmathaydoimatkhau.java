@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,7 +45,14 @@ public class Xacthucmathaydoimatkhau extends AppCompatActivity {
         btnConfirm = findViewById(R.id.btnConfirm);
         tvResendCode = findViewById(R.id.tvResendCode);
         tvEmail = findViewById(R.id.tvEmail);
-
+        ImageButton btnback = findViewById(R.id.btnBack);
+        btnback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Xacthucmathaydoimatkhau.this, Manhinhguimathaydoimatkhau.class);
+                startActivity(intent);
+            }
+        });
         // Lấy email từ Intent
         email = getIntent().getStringExtra("email");
         if (!TextUtils.isEmpty(email)) {
