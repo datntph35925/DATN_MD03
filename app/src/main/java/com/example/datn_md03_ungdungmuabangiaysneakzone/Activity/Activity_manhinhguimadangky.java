@@ -2,7 +2,9 @@ package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +34,19 @@ public class Activity_manhinhguimadangky extends AppCompatActivity {
         // Ánh xạ các view từ layout
         tvEmailVerification = findViewById(R.id.tvEmailxacthuctaikhoan);
         btnNext = findViewById(R.id.btnNextmoi);
+       ImageView btnBack  = findViewById(R.id.btnBack);
 
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Activity_manhinhguimadangky.this, DangKy.class);
+                intent.putExtra("name", getIntent().getStringExtra("name"));
+                intent.putExtra("email", getIntent().getStringExtra("email"));
+                intent.putExtra("password", getIntent().getStringExtra("password"));
+                intent.putExtra("rePassword", getIntent().getStringExtra("rePassword"));
+                startActivity(intent);
+            }
+        });
         // Khởi tạo ApiService
         apiService = RetrofitClient.getClient().create(ApiService.class);
 
