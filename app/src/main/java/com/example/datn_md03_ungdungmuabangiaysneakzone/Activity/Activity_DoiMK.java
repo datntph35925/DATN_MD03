@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -47,6 +48,13 @@ public class Activity_DoiMK extends AppCompatActivity {
         editConfPass_doiMK = findViewById(R.id.editConfPass_doiMK);
         btnChangePass_doiMK = findViewById(R.id.btnChangePass_doiMK);
 
+        imgBack_doiMK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Activity_DoiMK.this,Activity_FixInfor.class);
+                startActivity(intent);
+            }
+        });
         // Khởi tạo API Service
         apiService = RetrofitClient.getClient().create(ApiService.class);
 

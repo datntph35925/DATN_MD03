@@ -3,8 +3,10 @@ package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,6 +39,14 @@ public class manguimaemailmoi extends AppCompatActivity {
         tvCurrentAccount = findViewById(R.id.tvCurrentAccount);
         tvEmailmoi = findViewById(R.id.tvEmailmoi);
         btnNextmoi = findViewById(R.id.btnNextmoi);
+        ImageButton btnback = findViewById(R.id.btnBack);
+        btnback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(manguimaemailmoi.this, manhinhnhanguima.class);
+                startActivity(intent);
+            }
+        });
 
         // Lấy tentaikhoan từ Intent hoặc SharedPreferences
         tentaikhoan = getIntent().getStringExtra("Tentaikhoan");

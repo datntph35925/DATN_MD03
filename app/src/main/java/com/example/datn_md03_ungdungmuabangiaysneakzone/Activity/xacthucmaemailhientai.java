@@ -7,8 +7,10 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +50,14 @@ public class xacthucmaemailhientai extends AppCompatActivity {
         tvResendCode = findViewById(R.id.tvResendCode);
         tvEmail = findViewById(R.id.tvEmail);
 
+        ImageButton btnback = findViewById(R.id.btnBack);
+        btnback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(xacthucmaemailhientai.this, manhinhnhanguima.class);
+                startActivity(intent);
+            }
+        });
         // Lấy email từ SharedPreferences
         SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
         email = sharedPreferences.getString("Tentaikhoan", "");
