@@ -1,7 +1,6 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
@@ -24,9 +23,9 @@ import retrofit2.Response;
 
 public class DangKy extends AppCompatActivity {
     private EditText editTextTen, editTextEmail, editTextPassword, editTextRePassword;
-    private Button btnDangKy ;
+    private Button btnDangKy;
     private ApiService apiService;
-    private ImageButton backButton ;
+    private ImageButton backButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,15 +43,29 @@ public class DangKy extends AppCompatActivity {
         // Khởi tạo ApiService
         apiService = RetrofitClient.getClient().create(ApiService.class);
 
+        // Kiểm tra và điền lại thông tin nếu có
+        Intent intent = getIntent();
+        String name = intent.getStringExtra("name");
+        String email = intent.getStringExtra("email");
+        String password = intent.getStringExtra("password");
+        String rePassword = intent.getStringExtra("rePassword");
+
+        if (name != null) editTextTen.setText(name);
+        if (email != null) editTextEmail.setText(email);
+        if (password != null) editTextPassword.setText(password);
+        if (rePassword != null) editTextRePassword.setText(rePassword);
+
         // Xử lý khi bấm nút Đăng Ký
         btnDangKy.setOnClickListener(v -> {
             String ten = editTextTen.getText().toString().trim();
-            String email = editTextEmail.getText().toString().trim();
-            String password = editTextPassword.getText().toString().trim();
-            String rePassword = editTextRePassword.getText().toString().trim();
+            String emailInput = editTextEmail.getText().toString().trim();
+            String passwordInput = editTextPassword.getText().toString().trim();
+            String rePasswordInput = editTextRePassword.getText().toString().trim();
+
+            // Kiểm tra thông tin đầu vào
+            boolean isValid = true;
 
             // Kiểm tra tên
-            boolean isValid = true;
             if (TextUtils.isEmpty(ten)) {
                 editTextTen.setError("Vui lòng nhập tên!");
                 isValid = false;
@@ -62,50 +75,44 @@ public class DangKy extends AppCompatActivity {
             }
 
             // Kiểm tra email
-            if (TextUtils.isEmpty(email)) {
+            if (TextUtils.isEmpty(emailInput)) {
                 editTextEmail.setError("Vui lòng nhập email!");
                 isValid = false;
-            } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            } else if (!Patterns.EMAIL_ADDRESS.matcher(emailInput).matches()) {
                 editTextEmail.setError("Vui lòng nhập email hợp lệ!");
                 isValid = false;
-            } else if (email.length() < 5 || email.length() > 50) {
+            } else if (emailInput.length() < 5 || emailInput.length() > 50) {
                 editTextEmail.setError("Email phải từ 5 đến 50 ký tự!");
                 isValid = false;
             }
 
             // Kiểm tra mật khẩu
-            if (TextUtils.isEmpty(password)) {
+            if (TextUtils.isEmpty(passwordInput)) {
                 editTextPassword.setError("Vui lòng nhập mật khẩu!");
                 isValid = false;
-            } else if (password.length() < 6) {
+            } else if (passwordInput.length() < 6) {
                 editTextPassword.setError("Mật khẩu phải có ít nhất 6 ký tự!");
                 isValid = false;
             }
 
             // Kiểm tra mật khẩu xác nhận
-            if (TextUtils.isEmpty(rePassword)) {
+            if (TextUtils.isEmpty(rePasswordInput)) {
                 editTextRePassword.setError("Vui lòng xác nhận mật khẩu!");
                 isValid = false;
-            } else if (!password.equals(rePassword)) {
+            } else if (!passwordInput.equals(rePasswordInput)) {
                 editTextRePassword.setError("Mật khẩu không khớp!");
                 isValid = false;
             }
 
-            // Nếu không hợp lệ, thoát ra
-            if (!isValid) {
-                return;
-            }
+            if (!isValid) return;
 
-            // Tạo đối tượng TemporaryVerificationCode rỗng
+            // Tạo đối tượng TemporaryVerificationCode
             TemporaryVerificationCode tempCode = new TemporaryVerificationCode();
+            tempCode.setTentaikhoan(emailInput);
+            tempCode.setHoten(ten);
+            tempCode.setMatkhau(passwordInput);
 
-// Thiết lập các thuộc tính cần thiết
-            tempCode.setTentaikhoan(email); // Thiết lập email
-            tempCode.setHoten(ten); // Thiết lập tên
-            tempCode.setMatkhau(password); // Thiết lập mật khẩu
-// Các trường khác như verificationCode hoặc createdAt không cần thiết lập vì server xử lý
-
-
+            // Gửi yêu cầu đăng ký
             Call<ApiResponse> call = apiService.register(tempCode);
             call.enqueue(new Callback<ApiResponse>() {
                 @Override
@@ -114,10 +121,13 @@ public class DangKy extends AppCompatActivity {
                         Toast.makeText(DangKy.this, "Đăng ký tạm thời thành công!", Toast.LENGTH_SHORT).show();
 
                         // Chuyển sang màn hình gửi mã xác thực
-                        Intent intent = new Intent(DangKy.this,Activity_manhinhguimadangky.class);
-                        intent.putExtra("email", email); // Gửi email để xác thực
+                        Intent intent = new Intent(DangKy.this, Activity_manhinhguimadangky.class);
+                        intent.putExtra("name", ten);
+                        intent.putExtra("email", emailInput);
+                        intent.putExtra("password", passwordInput);
+                        intent.putExtra("rePassword", rePasswordInput);
                         startActivity(intent);
-                        finish(); // Đóng màn hình đăng ký
+                        finish();
                     } else {
                         Toast.makeText(DangKy.this, "Đăng ký thất bại!", Toast.LENGTH_SHORT).show();
                     }
@@ -129,6 +139,8 @@ public class DangKy extends AppCompatActivity {
                 }
             });
         });
+
+        // Xử lý nút quay lại
         backButton.setOnClickListener(view -> {
             startActivity(new Intent(DangKy.this, DangNhap.class));
         });
@@ -136,6 +148,6 @@ public class DangKy extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // Không làm gì, ngăn không cho quay lại màn hình trước
+        // Không làm gì để ngăn quay lại màn hình trước
     }
 }
