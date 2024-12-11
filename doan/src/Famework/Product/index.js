@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Image, message, Modal, Input } from "antd";
+import { Table, Button, Image, message, Modal, Input, Spin } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import AddProductModal from "../../Modal/ModalAddProduct";
 import {
@@ -8,7 +8,7 @@ import {
   deleteProductById,
   updateProductById,
 } from "../../Server/ProductsApi";
-import { getComment } from "../../Server/comment"; // Import the getComment function
+import { getComment } from "../../Server/comment";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -16,43 +16,27 @@ const Products = () => {
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [expandedRows, setExpandedRows] = useState([]);
   const { confirm } = Modal;
 
-  // Fetch products on component mount
   useEffect(() => {
     const fetchProducts = async () => {
       setIsLoading(true);
       try {
         const response = await getProduct();
         if (response.status === 200) {
-          const defaultImageUrl =
-            "http://localhost:3000/uploads/default-avatar.jpg";
-          const data = await Promise.all(
-            response.data.data.map(async (product) => {
-              const comments = await getComment(product._id);
-              console.log(
-                "Fetched comments for product:",
-                product._id,
-                comments
-              ); // Fetch comments for each product
-              return {
-                ...product,
-                key: product._id,
-                HinhAnh:
-                  Array.isArray(product.HinhAnh) && product.HinhAnh.length > 0
-                    ? product.HinhAnh.map(
-                        (url) => `http://localhost:3000/${url}`
-                      )
-                    : [defaultImageUrl],
-                soLuongTon: product.KichThuoc.reduce(
-                  (total, size) => total + size.soLuongTon,
-                  0
-                ),
-                comments: comments || [], // Add comments to the product data
-              };
-            })
-          );
-
+          const data = response.data.data.map((product) => ({
+            ...product,
+            key: product._id,
+            HinhAnh:
+              Array.isArray(product.HinhAnh) && product.HinhAnh.length > 0
+                ? product.HinhAnh.map((url) => `http://localhost:3000/${url}`)
+                : [],
+            soLuongTon: product.KichThuoc.reduce(
+              (total, size) => total + size.soLuongTon,
+              0
+            ),
+          }));
           setProducts(data);
         } else {
           message.error("Lấy danh sách sản phẩm không thành công!");
@@ -67,7 +51,21 @@ const Products = () => {
     fetchProducts();
   }, []);
 
-  // Add or edit product
+  const handleRowExpand = async (expanded, record) => {
+    if (expanded && !record.comments) {
+      try {
+        const comments = await getComment(record._id);
+        setProducts((prevProducts) =>
+          prevProducts.map((product) =>
+            product._id === record._id ? { ...product, comments } : product
+          )
+        );
+      } catch (error) {
+        message.error("Không thể tải bình luận!");
+      }
+    }
+  };
+
   const handleAddOrEditProduct = async (product) => {
     if (product.GiaBan < 1000) {
       message.error("Giá bán phải lớn hơn hoặc bằng 1,000 VND!");
@@ -76,7 +74,6 @@ const Products = () => {
     setIsAddModalVisible(false);
 
     if (editingProduct) {
-      // Update product
       try {
         const response = await updateProductById(editingProduct._id, product);
         if (response.status === 200) {
@@ -94,7 +91,6 @@ const Products = () => {
         message.error(error.response?.data?.message || "Cập nhật thất bại!");
       }
     } else {
-      // Add new product
       try {
         const response = await addProduct(product);
         if (response.status === 201) {
@@ -113,7 +109,6 @@ const Products = () => {
     setEditingProduct(null);
   };
 
-  // Delete product
   const handleDelete = (key) => {
     const productToDelete = products.find((item) => item.key === key);
     confirm({
@@ -136,13 +131,11 @@ const Products = () => {
     });
   };
 
-  // Show add product modal
   const showAddProductModal = () => {
     setIsAddModalVisible(true);
     setEditingProduct(null);
   };
 
-  // Show edit product modal
   const showEditProductModal = (product) => {
     setEditingProduct(product);
     setIsAddModalVisible(true);
@@ -153,7 +146,6 @@ const Products = () => {
     setEditingProduct(null);
   };
 
-  // Search products
   const handleSearch = (e) => {
     setSearchTerm(e.target.value.toLowerCase());
   };
@@ -171,9 +163,6 @@ const Products = () => {
       render: (HinhAnh) => (
         <Image.PreviewGroup>
           <Image width={50} src={HinhAnh[0]} style={{ cursor: "pointer" }} />
-          {HinhAnh.slice(1).map((url, index) => (
-            <Image key={index} src={url} style={{ display: "none" }} />
-          ))}
         </Image.PreviewGroup>
       ),
     },
@@ -222,6 +211,7 @@ const Products = () => {
         loading={isLoading}
         rowKey="key"
         expandable={{
+          onExpand: handleRowExpand,
           expandedRowRender: (record) => (
             <div>
               <h4>Kích thước & Số lượng:</h4>
@@ -238,7 +228,10 @@ const Products = () => {
               {record.comments && record.comments.length > 0 ? (
                 <ul>
                   {record.comments.map((comment, index) => (
-                    <li key={index}>{comment}</li>
+                    <li key={index}>
+                      <strong>{comment.author || "Anonymous"}:</strong>{" "}
+                      {comment.text}
+                    </li>
                   ))}
                 </ul>
               ) : (

@@ -42,7 +42,7 @@ const Dashboard = () => {
           unprocessedOrdersCount,
           soldQuantityResponse,
           revenueResponse,
-        ] = await Promise.all([
+        ] = await Promise.allSettled([
           getTotalAccounts(),
           totalListProducts(),
           totalOrders(),
@@ -53,18 +53,57 @@ const Dashboard = () => {
           ),
         ]);
 
-        setAccountCount(accountResponse.totalAccounts || 0);
-        setProductCount(productResponse.totalProducts || 0);
-        setOrderCount(unprocessedOrdersCount.unprocessedOrders || 0);
-        setSoldQuantity(soldQuantityResponse.totalSoldQuantity || 0);
-        setRevenue(revenueResponse.totalRevenue || 0);
+        // Xử lý từng API
+        if (accountResponse.status === "fulfilled") {
+          setAccountCount(accountResponse.value.totalAccounts || 0);
+        } else {
+          console.error("Error fetching accounts:", accountResponse.reason);
+        }
 
-        // Lưu dữ liệu doanh thu để truyền xuống biểu đồ
-        setRevenueData({
-          dates: revenueResponse.dates || [],
-          prices: revenueResponse.prices || [],
-        });
+        if (productResponse.status === "fulfilled") {
+          setProductCount(productResponse.value.totalProducts || 0);
+        } else {
+          console.error("Error fetching products:", productResponse.reason);
+        }
+
+        if (unprocessedOrdersCount.status === "fulfilled") {
+          setOrderCount(unprocessedOrdersCount.value.unprocessedOrders || 0);
+        } else {
+          console.error(
+            "Error fetching orders:",
+            unprocessedOrdersCount.reason
+          );
+        }
+
+        if (soldQuantityResponse.status === "fulfilled") {
+          if (
+            soldQuantityResponse.value.status === 404 &&
+            soldQuantityResponse.value.message === "Không có đơn hàng đã giao."
+          ) {
+            setSoldQuantity(0); // Không có sản phẩm đã bán
+          } else {
+            setSoldQuantity(soldQuantityResponse.value.totalSoldQuantity || 0);
+          }
+        } else {
+          console.error(
+            "Error fetching sold quantity:",
+            soldQuantityResponse.reason
+          );
+          setSoldQuantity(0); // Đặt mặc định là 0 khi lỗi
+        }
+
+        if (revenueResponse.status === "fulfilled") {
+          const revenueData = revenueResponse.value;
+          setRevenue(revenueData.totalRevenue || 0);
+          setRevenueData({
+            dates: revenueData.dates || [],
+            prices: revenueData.prices || [],
+          });
+        } else {
+          console.error("Error fetching revenue:", revenueResponse.reason);
+        }
       } catch (error) {
+        console.error("Error in fetchData:", error);
         message.error(error.message || "Lấy dữ liệu thất bại");
       } finally {
         setLoading(false);
@@ -79,11 +118,18 @@ const Dashboard = () => {
       count: revenue !== null ? `$${revenue.toLocaleString()}` : "Đang tải...",
       label: "Doanh thu",
       icon: <BarChartOutlined />,
+      onClick: () =>
+        revenue === null && message.warning("Chưa có dữ liệu doanh thu."),
     },
     {
       count: soldQuantity !== null ? soldQuantity : "Đang tải...",
       label: "Đã Bán",
       icon: <EuroCircleOutlined />,
+      onClick: () => {
+        if (soldQuantity === 0) {
+          message.info("Không có sản phẩm nào đã bán.");
+        }
+      },
     },
     {
       count: accountCount !== null ? accountCount : "Đang tải...",
@@ -101,7 +147,8 @@ const Dashboard = () => {
       count: orderCount !== null ? orderCount : "Đang tải...",
       label: "ĐH chưa xử lý",
       icon: <ProductOutlined />,
-      onClick: () => navigate("/quanlydonhang/dangxuly"),
+      onClick: () =>
+        orderCount === 0 && message.warning("Không có đơn hàng chưa xử lý."),
     },
   ];
 
