@@ -349,7 +349,7 @@ router.post('/add-order-directly/:userId', async (req, res) => {
 
         // Tạo thông báo
         const notification = new Notification({
-            tentaikhoan: Tentaikhoan,
+            tentaikhoan: userAccount.Tentaikhoan,
             title: 'Trạng thái đơn hàng của bạn ',
             message: `Đơn hàng của bạn đang chờ xử lý !`,
         });
