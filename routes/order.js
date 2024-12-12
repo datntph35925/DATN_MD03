@@ -497,56 +497,42 @@ router.get('/revenue-statistics', async (req, res) => {
     const { startDate, endDate } = req.query;
 
     try {
-        // Xử lý khoảng thời gian
+        // Kiểm tra và xử lý tham số ngày tháng
         const dateFilter = {};
         if (startDate) dateFilter.$gte = new Date(startDate);
         if (endDate) dateFilter.$lte = new Date(endDate);
 
-        // Tính doanh thu từ COD (trạng thái Đã giao)
-        const codRevenue = await Orders.aggregate([
+        // Tính doanh thu theo từng ngày trong khoảng thời gian đã chọn
+        const dailyRevenue = await Orders.aggregate([
             {
                 $match: {
-                    PhuongThucThanhToan: 'Thanh toán khi nhận hàng (COD)',
-                    TrangThai: 'Đã giao',
+                    TrangThai: 'Đã giao', // Chỉ tính các đơn hàng đã giao
                     ...(startDate || endDate ? { NgayDatHang: dateFilter } : {}),
                 },
             },
             {
                 $group: {
-                    _id: null,
+                    _id: {
+                        $dateToString: { format: '%Y-%m-%d', date: '$NgayDatHang' },
+                    },
                     totalRevenue: { $sum: '$TongTien' },
                 },
             },
-        ]);
-
-        // Tính doanh thu từ thanh toán qua ngân hàng (trạng thái Đang giao)
-        const bankRevenue = await Orders.aggregate([
             {
-                $match: {
-                    PhuongThucThanhToan: 'Thanh toán qua ngân hàng',
-                    TrangThai: { $in: ['Đang giao', 'Đã giao'] },
-                    ...(startDate || endDate ? { NgayDatHang: dateFilter } : {}),
-                },
-            },
-            {
-                $group: {
-                    _id: null,
-                    totalRevenue: { $sum: '$TongTien' },
-                },
+                $sort: { _id: 1 }, // Sắp xếp theo ngày tăng dần
             },
         ]);
 
-        const totalCODRevenue = codRevenue.length > 0 ? codRevenue[0].totalRevenue : 0;
-        const totalBankRevenue = bankRevenue.length > 0 ? bankRevenue[0].totalRevenue : 0;
+        // Chuyển đổi dữ liệu trả về thành dạng mong muốn
+        const formattedRevenue = dailyRevenue.map(item => ({
+            date: item._id,
+            revenue: item.totalRevenue,
+        }));
 
         res.status(200).json({
             status: 200,
-            message: "Thống kê doanh thu thành công",
-            data: {
-                codRevenue: totalCODRevenue,
-                bankRevenue: totalBankRevenue,
-                totalRevenue: totalCODRevenue + totalBankRevenue,
-            },
+            message: "Thống kê doanh thu theo ngày thành công",
+            data: formattedRevenue,
         });
     } catch (error) {
         console.error('Lỗi khi thống kê doanh thu:', error);
