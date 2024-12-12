@@ -44,7 +44,8 @@ public class ThongbaodsActivity extends AppCompatActivity {
     private Handler handler;
     private Runnable refreshRunnable;
 
-    private final Set<String> shownNotificationIds = new HashSet<>(); // Lưu ID thông báo đã hiển thị
+    private Set<String> shownNotificationIds; // Lưu ID thông báo đã hiển thị
+    private SharedPreferences sharedPreferences;
     private static final long REFRESH_INTERVAL = 1000; // Thời gian tải lại dữ liệu
     public static final String CHANNEL_ID = "my_notification_channel";
 
@@ -53,9 +54,9 @@ public class ThongbaodsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.thongbaods);
 
-        // Lấy email từ SharedPreferences
-        SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
         email = sharedPreferences.getString("Tentaikhoan", "");
+        shownNotificationIds = sharedPreferences.getStringSet("ShownNotificationIds", new HashSet<>());
 
         if (email.isEmpty()) {
             Toast.makeText(this, "Không tìm thấy thông tin tài khoản!", Toast.LENGTH_SHORT).show();
@@ -74,7 +75,6 @@ public class ThongbaodsActivity extends AppCompatActivity {
             }
         });
 
-        // Xử lý sự kiện long click để xóa thông báo
         notificationAdapter.setOnNotificationLongClickListener((notificationId, position) -> {
             if (notificationId != null && !notificationId.isEmpty()) {
                 deleteNotification(notificationId, position);
@@ -126,6 +126,9 @@ public class ThongbaodsActivity extends AppCompatActivity {
                             shownNotificationIds.add(thongbao.getId()); // Lưu ID thông báo đã hiển thị
                         }
                     }
+
+                    // Lưu danh sách ID đã hiển thị
+                    sharedPreferences.edit().putStringSet("ShownNotificationIds", shownNotificationIds).apply();
                 } else {
                     Toast.makeText(ThongbaodsActivity.this, "Lỗi khi tải thông báo", Toast.LENGTH_SHORT).show();
                 }
@@ -172,7 +175,7 @@ public class ThongbaodsActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     thongbaoList.get(position).setRead(true);
                     notificationAdapter.notifyItemChanged(position);
-                    shownNotificationIds.remove(id);
+                    Toast.makeText(ThongbaodsActivity.this, "Đánh dấu là đã đọc", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -194,6 +197,8 @@ public class ThongbaodsActivity extends AppCompatActivity {
                     thongbaoList.remove(position);
                     notificationAdapter.notifyItemRemoved(position);
                     shownNotificationIds.remove(id);
+                    sharedPreferences.edit().putStringSet("ShownNotificationIds", shownNotificationIds).apply();
+                    Toast.makeText(ThongbaodsActivity.this, "Đã xóa thông báo", Toast.LENGTH_SHORT).show();
                 }
             }
 

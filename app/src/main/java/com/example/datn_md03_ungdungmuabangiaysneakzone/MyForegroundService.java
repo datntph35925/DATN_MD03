@@ -16,6 +16,8 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiService;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.RetrofitClient;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Thongbao;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import retrofit2.Call;
@@ -102,6 +104,10 @@ public class MyForegroundService extends Service {
             return; // Không thực hiện nếu không có email
         }
 
+        // Lấy danh sách ID thông báo đã bị xóa
+        String deletedIdsString = sharedPreferences.getString("DeletedNotificationIds", "");
+        List<String> deletedIds = new ArrayList<>(Arrays.asList(deletedIdsString.split(",")));
+
         // Gọi API để kiểm tra thông báo mới
         ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
         Call<List<Thongbao>> call = apiService.getNotifications(email);
@@ -113,9 +119,14 @@ public class MyForegroundService extends Service {
                     List<Thongbao> thongbaoList = response.body();
 
                     for (Thongbao thongbao : thongbaoList) {
+                        // Kiểm tra nếu thông báo đã bị xóa
+                        if (deletedIds.contains(thongbao.getId())) {
+                            continue; // Nếu thông báo đã bị xóa, bỏ qua
+                        }
+
                         // Hiển thị thông báo mới nếu chưa được hiển thị
                         if (!thongbao.isRead() && !thongbao.getId().equals(lastNotificationId)) {
-                            showNotification(thongbao.getTitle(), thongbao.getMessage());
+                            showNotification(thongbao.getTitle(), thongbao.getMessage(), thongbao.getId());
                             lastNotificationId = thongbao.getId(); // Lưu lại ID của thông báo
                             break; // Chỉ hiển thị một thông báo mới nhất
                         }
@@ -130,7 +141,7 @@ public class MyForegroundService extends Service {
         });
     }
 
-    private void showNotification(String title, String message) {
+    private void showNotification(String title, String message, String notificationId) {
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
@@ -141,7 +152,24 @@ public class MyForegroundService extends Service {
                 .setAutoCancel(true)
                 .build();
 
-        // Sử dụng ID cố định cho mỗi thông báo mới
-        notificationManager.notify(2, notification);
+        // Hiển thị thông báo
+        notificationManager.notify(notificationId.hashCode(), notification);
+
+        // Xóa thông báo nếu người dùng xóa trên thanh thông báo
+        saveDeletedNotificationId(notificationId);
+    }
+
+    private void saveDeletedNotificationId(String notificationId) {
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        // Lấy danh sách hiện tại và thêm ID mới
+        String deletedIdsString = sharedPreferences.getString("DeletedNotificationIds", "");
+        if (!deletedIdsString.contains(notificationId)) {
+            deletedIdsString = deletedIdsString.isEmpty() ? notificationId : deletedIdsString + "," + notificationId;
+        }
+
+        editor.putString("DeletedNotificationIds", deletedIdsString);
+        editor.apply();
     }
 }

@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <!-- Các quyền cần thiết -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CAMERA" /> <!-- Quyền cho truy cập ảnh trên Android 13 (API 33) trở lên -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- Quyền cũ cho các phiên bản Android dưới 13 -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- Tính năng phần cứng camera (không bắt buộc) -->
-    <!-- gg map -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
@@ -28,11 +27,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DATN_MD03_UngDungMuaBanGiaySneakZone"
         android:usesCleartextTraffic="true">
+
+        <!-- Khai báo NotificationListenerService -->
+        <service android:name=".MyNotificationListenerService" android:exported="true" android:label="Notification Listener Service" android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <!-- Khai báo Foreground Service -->
         <service
             android:name=".MyForegroundService"
             android:exported="false"
             android:foregroundServiceType="location|dataSync" />
 
+        <!-- Khai báo các Activity -->
         <activity
             android:name=".Activity.Activity_ShowList_Voucher"
             android:exported="false" />
@@ -42,18 +51,12 @@
         <activity
             android:name=".Activity.QRCodeCartActivity"
             android:exported="false" />
-
-        <activity
-            android:name=".Activity.QRCodeActivity"
-            android:exported="false" />
         <activity
             android:name=".Activity.QRCodeActivity"
             android:exported="false" />
         <activity
             android:name=".ThongbaodsActivity"
-            android:exported="false" /> <!-- <activity -->
-        <!-- android:name=".activity_notifications" -->
-        <!-- android:exported="false" /> -->
+            android:exported="false" />
         <activity
             android:name=".Activity.item_notification"
             android:exported="false" />
@@ -65,7 +68,7 @@
             android:exported="false" />
         <activity
             android:name=".Activity.Manhinhthanhconganimation"
-            android:exported="false" /> <!-- Khai báo các Activity -->
+            android:exported="false" />
         <activity
             android:name=".Activity.activity_update_avatar"
             android:exported="false" />
@@ -150,20 +153,22 @@
         <activity
             android:name=".Activity.activity_chat"
             android:exported="false" />
+
+        <!-- MainActivity khai báo là LAUNCHER -->
         <activity
             android:name=".Activity.DangNhap"
-            android:exported="true"
-            >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <!-- Google Maps API Key -->
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyDcxyryj5Dzbcj3GbTt1s7W32MOzHvnuys" />
+
     </application>
 
 </manifest>
