@@ -5,7 +5,9 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.Activity_ThanhToan">
+    tools:context=".Activity.Activity_ThanhToan"
+    android:layout_marginTop="20dp"
+    >
 
     <ScrollView
         android:layout_width="match_parent"
@@ -173,7 +175,7 @@
                     android:id="@+id/edtVoicher"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Ma voicher"
+                    android:hint="Mã voucher"
                     app:layout_constraintTop_toTopOf="@+id/txt7"
                     app:layout_constraintStart_toStartOf="@+id/View"
                     android:layout_marginTop="40dp"

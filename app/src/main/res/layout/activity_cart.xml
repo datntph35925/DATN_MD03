@@ -5,7 +5,9 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.Activity_Cart">
+    tools:context=".Activity.Activity_Cart"
+    android:layout_marginTop="25dp"
+    >
 
 
     <androidx.constraintlayout.widget.Guideline

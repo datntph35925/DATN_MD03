@@ -22,17 +22,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_back"
-            android:background="@color/white"
+            android:background="?attr/selectableItemBackground"
             android:layout_marginTop="10dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="100dp"
+            android:layout_marginLeft="115dp"
             android:text="Voucher"
             android:textColor="@color/black"
-            android:textSize="30dp"
-            android:textStyle="bold" />
+            android:textSize="25dp"
+            android:textStyle="bold"
+
+            />
 
     </LinearLayout>
     <RelativeLayout
