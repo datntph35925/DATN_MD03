@@ -25,6 +25,7 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.api.RetrofitClient;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Thongbao;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,8 +45,7 @@ public class ThongbaodsActivity extends AppCompatActivity {
     private Handler handler;
     private Runnable refreshRunnable;
 
-    private Set<String> shownNotificationIds; // Lưu ID thông báo đã hiển thị
-    private SharedPreferences sharedPreferences;
+    private final Set<String> shownNotificationIds = new HashSet<>(); // Lưu ID thông báo đã hiển thị
     private static final long REFRESH_INTERVAL = 1000; // Thời gian tải lại dữ liệu
     public static final String CHANNEL_ID = "my_notification_channel";
 
@@ -54,9 +54,9 @@ public class ThongbaodsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.thongbaods);
 
-        sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        // Lấy email từ SharedPreferences
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
         email = sharedPreferences.getString("Tentaikhoan", "");
-        shownNotificationIds = sharedPreferences.getStringSet("ShownNotificationIds", new HashSet<>());
 
         if (email.isEmpty()) {
             Toast.makeText(this, "Không tìm thấy thông tin tài khoản!", Toast.LENGTH_SHORT).show();
@@ -75,6 +75,7 @@ public class ThongbaodsActivity extends AppCompatActivity {
             }
         });
 
+        // Xử lý sự kiện long click để xóa thông báo
         notificationAdapter.setOnNotificationLongClickListener((notificationId, position) -> {
             if (notificationId != null && !notificationId.isEmpty()) {
                 deleteNotification(notificationId, position);
@@ -99,13 +100,14 @@ public class ThongbaodsActivity extends AppCompatActivity {
         refreshRunnable = new Runnable() {
             @Override
             public void run() {
-                loadNotifications(email);
+                checkForNewNotifications();
                 handler.postDelayed(this, REFRESH_INTERVAL);
             }
         };
         handler.post(refreshRunnable);
     }
 
+    // Tải thông báo cho RecyclerView
     private void loadNotifications(String email) {
         ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
         Call<List<Thongbao>> call = apiService.getNotifications(email);
@@ -118,17 +120,6 @@ public class ThongbaodsActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     thongbaoList = response.body();
                     notificationAdapter.updateNotifications(thongbaoList);
-
-                    for (Thongbao thongbao : thongbaoList) {
-                        // Chỉ hiển thị nếu thông báo chưa đọc và chưa hiển thị
-                        if (!thongbao.isRead() && !shownNotificationIds.contains(thongbao.getId())) {
-                            showNotification(thongbao);
-                            shownNotificationIds.add(thongbao.getId()); // Lưu ID thông báo đã hiển thị
-                        }
-                    }
-
-                    // Lưu danh sách ID đã hiển thị
-                    sharedPreferences.edit().putStringSet("ShownNotificationIds", shownNotificationIds).apply();
                 } else {
                     Toast.makeText(ThongbaodsActivity.this, "Lỗi khi tải thông báo", Toast.LENGTH_SHORT).show();
                 }
@@ -142,7 +133,17 @@ public class ThongbaodsActivity extends AppCompatActivity {
         });
     }
 
+    // Hiển thị thông báo trên thanh thông báo
     private void showNotification(Thongbao thongbao) {
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        String deletedIdsString = sharedPreferences.getString("DeletedNotificationIds", "");
+        Set<String> deletedIds = new HashSet<>(Arrays.asList(deletedIdsString.split(",")));
+
+        // Kiểm tra nếu thông báo đã bị xóa, không hiển thị lại
+        if (deletedIds.contains(thongbao.getId())) {
+            return; // Không hiển thị thông báo đã bị xóa
+        }
+
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -163,6 +164,63 @@ public class ThongbaodsActivity extends AppCompatActivity {
                 .build();
 
         notificationManager.notify(thongbao.getId().hashCode(), notification);
+
+        // Lưu lại thông báo đã hiển thị
+        shownNotificationIds.add(thongbao.getId());
+    }
+
+    // Lưu thông báo đã bị xóa vào SharedPreferences
+    private void saveDeletedNotificationId(String notificationId) {
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        String deletedIdsString = sharedPreferences.getString("DeletedNotificationIds", "");
+        if (!deletedIdsString.contains(notificationId)) {
+            deletedIdsString = deletedIdsString.isEmpty() ? notificationId : deletedIdsString + "," + notificationId;
+        }
+
+        editor.putString("DeletedNotificationIds", deletedIdsString);
+        editor.apply();
+    }
+
+    // Kiểm tra thông báo mới trên API
+    private void checkForNewNotifications() {
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        String email = sharedPreferences.getString("Tentaikhoan", "");
+
+        if (email.isEmpty()) {
+            return;
+        }
+
+        String deletedIdsString = sharedPreferences.getString("DeletedNotificationIds", "");
+        List<String> deletedIds = new ArrayList<>(Arrays.asList(deletedIdsString.split(",")));
+
+        ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
+        Call<List<Thongbao>> call = apiService.getNotifications(email);
+
+        call.enqueue(new Callback<List<Thongbao>>() {
+            @Override
+            public void onResponse(Call<List<Thongbao>> call, Response<List<Thongbao>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Thongbao> thongbaoList = response.body();
+
+                    for (Thongbao thongbao : thongbaoList) {
+                        if (deletedIds.contains(thongbao.getId())) {
+                            continue;
+                        }
+
+                        if (!thongbao.isRead() && !shownNotificationIds.contains(thongbao.getId())) {
+                            showNotification(thongbao);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Thongbao>> call, Throwable t) {
+                Toast.makeText(ThongbaodsActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void markAsRead(String id, int position) {
@@ -175,7 +233,7 @@ public class ThongbaodsActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     thongbaoList.get(position).setRead(true);
                     notificationAdapter.notifyItemChanged(position);
-                    Toast.makeText(ThongbaodsActivity.this, "Đánh dấu là đã đọc", Toast.LENGTH_SHORT).show();
+                    shownNotificationIds.remove(id);
                 }
             }
 
@@ -189,7 +247,8 @@ public class ThongbaodsActivity extends AppCompatActivity {
     private void deleteNotification(String id, int position) {
         ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
 
-        Call<Void> call = apiService.deleteNotification(id);
+        Call<Void> call = apiService.deleteNotification
+                (id);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
@@ -197,8 +256,6 @@ public class ThongbaodsActivity extends AppCompatActivity {
                     thongbaoList.remove(position);
                     notificationAdapter.notifyItemRemoved(position);
                     shownNotificationIds.remove(id);
-                    sharedPreferences.edit().putStringSet("ShownNotificationIds", shownNotificationIds).apply();
-                    Toast.makeText(ThongbaodsActivity.this, "Đã xóa thông báo", Toast.LENGTH_SHORT).show();
                 }
             }
 
