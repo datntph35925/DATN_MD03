@@ -29,6 +29,7 @@
     public class SanPhamAdapter extends RecyclerView.Adapter<SanPhamAdapter.Viewholder> { // Đã sửa
         Context context;
         ArrayList<Product> productArrayList;
+        private static final String BASE_URL = "http://10.0.2.2:3000/";
 
         public SanPhamAdapter(Context context, ArrayList<Product> productArrayList) {
             this.context = context;
@@ -49,22 +50,22 @@
             holder.shoePrice.setText(String.valueOf(product.getGiaBan()) + "đ");
 
             if (product.getHinhAnh() != null && !product.getHinhAnh().isEmpty()) {
-                // Lấy URL ảnh đầu tiên trong danh sách
-                String imageUrl = product.getHinhAnh().get(0);
+                String imageUrl = product.getHinhAnh().get(0).trim();
 
-                // Nếu URL là tương đối, ghép nó với địa chỉ base URL của server
-                String baseUrl = "http://10.0.2.2:3000/"; // Thay thế bằng địa chỉ thực tế của server
-                String fullImageUrl = baseUrl + imageUrl;  // Kết hợp URL server với URL ảnh
+                // Check if image URL is relative, if so, prepend the base URL
+                if (!imageUrl.startsWith("http://") && !imageUrl.startsWith("https://")) {
+                    imageUrl = BASE_URL + imageUrl;
+                }
 
-                // In ra log để kiểm tra URL
-                Log.d("SanPhamAdapter", "Full Image URL: " + fullImageUrl);
+                // Log the full image URL for debugging
+                Log.d("SanPhamAdapter", "Full Image URL: " + imageUrl);
 
-                // Sử dụng Glide để tải ảnh từ URL đầy đủ
+                // Use Glide to load the image into the ImageView
                 Glide.with(context)
-                        .load(fullImageUrl)
-                        .placeholder(R.drawable.nice_shoe) // Ảnh placeholder khi chưa tải
-                        .error(R.drawable.nike2) // Ảnh lỗi nếu không tải được
-                        .into(holder.shoeImage); // Đưa ảnh vào ImageView
+                        .load(imageUrl)
+                        .placeholder(R.drawable.nice_shoe)  // Placeholder image while loading
+                        .error(R.drawable.nike2)           // Error image if loading fails
+                        .into(holder.shoeImage);          // Load the image into the ImageView
             }
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {

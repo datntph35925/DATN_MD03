@@ -22,13 +22,14 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
     private boolean isOrderDelivered;
 
     private OnVoucherClickListener onVoucherClickListener;
-
+    private Voucher selectedVoucher;
 
     public VoucherAdapter(List<Voucher> voucherList, OnVoucherClickListener onVoucherClickListener, boolean isOrderDelivered) {
         this.voucherList = voucherList;
         this.onVoucherClickListener = onVoucherClickListener;
         this.isOrderDelivered = isOrderDelivered;
         this.dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        this.selectedVoucher = null; // Ban đầu chưa có voucher nào được chọn
     }
 
     @NonNull
@@ -62,15 +63,14 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
                 holder.tvNgayKetThuc.setText(formattedDateKT);
             }
         }
-
         if(isOrderDelivered){
             holder.itemView.setOnClickListener(v -> {
-                if (onVoucherClickListener != null) {
+                if (onVoucherClickListener != null ) {
+                   // Cập nhật lại danh sách sau khi thay đổi
                     onVoucherClickListener.onVoucherClick(voucher);
                 }
             });
         }
-
 
     }
 

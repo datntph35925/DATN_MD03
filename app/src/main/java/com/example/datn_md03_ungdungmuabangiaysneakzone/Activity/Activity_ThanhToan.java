@@ -18,25 +18,19 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter.ThanhToanAdapter;
-import com.example.datn_md03_ungdungmuabangiaysneakzone.Demo.Cart_Demo;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiService;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.RetrofitClient;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.KichThuoc;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Order;
-import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Product;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ProductItemCart;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.RemoveItemsRequest;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -65,6 +59,8 @@ public class Activity_ThanhToan extends AppCompatActivity {
     EditText edVoicher;
 
     private Button btnXoaVoucher;
+
+    String maVoucher;
 
     private double originalTotalCost;  // Lưu tổng tiền ban đầu của giỏ hàng
     private String voucherType; // Loại voucher (Giảm giá theo % hoặc Giảm giá cố định)
@@ -197,6 +193,8 @@ public class Activity_ThanhToan extends AppCompatActivity {
             Intent intent = new Intent(Activity_ThanhToan.this, QRCodeCartActivity.class);
             intent.putExtra("order", order);  // Truyền đối tượng order
             intent.putExtra("qrUrl", qrUrl);  // Truyền mã QR
+            intent.putExtra("maSP", maSPList);
+            intent.putExtra("sizeList", sizeList);
             startActivity(intent);
 
         } else if (tvPayMent.getText().toString().equals("Thanh toán khi nhận hàng (COD)")) {
@@ -332,7 +330,7 @@ public class Activity_ThanhToan extends AppCompatActivity {
             tvLocation.setText(address);
         } else if (requestCode == 101 && resultCode == RESULT_OK && data != null) {
             // Nhận thông tin voucher
-            String maVoucher = data.getStringExtra("maVoucher");
+            maVoucher = data.getStringExtra("maVoucher");
             String loaiVoucher = data.getStringExtra("loaiVoucher");
             double giaTriVoucher = data.getDoubleExtra("giaTri", 0.0);
 

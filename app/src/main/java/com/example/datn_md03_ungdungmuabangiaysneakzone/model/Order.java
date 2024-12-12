@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Order implements Serializable {
@@ -19,7 +20,7 @@ public class Order implements Serializable {
     private int TongSoLuong;       // Tổng số lượng sản phẩm trong đơn hàng
     private double TongTien;       // Tổng tiền đơn hàng
     private String PhuongThucThanhToan; // Phương thức thanh toán
-    private String NgayDatHang;    // Ngày đặt hàng
+    private Date NgayDatHang;    // Ngày đặt hàng
     private String NgayGiaoHang;   // Ngày giao hàng (nếu có)
     private String Voucher;
 
@@ -61,18 +62,30 @@ public class Order implements Serializable {
     public Order() {
     }
 
-    public Order(String diaChiGiaoHang, String ngayDatHang, String ngayGiaoHang, String phuongThucThanhToan, List<ProductItemCart> sanPham, String soDienThoai, String tenNguoiNhan, String tentaikhoan, int tongSoLuong, double tongTien, String trangThai) {
+    public Order(String diaChiGiaoHang, String id, String maDonHang, Date ngayDatHang, String ngayGiaoHang, String phuongThucThanhToan, List<ProductItemCart> sanPham, List<String> selectedProducts, String soDienThoai, String tenNguoiNhan, String tentaikhoan, int tongSoLuong, double tongTien, String trangThai, String voucher) {
         DiaChiGiaoHang = diaChiGiaoHang;
+        this.id = id;
+        MaDonHang = maDonHang;
         NgayDatHang = ngayDatHang;
         NgayGiaoHang = ngayGiaoHang;
         PhuongThucThanhToan = phuongThucThanhToan;
         SanPham = sanPham;
+        this.selectedProducts = selectedProducts;
         SoDienThoai = soDienThoai;
         TenNguoiNhan = tenNguoiNhan;
         Tentaikhoan = tentaikhoan;
         TongSoLuong = tongSoLuong;
         TongTien = tongTien;
         TrangThai = trangThai;
+        Voucher = voucher;
+    }
+
+    public Date getNgayDatHang() {
+        return NgayDatHang;
+    }
+
+    public void setNgayDatHang(Date ngayDatHang) {
+        NgayDatHang = ngayDatHang;
     }
 
     public String getDiaChiGiaoHang() {
@@ -83,13 +96,6 @@ public class Order implements Serializable {
         DiaChiGiaoHang = diaChiGiaoHang;
     }
 
-    public String getNgayDatHang() {
-        return NgayDatHang;
-    }
-
-    public void setNgayDatHang(String ngayDatHang) {
-        NgayDatHang = ngayDatHang;
-    }
 
     public String getNgayGiaoHang() {
         return NgayGiaoHang;

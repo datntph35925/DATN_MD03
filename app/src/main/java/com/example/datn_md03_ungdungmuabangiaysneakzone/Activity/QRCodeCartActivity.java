@@ -3,6 +3,7 @@ package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +21,11 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiService;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.RetrofitClient;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Order;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.PaymentAuthentication;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.RemoveItemsRequest;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,7 +38,8 @@ public class QRCodeCartActivity extends AppCompatActivity {
     private TextView tvOrderDetails;
     private Order order;
     private ApiService apiService;
-
+    private ArrayList<String> maSPList;
+    private ArrayList<Integer> sizeList;// Mảng chứa các maSP
     String email;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +57,13 @@ public class QRCodeCartActivity extends AppCompatActivity {
         btnConfirmPayment = findViewById(R.id.btnConfirmPayment);
         tvOrderDetails = findViewById(R.id.tvOrderDetails);
 
+        maSPList = new ArrayList<>();
+        sizeList = new ArrayList<>();
+
+        sizeList = getIntent().getIntegerArrayListExtra("sizeList");
+        maSPList = getIntent().getStringArrayListExtra("maSP");
+
+        apiService = RetrofitClient.getClient().create(ApiService.class);
         // Nhận dữ liệu từ Activity trước (ActivityCTSP_To_ThanhToan)
         Intent intent = getIntent();
         String qrUrl = intent.getStringExtra("qrUrl");
@@ -71,6 +85,37 @@ public class QRCodeCartActivity extends AppCompatActivity {
         });
     }
 
+    private void removeCartItem(){
+        List<RemoveItemsRequest.products> productItems = new ArrayList<>();
+        for (int i = 0; i < maSPList.size(); i++) {
+            List<String> productIdList = Collections.singletonList(maSPList.get(i)); // Mã sản phẩm
+            List<Integer> sizeList = Collections.singletonList(this.sizeList.get(i)); // Kích thước
+
+            // Thêm vào danh sách yêu cầu
+            productItems.add(new RemoveItemsRequest.products(productIdList, sizeList));
+        }
+        Log.d("API_RESPONSE", "Success: " + productItems.toString());
+        RemoveItemsRequest request = new RemoveItemsRequest(productItems);
+        apiService.removeItems(email, request).enqueue(new Callback<com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response<RemoveItemsRequest>>() {
+            @Override
+            public void onResponse(Call<com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response<RemoveItemsRequest>> call, Response<com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response<RemoveItemsRequest>> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(QRCodeCartActivity.this, "Xóa sản phẩm thành công!", Toast.LENGTH_SHORT).show();
+                    Log.d("API_RESPONSE", "Success: " + response.code());
+                } else {
+                    Toast.makeText(QRCodeCartActivity.this, "Xóa sản phẩm thất bại!", Toast.LENGTH_SHORT).show();
+                    Log.e("API_RESPONSE", "Error: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response<RemoveItemsRequest>> call, Throwable t) {
+                Toast.makeText(QRCodeCartActivity.this, "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
+                Log.e("API_ERROR", t.getMessage());
+            }
+        });
+    }
+
     private void confirmPayment() {
         // Kiểm tra phương thức thanh toán
         if (order != null) {
@@ -86,6 +131,7 @@ public class QRCodeCartActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<Order> call, Response<Order> response) {
                     if (response.isSuccessful()) {
+                        removeCartItem();
                         Toast.makeText(QRCodeCartActivity.this, "Order thành công", Toast.LENGTH_SHORT).show();
                         finish();
                         startActivity(new Intent(QRCodeCartActivity.this, MainActivity.class));

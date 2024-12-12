@@ -26,6 +26,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     public OrderAdapter(Context context, List<Order> hoaDonList) {
         this.context = context;
         this.hoaDonList = hoaDonList;
+        this.dateFormat = new SimpleDateFormat("dd/MM/yyyy, HH:mm", Locale.getDefault());
     }
 
     @NonNull
@@ -41,7 +42,12 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         holder.tvTenNguoiNhan.setText("Người nhận: " +  order.getTenNguoiNhan());
         holder.tvDiaChi.setText("Địa chỉ: " +order.getDiaChiGiaoHang());
         holder.tvSoDienThoai.setText("Số điện thoại: " + order.getSoDienThoai());
-        holder.tvDate.setText(order.getNgayDatHang());
+        if (order.getNgayDatHang() != null) {
+            String formattedDate = dateFormat.format(order.getNgayDatHang());
+            if (holder.tvDate != null) {
+                holder.tvDate.setText(formattedDate);
+            }
+        }
         holder.tvTongTien.setText("Tổng tiền: " + String.format("%.2f", order.getTongTien()));
 
         holder.tvSoLuong.setText("Tổng số lượng: " + String.valueOf(order.getTongSoLuong()));
