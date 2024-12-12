@@ -3,6 +3,7 @@ package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -16,6 +17,11 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiService;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.RetrofitClient;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Order;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.PaymentAuthentication;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.model.RemoveItemsRequest;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,6 +35,7 @@ public class QRCodeActivity extends AppCompatActivity {
     private Order order;
     private ApiService apiService;
     String email;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +51,7 @@ public class QRCodeActivity extends AppCompatActivity {
         String qrUrl = intent.getStringExtra("qrUrl");
         order = (Order) intent.getSerializableExtra("order");
 
+
         // Hiển thị mã QR
         Glide.with(this).load(qrUrl).into(imgQRCode);
 
@@ -54,13 +62,13 @@ public class QRCodeActivity extends AppCompatActivity {
                     "\nSố điện thoại: " + order.getSoDienThoai() +
                     "\nPhương thức thanh toán: " + order.getPhuongThucThanhToan());
         }
-
         // Xử lý sự kiện nhấn "Xác nhận thanh toán"
         btnConfirmPayment.setOnClickListener(view -> {
             confirmPayment();
             xacThucThanhToan();
         });
     }
+
 
     private void confirmPayment() {
         // Kiểm tra phương thức thanh toán

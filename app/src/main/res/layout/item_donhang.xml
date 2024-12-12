@@ -90,14 +90,15 @@
                     android:text="Tổng cộng : "/>
 
                 <TextView
-                    android:textStyle="bold"
-                    android:textSize="20dp"
-                    android:layout_marginLeft="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/tvDate"
                     android:gravity="end"
-                    android:text="Date"/>
+                    android:text="Date"
+                    android:textSize="15sp"
+                    android:textColor="#888888"
+                    android:layout_margin="10dp"
+                    />
             </LinearLayout>
 
         </LinearLayout>

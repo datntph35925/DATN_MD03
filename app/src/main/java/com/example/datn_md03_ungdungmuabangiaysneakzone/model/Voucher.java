@@ -11,7 +11,17 @@ public class Voucher {
     private Date NgayBatDau;
     private Date NgayKetThuc;
 
+    private boolean isUsed;  // Trạng thái voucher đã sử dụng hay chưa
+
     public Voucher() {
+    }
+
+    public boolean isUsed() {
+        return isUsed;
+    }
+
+    public void setUsed(boolean used) {
+        isUsed = used;
     }
 
     public String get_id() {
