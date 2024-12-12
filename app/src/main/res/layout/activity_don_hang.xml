@@ -5,7 +5,9 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.Activity_DonHang">
+    tools:context=".Activity.Activity_DonHang"
+    android:layout_marginTop="10dp"
+    >
 
     <ImageView
         android:id="@+id/imgBack_donHang"
@@ -22,17 +24,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="3dp" />
+        app:layout_constraintGuide_begin="3dp"
+        />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="120dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginStart="110dp"
+        android:layout_marginTop="20dp"
         android:text="Đơn hàng"
         android:textColor="@color/black"
-        android:textSize="20dp"
+        android:textSize="25dp"
         android:textStyle="bold"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imgBack_donHang"
@@ -42,7 +45,7 @@
         android:id="@+id/tablayout"
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="10dp"
         android:background="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

@@ -5,13 +5,15 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.Activity_ChiTietSP">
+    tools:context=".Activity.Activity_ChiTietSP"
+    android:layout_marginTop="10dp"
+    >
 
     <!-- Nút Quay Lại -->
     <ImageView
         android:id="@+id/imgBack"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -54,7 +56,9 @@
         app:layout_constraintTop_toTopOf="@+id/imgBack"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/yeuthich"
-        android:contentDescription="Favorite Button" />
+        android:contentDescription="Favorite Button"
+        android:layout_marginTop="-7dp"
+        />
 
     <!-- Nội dung cuộn -->
     <ScrollView
