@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter.SanPhamAdapter;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.MyForegroundService;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.ThongbaodsActivity;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiResponse;
@@ -114,6 +116,12 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             finish(); // Đảm bảo không quay lại màn hình đăng nhập
         });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(new Intent(this, MyForegroundService.class));
+        } else {
+            startService(new Intent(this, MyForegroundService.class));
+        }
+
     }
 
 
