@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Location = require('../models/Location');
 const CustomerAccounts = require('../models/CustomerAccounts');
+const Notification = require('../models/Notification'); 
 
 // API lấy danh sách địa chỉ của người dùng theo ID tài khoản
 router.get('/get-list-location-by-id/:id', async (req, res) => {
