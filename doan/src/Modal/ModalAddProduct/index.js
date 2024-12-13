@@ -49,70 +49,63 @@ const AddProductModal = ({ visible, onAdd, onCancel, initialValues }) => {
 
   // Handle file upload changes
   const handleUploadChange = async ({ file, fileList: newFileList }) => {
-    if (file.status === "uploading") {
-      setFileList(newFileList);
-    } else if (file.originFileObj) {
-      const base64 = await getBase64(file.originFileObj);
-      const updatedFileList = newFileList.map((item) =>
-        item.uid === file.uid ? { ...item, url: base64 } : item
-      );
-      setFileList(updatedFileList);
+    setFileList(newFileList);
+    if (file.status === "done" || file.originFileObj) {
+      try {
+        const base64 = await getBase64(file.originFileObj || file);
+        const updatedFileList = newFileList.map((item) =>
+          item.uid === file.uid ? { ...item, url: base64 } : item
+        );
+        setFileList(updatedFileList);
+      } catch (error) {
+        message.error("Không thể tải lên ảnh, vui lòng thử lại!");
+      }
     }
   };
 
   // Handle form submission
   const handleAddProduct = async () => {
     try {
-      // Validate form fields
       const values = await form.validateFields();
       setIsSubmitting(true);
 
-      // Extract uploaded file URLs
+      // Extract URLs from uploaded files
       const uploadedUrls = fileList
         .filter((file) => file.status === "done")
         .map((file) => file.url || file.response?.url);
 
-      // Handle manual URLs safely
+      // Parse manually entered URLs
       const manualUrls =
-        typeof values.HinhAnh === "string" && values.HinhAnh.trim()
+        values.HinhAnh?.trim() && typeof values.HinhAnh === "string"
           ? values.HinhAnh.split(",").map((url) => url.trim())
           : [];
 
-      // Combine all image URLs
+      // Merge all image URLs
       const combinedUrls = [...uploadedUrls, ...manualUrls];
 
-      // Format sizes safely
-      const formattedSizes =
-        values.KichThuoc?.map((item) => ({
-          size: item?.size || 0,
-          soLuongTon: parseInt(item?.soLuongTon || "0", 10),
-        })) || [];
-
-      // Prepare the final payload
       const formattedValues = {
         ...values,
         HinhAnh: combinedUrls,
-        KichThuoc: formattedSizes,
+        KichThuoc:
+          values.KichThuoc?.map((item) => ({
+            size: item?.size || 0,
+            soLuongTon: parseInt(item?.soLuongTon || "0", 10),
+          })) || [],
       };
 
-      // Pass the formatted values to the `onAdd` callback
       onAdd(formattedValues);
-
-      // Success message
       message.success(
         initialValues
           ? "Sản phẩm đã được cập nhật thành công!"
           : "Sản phẩm đã được thêm thành công!"
       );
 
-      // Reset the form and file list
       form.resetFields();
       setFileList([]);
     } catch (error) {
       console.error("Error during product submission:", error);
       message.error("Vui lòng kiểm tra lại thông tin nhập!");
     } finally {
-      // Reset the submission state
       setIsSubmitting(false);
     }
   };
@@ -214,7 +207,14 @@ const AddProductModal = ({ visible, onAdd, onCancel, initialValues }) => {
             listType="picture-card"
             fileList={fileList}
             onChange={handleUploadChange}
-            beforeUpload={() => false}
+            beforeUpload={(file) => {
+              const isImage = file.type.startsWith("image/");
+              if (!isImage) {
+                message.error("Bạn chỉ có thể tải lên file ảnh!");
+                return false;
+              }
+              return true;
+            }}
           >
             {fileList.length >= 8 ? null : uploadButton}
           </Upload>

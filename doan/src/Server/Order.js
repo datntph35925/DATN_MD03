@@ -37,7 +37,7 @@ const totalOrders = async () => {
 const totalOrdersQuantity = async () => {
   try {
     const response = await axios.get("/order/total-sold-quantity");
-    return response.data.data;
+    return response.data.totalSoldQuantity;
   } catch (error) {
     console.error("Lỗi khi lấy tổng số đơn hàng theo số lượng:", error);
     throw error;
@@ -49,7 +49,7 @@ const totalOrdersRevenue = async (start, end) => {
     const response = await axios.get("/order/revenue-statistics", {
       params: { start, end }, // Truyền tham số start và end
     });
-    return response.data.data;
+    return response.data.data.totalRevenue;
   } catch (error) {
     console.error("Lỗi khi lấy tổng doanh thu đơn hàng:", error);
     throw error;

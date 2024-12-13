@@ -11,24 +11,25 @@ import {
   Rate,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import AddProductModal from "../../Modal/ModalAddProduct";
+import AddProductModal from "../../Modal/ModalAddProduct"; // The modal for adding/editing products
 import {
   addProduct,
   getProduct,
   deleteProductById,
   updateProductById,
-} from "../../Server/ProductsApi";
-import { getComment } from "../../Server/comment";
+} from "../../Server/ProductsApi"; // The API functions for products
+import { getComment } from "../../Server/comment"; // API to get comments
 
 const Products = () => {
-  const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isAddModalVisible, setIsAddModalVisible] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [loadingComments, setLoadingComments] = useState({});
-  const { confirm } = Modal;
+  const [products, setProducts] = useState([]); // State to hold the product list
+  const [isLoading, setIsLoading] = useState(false); // State to track loading status
+  const [isAddModalVisible, setIsAddModalVisible] = useState(false); // State for showing modal
+  const [editingProduct, setEditingProduct] = useState(null); // State to hold the product being edited
+  const [searchTerm, setSearchTerm] = useState(""); // State for the search term
+  const [loadingComments, setLoadingComments] = useState({}); // State to track loading status of comments
+  const { confirm } = Modal; // Ant Design's Modal for confirming delete
 
+  // Fetch products on component mount
   useEffect(() => {
     const fetchProducts = async () => {
       setIsLoading(true);
@@ -47,7 +48,7 @@ const Products = () => {
               0
             ),
           }));
-          setProducts(data);
+          setProducts(data); // Set the fetched products to state
         } else {
           message.error("Lấy danh sách sản phẩm không thành công!");
         }
@@ -61,11 +62,12 @@ const Products = () => {
     fetchProducts();
   }, []);
 
+  // Handle row expand to load comments for a product
   const handleRowExpand = async (expanded, record) => {
     if (expanded && !record.comments) {
       setLoadingComments((prev) => ({ ...prev, [record._id]: true })); // Mark as loading
       try {
-        const comments = await getComment(record._id);
+        const comments = await getComment(record._id); // Fetch comments for the product
         setProducts((prevProducts) =>
           prevProducts.map((product) =>
             product._id === record._id ? { ...product, comments } : product
@@ -79,6 +81,7 @@ const Products = () => {
     }
   };
 
+  // Handle product add or edit
   const handleAddOrEditProduct = async (product) => {
     if (product.GiaBan < 1000) {
       message.error("Giá bán phải lớn hơn hoặc bằng 1,000 VND!");
@@ -88,7 +91,7 @@ const Products = () => {
 
     if (editingProduct) {
       try {
-        const response = await updateProductById(editingProduct._id, product);
+        const response = await updateProductById(editingProduct._id, product); // Update product if editing
         if (response.status === 200) {
           const updatedProduct = response.data;
           setProducts((prevProducts) =>
@@ -105,7 +108,7 @@ const Products = () => {
       }
     } else {
       try {
-        const response = await addProduct(product);
+        const response = await addProduct(product); // Add new product if not editing
         if (response.status === 201) {
           const newProduct = response.data;
           setProducts((prevProducts) => [
@@ -122,6 +125,7 @@ const Products = () => {
     setEditingProduct(null);
   };
 
+  // Handle product deletion
   const handleDelete = (key) => {
     const productToDelete = products.find((item) => item.key === key);
     confirm({
@@ -132,7 +136,7 @@ const Products = () => {
       cancelText: "Hủy",
       onOk: async () => {
         try {
-          await deleteProductById(productToDelete._id);
+          await deleteProductById(productToDelete._id); // Delete the product
           setProducts((prevProducts) =>
             prevProducts.filter((item) => item.key !== key)
           );
@@ -144,29 +148,35 @@ const Products = () => {
     });
   };
 
+  // Show the add product modal
   const showAddProductModal = () => {
     setIsAddModalVisible(true);
-    setEditingProduct(null);
+    setEditingProduct(null); // Clear the editing product
   };
 
+  // Show the edit product modal
   const showEditProductModal = (product) => {
     setEditingProduct(product);
     setIsAddModalVisible(true);
   };
 
+  // Close the modal
   const handleCancel = () => {
     setIsAddModalVisible(false);
     setEditingProduct(null);
   };
 
+  // Handle search functionality
   const handleSearch = (e) => {
     setSearchTerm(e.target.value.toLowerCase());
   };
 
+  // Filter products based on search term
   const filteredProducts = products.filter((product) =>
     product.TenSP.toLowerCase().includes(searchTerm)
   );
 
+  // Define the table columns
   const columns = [
     { title: "Tên Sản Phẩm", dataIndex: "TenSP", key: "name" },
     {
@@ -185,7 +195,7 @@ const Products = () => {
       dataIndex: "GiaBan",
       key: "GiaBan",
       sorter: (a, b) => a.GiaBan - b.GiaBan,
-      render: (GiaBan) => (GiaBan ? `${GiaBan.toLocaleString()}  ` : "N/A"),
+      render: (GiaBan) => (GiaBan ? `${GiaBan.toLocaleString()}VND` : "N/A"),
     },
     { title: "Số lượng tổng", dataIndex: "soLuongTon", key: "soLuongTon" },
     {

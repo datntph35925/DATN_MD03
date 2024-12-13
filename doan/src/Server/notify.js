@@ -10,10 +10,13 @@ const getNotify = async () => {
 };
 const addNotification = async (title, message) => {
   try {
-    const response = await axios.post(`/routes/guithongbaotatca`, {
-      title,
-      message,
-    });
+    const response = await axios.post(
+      `/routes/notifications/guithongbaotatca`,
+      {
+        title,
+        message,
+      }
+    );
 
     // Xử lý dữ liệu trả về từ backend
     const { message: successMessage, notificationsCount } = response.data;
