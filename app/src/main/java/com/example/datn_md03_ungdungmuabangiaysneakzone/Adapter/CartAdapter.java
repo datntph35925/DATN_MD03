@@ -57,7 +57,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
             // Nếu URL là tương đối, ghép với baseUrl
             if (!imageUrl.startsWith("http")) {
-                String baseUrl = "http://10.0.2.2:3000/";
+                String baseUrl = "http://160.191.50.148:3000/";
                 imageUrl = baseUrl + imageUrl;
             }
 

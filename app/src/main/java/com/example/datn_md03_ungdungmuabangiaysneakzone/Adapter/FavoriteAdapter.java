@@ -26,7 +26,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.Favori
 
     private final List<Favorite> favoriteList;
     private final Context context;
-    private final String baseUrl = "http://10.0.2.2:3000/"; // Replace with your actual base URL
+    private final String baseUrl = "http://160.191.50.148:3000/"; // Replace with your actual base URL
 
     // Constructor
     public FavoriteAdapter(Context context, List<Favorite> favoriteList) {
@@ -54,7 +54,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.Favori
             String imageUrl = product.getHinhAnh().get(0);
 
             // Nếu URL là tương đối, ghép nó với địa chỉ base URL của server
-            String baseUrl = "http://10.0.2.2:3000/"; // Thay thế bằng địa chỉ thực tế của server
+            String baseUrl = "http://160.191.50.148:3000/"; // Thay thế bằng địa chỉ thực tế của server
             String fullImageUrl = baseUrl + imageUrl;  // Kết hợp URL server với URL ảnh
 
             // In ra log để kiểm tra URL

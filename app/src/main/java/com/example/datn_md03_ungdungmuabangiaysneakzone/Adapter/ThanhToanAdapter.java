@@ -67,7 +67,7 @@ public class ThanhToanAdapter extends RecyclerView.Adapter<ThanhToanAdapter.View
 
         // Load ảnh sản phẩm
         if (item.getHinhAnh() != null && !item.getHinhAnh().isEmpty()) {
-            String baseUrl = "http://10.0.2.2:3000/";
+            String baseUrl = "http://160.191.50.148:3000/";
             String imageUrl = item.getHinhAnh().get(0).trim();
 
             // Kiểm tra URL đầy đủ hay tương đối

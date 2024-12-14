@@ -62,7 +62,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
             // Tạo URL đầy đủ nếu cần (giả sử ảnh lưu trên server nội bộ)
             String imageUrl = review.getAnhDaiDien().startsWith("http")
                     ? review.getAnhDaiDien()
-                    : "http://10.0.2.2:3000/" + review.getAnhDaiDien();
+                    : "http://160.191.50.148:3000/" + review.getAnhDaiDien();
 
             // Tải ảnh bằng Glide
             Glide.with(holder.itemView.getContext())

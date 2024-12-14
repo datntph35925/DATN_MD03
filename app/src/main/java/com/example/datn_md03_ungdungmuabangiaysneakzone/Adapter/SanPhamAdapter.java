@@ -29,7 +29,7 @@
     public class SanPhamAdapter extends RecyclerView.Adapter<SanPhamAdapter.Viewholder> { // Đã sửa
         Context context;
         ArrayList<Product> productArrayList;
-        private static final String BASE_URL = "http://10.0.2.2:3000/";
+        private static final String BASE_URL = "http://160.191.50.148:3000/";
 
         public SanPhamAdapter(Context context, ArrayList<Product> productArrayList) {
             this.context = context;
