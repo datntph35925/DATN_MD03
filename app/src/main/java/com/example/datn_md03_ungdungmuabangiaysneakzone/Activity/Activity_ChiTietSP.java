@@ -226,7 +226,7 @@
                 String currentImageUrl = imageList[currentImageIndex].trim();
 
                 // Ghép với URL base nếu cần
-                String baseUrl = "http://10.0.2.2:3000/"; // Thay thế bằng base URL thực tế
+                String baseUrl = "http://160.191.50.148:3000/"; // Thay thế bằng base URL thực tế
                 String fullImageUrl = baseUrl + currentImageUrl;
 
                 Log.d("CartAdapter", "Full Image URL: " + fullImageUrl);
