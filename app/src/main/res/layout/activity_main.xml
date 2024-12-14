@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -19,11 +20,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <!-- Header nội dung -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!-- Text Welcome -->
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
@@ -34,7 +35,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- Text To SneakerZone -->
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
@@ -47,7 +47,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/textView" />
 
-            <!-- Bell Icon -->
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="24dp"
@@ -57,7 +56,6 @@
                 app:srcCompat="@drawable/bell"
                 android:contentDescription="Notification Bell" />
 
-            <!-- Notification Badge (Unread Count) -->
             <TextView
                 android:id="@+id/hienthiso"
                 android:layout_width="18dp"
@@ -71,10 +69,9 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/imageView"
                 app:layout_constraintTop_toTopOf="@+id/imageView" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- EditText tìm kiếm -->
+        <!-- Ô tìm kiếm -->
         <EditText
             android:id="@+id/editTextText"
             android:layout_width="match_parent"
@@ -89,7 +86,7 @@
             android:textSize="16sp" />
     </LinearLayout>
 
-    <!-- Nội dung cuộn -->
+    <!-- Nội dung chính (Cuộn được) -->
     <ScrollView
         android:id="@+id/scrollViewContent"
         android:layout_width="match_parent"
@@ -108,13 +105,11 @@
             <!-- Slideshow Section -->
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="180dp"
-                android:layout_marginTop="5dp"
+                android:layout_height="200dp"
                 android:layout_marginBottom="16dp"
                 android:background="@drawable/rounded_corners"
                 android:clipToOutline="true">
 
-                <!-- Slideshow Image -->
                 <ImageView
                     android:id="@+id/imageViewSlider"
                     android:layout_width="match_parent"
@@ -122,7 +117,6 @@
                     android:scaleType="centerCrop"
                     android:contentDescription="Slideshow Image" />
 
-                <!-- Previous Button -->
                 <ImageButton
                     android:id="@+id/btnPrev"
                     android:layout_width="48dp"
@@ -132,7 +126,6 @@
                     android:background="@android:color/transparent"
                     android:contentDescription="Previous Slide" />
 
-                <!-- Next Button -->
                 <ImageButton
                     android:id="@+id/btnNext"
                     android:layout_width="48dp"
@@ -143,14 +136,13 @@
                     android:contentDescription="Next Slide" />
             </FrameLayout>
 
-            <!-- Popular Products Header -->
+            <!-- Tiêu đề Sản phẩm -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="8dp"
                 android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingBottom="8dp">
+                android:gravity="center_vertical">
 
                 <TextView
                     android:id="@+id/textView5"
@@ -159,7 +151,7 @@
                     android:layout_weight="1"
                     android:text="Sản phẩm phổ biến"
                     android:textColor="@color/black"
-                    android:textSize="19sp"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -171,15 +163,16 @@
                     android:textSize="14sp" />
             </LinearLayout>
 
-            <!-- RecyclerView for Popular Products -->
+            <!-- RecyclerView sản phẩm -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/SanPhamPhoBienView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginStart="-7dp"
+                android:layout_marginEnd="-18dp"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:spanCount="2" />
+                app:spanCount="2"
+                android:layout_marginBottom="16dp" />
         </LinearLayout>
     </ScrollView>
 
@@ -188,6 +181,7 @@
         android:id="@+id/bottomnavigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/menu" />
+        android:layout_marginTop="8dp"
+        app:menu="@menu/menu"
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

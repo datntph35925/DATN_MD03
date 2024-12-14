@@ -1,48 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="155dp"
-    android:layout_height="wrap_content"
+    android:layout_width="175dp"
+    android:layout_height="240dp"
     android:layout_margin="8dp"
-    app:cardCornerRadius="16dp"
+    android:background="@drawable/grey_background"
+    android:elevation="3dp"
     app:cardElevation="4dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/shoe_image_YT"
+        android:layout_width="175dp"
+        android:layout_height="155dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/nice_shoe" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shoe_image_YT"
+        android:background="@drawable/white_background3"
+        />
+
+    <TextView
+        android:id="@+id/shoe_name_YT"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="title"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/view" />
 
-        <!-- Hình ảnh của giày -->
-        <ImageView
-            android:id="@+id/shoe_image_YT"
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/nice_shoe"
-            />
+    <TextView
+        android:id="@+id/shoe_price_YT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="100.000VNĐ"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/shoe_name_YT"
+        app:layout_constraintTop_toBottomOf="@+id/shoe_name_YT" />
 
-        <!-- Tên giày -->
-        <TextView
-            android:id="@+id/shoe_name_YT"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Shoe Name"
-            android:textSize="16sp"
-            android:textColor="@android:color/black"
-            android:gravity="left"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="4dp" />
-
-        <!-- Giá giày -->
-        <TextView
-            android:id="@+id/shoe_price_YT"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="$00.00"
-            android:textSize="14sp"
-            android:textColor="@android:color/darker_gray"
-            android:gravity="left"/>
-    </LinearLayout>
-</androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>
