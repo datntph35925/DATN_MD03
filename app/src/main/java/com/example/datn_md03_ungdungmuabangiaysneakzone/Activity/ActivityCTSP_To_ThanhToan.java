@@ -157,7 +157,7 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
             // Lấy URL đầu tiên
             String imageUrl = imageUrls[0].trim();  // Loại bỏ khoảng trắng dư thừa
 
-            String baseUrl = "http://10.0.2.2:3000/"; // Thay thế bằng base URL thực tế
+            String baseUrl = "http://160.191.50.148:3000/"; // Thay thế bằng base URL thực tế
              firstImageUrl  = baseUrl + imageUrl;
 
             // Log lại URL để kiểm tra
@@ -170,7 +170,8 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
                     .error(R.drawable.nike2) // Hình mặc định khi lỗi
                     .into(imgProduct);
         }
-        productItem.setHinhAnh(Collections.singletonList(firstImageUrl));
+        //productItem.setHinhAnh(Collections.singletonList(firstImageUrl));
+        productItem.setHinhAnh(productImages);
     }
 
     @Override

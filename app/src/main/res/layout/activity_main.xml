@@ -153,21 +153,16 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/TopXemThem"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Xem thêm"
-                    android:textColor="#2196F3"
-                    android:textSize="14sp" />
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/viewtop10"
+                android:id="@+id/rcvviewtop10"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingStart="16dp"
-                android:paddingEnd="16dp" />
+                android:paddingEnd="16dp"
+                android:orientation="horizontal"
+                />
             <!-- Tiêu đề Sản phẩm -->
             <LinearLayout
                 android:layout_width="match_parent"

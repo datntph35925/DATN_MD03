@@ -79,6 +79,7 @@
                     in.putExtra("description", product.getMoTa());
                     in.putExtra("yeuthich", false);
                     context.startActivity(in);
+                    Log.d("SanPhamAdapter", "Full Image URL: " + product.getHinhAnh());
                 }
             });
         }

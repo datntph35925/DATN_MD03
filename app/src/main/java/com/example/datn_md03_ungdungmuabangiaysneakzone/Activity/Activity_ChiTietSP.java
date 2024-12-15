@@ -73,8 +73,6 @@
         ProductItemCart productItem;
 
         ProductItem proitem;
-
-        private boolean isFavorite = false; // Trạng thái ban đầu
         ReviewAdapter reviewAdapter;
         RecyclerView rcvReview;
         private ArrayList<Review> reviewList ;
@@ -140,7 +138,7 @@
 
 
             tvName.setText(tenSP);
-            tvGia.setText(giaSP+"$");
+            tvGia.setText(giaSP+"VNĐ");
             tvMoTa.setText(moTa);
 
             kichThuocArrayList = new ArrayList();
@@ -229,7 +227,7 @@
                 String baseUrl = "http://160.191.50.148:3000/"; // Thay thế bằng base URL thực tế
                 String fullImageUrl = baseUrl + currentImageUrl;
 
-                Log.d("CartAdapter", "Full Image URL: " + fullImageUrl);
+                Log.d("CTSP", "Full Image URL: " + fullImageUrl);
 
                 // Kiểm tra URL có hợp lệ không
                 if (!currentImageUrl.isEmpty()) {
@@ -448,20 +446,10 @@
                             productItem.setHinhAnh(hinhanh);
                             productItem.setSoLuongTon(soLuongTon);
 
-                            proitem.setMaSanPham(maSP);
-                            proitem.setTenSP(tenSP);
-                            proitem.setGia(giaSP);
-                            proitem.setSoLuong(num);
-                            proitem.setSize(selectSize);
-                            proitem.setTongTien(giaSP * num);
-                            proitem.setHinhAnh(hinhanh);
-
                             // Pass data to Activity_ThanhToan
                             Intent intent = new Intent(Activity_ChiTietSP.this, ActivityCTSP_To_ThanhToan.class);
-                            intent.putExtra("selectedProduct", (Serializable) proitem);
                             intent.putExtra("productItem", (Serializable) productItem);
                             startActivity(intent);
-
                             dialog.dismiss();
                         }
                     }

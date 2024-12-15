@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -17,9 +18,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter.SanPhamAdapter;
+import com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter.TopSellingAdapter;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.MyForegroundService;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.ThongbaodsActivity;
@@ -32,13 +35,14 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 
 public class MainActivity extends AppCompatActivity {
 
-    RecyclerView spRecyclerView;
+    RecyclerView spRecyclerView, rcvTop10;
     ApiService apiService;
     SanPhamAdapter productAdapter;
     ArrayList<Product> productArrayList;
@@ -49,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     int[] imageList = {R.drawable.banner1, R.drawable.banner2, R.drawable.banner3}; // Danh sách ảnh slideshow
     int currentImageIndex = 0; // Chỉ mục ảnh hiện tại
     Handler handler = new Handler(); // Handler để quản lý thời gian trễ cho slideshow
+    private TopSellingAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
 
         spRecyclerView = findViewById(R.id.SanPhamPhoBienView);
         apiService = RetrofitClient.getClient().create(ApiService.class);
+        rcvTop10 = findViewById(R.id.rcvviewtop10);
+        rcvTop10.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         productArrayList = new ArrayList<>();
         // Gọi API để lấy danh sách sản phẩm
         getListProducts();
@@ -122,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
             startService(new Intent(this, MyForegroundService.class));
         }
 
+        fetchTopSellingProducts();
     }
 
 
@@ -129,6 +137,29 @@ public class MainActivity extends AppCompatActivity {
         productAdapter = new SanPhamAdapter(this, list);
         spRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         spRecyclerView.setAdapter(productAdapter);
+    }
+
+    //get top 10
+    private void fetchTopSellingProducts() {
+        Call<Response<ArrayList<Product>>> call = apiService.getTopSellingProducts();
+        call.enqueue(new Callback<Response<ArrayList<Product>>>() {
+            @Override
+            public void onResponse(Call<Response<ArrayList<Product>>> call, retrofit2.Response<Response<ArrayList<Product>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    productArrayList = response.body().getData();
+                    adapter = new TopSellingAdapter(MainActivity.this, productArrayList);
+                    rcvTop10.setAdapter(adapter);
+                } else {
+                    Toast.makeText(MainActivity.this, "Không thể lấy dữ liệu", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Response<ArrayList<Product>>> call, Throwable t) {
+                Log.d("Top10", "du lieu: " + t.getMessage());
+                Toast.makeText(MainActivity.this, "Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void getUnreadNotificationCount(String tentaikhoan) {

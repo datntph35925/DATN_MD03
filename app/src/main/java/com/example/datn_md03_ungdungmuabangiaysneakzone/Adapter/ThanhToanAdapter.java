@@ -69,7 +69,11 @@ public class ThanhToanAdapter extends RecyclerView.Adapter<ThanhToanAdapter.View
         if (item.getHinhAnh() != null && !item.getHinhAnh().isEmpty()) {
             String baseUrl = "http://160.191.50.148:3000/";
             String imageUrl = item.getHinhAnh().get(0).trim();
+            String[] imageUrls = imageUrl.split(",");  // Tách theo dấu phẩy
 
+            String image = imageUrls[0].trim();  // Loại bỏ khoảng trắng dư thừa
+
+            String finalImageUrl = baseUrl + image;
             // Kiểm tra URL đầy đủ hay tương đối
             if (!imageUrl.startsWith("http://") && !imageUrl.startsWith("https://")) {
                 imageUrl = baseUrl + imageUrl;
@@ -78,7 +82,7 @@ public class ThanhToanAdapter extends RecyclerView.Adapter<ThanhToanAdapter.View
             Log.d("ThanhToanAdapter", "Full Image URL: " + imageUrl);
 
             Glide.with(context)
-                    .load(imageUrl)
+                    .load(finalImageUrl)
                     .placeholder(R.drawable.nice_shoe)
                     .error(R.drawable.errorr)
                     .into(holder.imgProduct);

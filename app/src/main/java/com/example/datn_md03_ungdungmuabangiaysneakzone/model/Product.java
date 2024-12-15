@@ -16,6 +16,52 @@ public class Product {
     private List<String> HinhAnh;
     private boolean TrangThaiYeuThich;
 
+    private String productId;
+    private String name;
+    private double price;
+    private List<String> images;
+    private int quantitySold;
+
+    public int getQuantitySold() {
+        return quantitySold;
+    }
+
+    public void setQuantitySold(int quantitySold) {
+        this.quantitySold = quantitySold;
+    }
+
+    public List<String> getImages() {
+        return images;
+    }
+
+    public void setImages(List<String> images) {
+        this.images = images;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
     public boolean isTrangThaiYeuThich() {
         return TrangThaiYeuThich;
     }

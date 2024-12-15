@@ -211,5 +211,8 @@ public interface ApiService {
     @GET("/voucher/get-list-vouchers")
     Call<Response<ArrayList<Voucher>>> getListVouchers();
 
+    //top 10
+    @GET("/order/top-10-best-selling-products")
+    Call<Response<ArrayList<Product>>> getTopSellingProducts();
 }
 
