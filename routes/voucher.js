@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Vouchers = require('../models/Vouchers');
+const CustomerAccounts = require('../models/CustomerAccounts');
 
 // Lấy danh sách tất cả voucher
 router.get('/get-list-vouchers', async (req, res) => {
@@ -140,5 +141,6 @@ router.delete('/delete-vouchers/:id', async (req, res) => {
         });
     }
 });
+
 
 module.exports = router;

@@ -635,7 +635,7 @@ router.get('/top-10-best-selling-products', async (req, res) => {
                         name: product.TenSP,
                         quantitySold: order.totalSold,
                         price: product.GiaBan,
-                        image: product.HinhAnh[0] || null,
+                        images: product.HinhAnh || [],
                     };
                 }
                 return null;
