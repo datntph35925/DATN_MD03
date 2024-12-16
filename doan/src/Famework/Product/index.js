@@ -40,14 +40,17 @@ const Products = () => {
             ...product,
             key: product._id,
             HinhAnh:
-              Array.isArray(product.HinhAnh) && product.HinhAnh.length > 0
-                ? product.HinhAnh.map((url) => `http://160.191.50.148:3000/${url}`)
-                : [],
+                Array.isArray(product.HinhAnh) && product.HinhAnh.length > 0
+                    ? product.HinhAnh.map((url) =>
+                        `http://160.191.50.148:3000/${url}` // Nối tiền tố vào đường dẫn tương đối
+                    )
+                    : [],
             soLuongTon: product.KichThuoc.reduce(
               (total, size) => total + size.soLuongTon,
               0
             ),
           }));
+          console.log("Processed Products:", data);
           setProducts(data); // Set the fetched products to state
         } else {
           message.error("Lấy danh sách sản phẩm không thành công!");

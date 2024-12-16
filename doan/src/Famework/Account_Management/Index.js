@@ -27,8 +27,8 @@ const Account_Management = () => {
         setCustomers(
           data.map((customer) => {
             const avatarPath = customer.Anhtk
-              ? `http://localhost:3000/${customer.Anhtk}`
-              : "http://localhost:3000/uploads/default-avatar.jpg";
+              ? `http://160.191.50.148:3000/${customer.Anhtk}`
+              : "http://160.191.50.148:3000/uploads/default-avatar.jpg";
 
             // Log avatar path for debugging
             console.log("Avatar Path:", avatarPath);
