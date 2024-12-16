@@ -5,135 +5,249 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
+    android:background="@drawable/background"
     tools:context=".Activity.Activity_FixInfor">
 
-    <!-- Nút quay lại -->
-
-    <!-- Tiêu đề -->
-
-    <!-- ScrollView chứa nội dung -->
-
-    <ImageView
-        android:id="@+id/imgBack_fixinfor"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_back" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="Thông tin cá nhân"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.385"
-        app:layout_constraintStart_toEndOf="@id/imgBack_fixinfor"
-        app:layout_constraintTop_toTopOf="@id/imgBack_fixinfor" />
-
-    <ScrollView
-        android:id="@+id/scrollView"
-        android:layout_width="350dp"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/textView"
+        android:layout_marginTop="160dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="190dp"
+        android:background="@drawable/background_menu"
+        android:elevation="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Thông tin cá nhân"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="32dp"
+            android:layout_marginTop="10dp"
             android:orientation="vertical"
-            android:padding="8dp">
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle">
 
-            <!-- CardView cập nhật ảnh đại diện -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardView"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="6dp">
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/item_background"
+                android:elevation="3dp">
 
-                <Button
-                    android:id="@+id/btncapnhat_Imgae"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/tvUpdateImageDesc"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="@color/blue"
+                    android:layout_marginStart="8dp"
+                    android:text="Thay đổi và cập nhật ảnh đại diện của bạn."
+                    android:textColor="#000000"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@id/ivProfileImage"
+                    app:layout_constraintStart_toEndOf="@id/ivProfileImage"
+                    app:layout_constraintTop_toTopOf="@id/ivProfileImage"
+                    app:layout_constraintVertical_bias="0.76" />
+
+                <ImageView
+                    android:id="@+id/ivProfileImage"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/profile" />
+
+                <TextView
+                    android:id="@+id/tvUpdateImageTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
                     android:text="Cập nhật ảnh đại diện"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:padding="10dp" />
-            </androidx.cardview.widget.CardView>
+                    android:textColor="#000000"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/ivProfileImage"
+                    app:layout_constraintTop_toTopOf="@id/ivProfileImage" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- CardView cập nhật họ tên -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cvName"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="6dp">
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/item_background"
+                android:id="@+id/btnName"
+                android:elevation="3dp">
 
-                <Button
-                    android:id="@+id/btnName"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/tvUpdateNameDesc"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="@color/blue"
+                    android:layout_marginStart="8dp"
+                    android:text="Chỉnh sửa và cập nhật thông tin họ và tên."
+                    android:textColor="#000000"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@id/ivNameIcon"
+                    app:layout_constraintStart_toEndOf="@id/ivNameIcon"
+                    app:layout_constraintTop_toTopOf="@id/ivNameIcon"
+                    app:layout_constraintVertical_bias="0.76" />
+
+                <ImageView
+                    android:id="@+id/ivNameIcon"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/name" />
+
+                <TextView
+                    android:id="@+id/tvUpdateNameTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
                     android:text="Cập nhật họ tên"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:padding="10dp" />
-            </androidx.cardview.widget.CardView>
+                    android:textColor="#000000"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/ivNameIcon"
+                    app:layout_constraintTop_toTopOf="@id/ivNameIcon" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- CardView cập nhật email -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cvEmail"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="6dp">
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/item_background"
+                android:id="@+id/btnEmail"
+                android:elevation="3dp">
 
-                <Button
-                    android:id="@+id/btnEmaill"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/tvUpdateEmailDesc"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="@color/blue"
+                    android:layout_marginStart="8dp"
+                    android:text="Thay đổi và cập nhật địa chỉ email của bạn."
+                    android:textColor="#000000"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@id/ivEmailIcon"
+                    app:layout_constraintStart_toEndOf="@id/ivEmailIcon"
+                    app:layout_constraintTop_toTopOf="@id/ivEmailIcon"
+                    app:layout_constraintVertical_bias="0.76" />
+
+                <ImageView
+                    android:id="@+id/ivEmailIcon"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/mail" />
+
+                <TextView
+                    android:id="@+id/tvUpdateEmailTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
                     android:text="Cập nhật email"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:padding="10dp" />
-            </androidx.cardview.widget.CardView>
+                    android:textColor="#000000"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/ivEmailIcon"
+                    app:layout_constraintTop_toTopOf="@id/ivEmailIcon" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- CardView thay đổi mật khẩu -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cvChangePass"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="6dp">
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/item_background"
+                android:id="@+id/cvChangePass"
+                android:elevation="3dp">
+
+                <TextView
+                    android:id="@+id/tvChangePassDesc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Đổi mật khẩu tài khoản để bảo mật tốt hơn."
+                    android:textColor="#000000"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@id/ivPasswordIcon"
+                    app:layout_constraintStart_toEndOf="@id/ivPasswordIcon"
+                    app:layout_constraintTop_toTopOf="@id/ivPasswordIcon"
+                    app:layout_constraintVertical_bias="0.76" />
+
+                <ImageView
+                    android:id="@+id/ivPasswordIcon"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/padlock" />
+
+                <TextView
+                    android:id="@+id/tvChangePassTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Thay đổi mật khẩu"
+                    android:textColor="#000000"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/ivPasswordIcon"
+                    app:layout_constraintTop_toTopOf="@id/ivPasswordIcon" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:elevation="3dp">
 
                 <Button
-                    android:id="@+id/btnChangePass"
+                    android:id="@+id/btnBackToHome"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="@color/blue"
-                    android:text="Thay đổi mật khẩu"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:padding="10dp" />
-            </androidx.cardview.widget.CardView>
+                    android:background="@drawable/button_background"
+                    android:text="Quay về hồ sơ cá nhân"
+                    android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
-    </ScrollView>
-
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

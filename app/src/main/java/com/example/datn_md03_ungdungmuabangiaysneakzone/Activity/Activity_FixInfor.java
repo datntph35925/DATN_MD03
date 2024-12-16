@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,8 +16,9 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
 
 public class Activity_FixInfor extends AppCompatActivity {
 
-    Button btnEmaill,btnChangePass,btnName , btn_Imgae;
+    Button btnback;
     ImageView imgBack_fixInfor ;
+    TextView textanh, textten, textemail, textmatkhau;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,12 +31,12 @@ public class Activity_FixInfor extends AppCompatActivity {
             return insets;
         });
         // btnBack = findViewById(R.id.btnBack);
-        btn_Imgae = findViewById(R.id.btncapnhat_Imgae);
-        btnName = findViewById(R.id.btnName);
-        btnEmaill = findViewById(R.id.btnEmaill);
-        btnChangePass = findViewById(R.id.btnChangePass);
-        imgBack_fixInfor = findViewById(R.id.imgBack_fixinfor);
-        imgBack_fixInfor.setOnClickListener(view -> {
+        textanh = findViewById(R.id.tvUpdateImageTitle);
+        textten = findViewById(R.id.tvUpdateNameTitle);
+        textemail = findViewById(R.id.tvUpdateEmailTitle);
+        textmatkhau = findViewById(R.id.tvChangePassTitle);
+        btnback = findViewById(R.id.btnBackToHome);
+        btnback.setOnClickListener(view -> {
             startActivity(new Intent(Activity_FixInfor.this, Activity_Profile.class));
         });
 //        btnBack.setOnClickListener(v -> {
@@ -44,19 +46,19 @@ public class Activity_FixInfor extends AppCompatActivity {
 //            finish(); // Kết thúc Activity hiện tại nếu muốn
 //        });
 
-        btn_Imgae.setOnClickListener(v -> {
+        textanh.setOnClickListener(v -> {
 
             startActivity(new Intent(Activity_FixInfor.this, activity_update_avatar.class ));
         });
-        btnName.setOnClickListener(v -> {
+        textten.setOnClickListener(v -> {
 
             startActivity(new Intent(Activity_FixInfor.this, CapnhathotenActivity.class));
         });
-        btnEmaill.setOnClickListener(v -> {
+        textemail.setOnClickListener(v -> {
 
             startActivity(new Intent(Activity_FixInfor.this, manhinhnhanguima.class));
         });
-        btnChangePass.setOnClickListener(v -> {
+        textmatkhau.setOnClickListener(v -> {
 
             startActivity(new Intent(Activity_FixInfor.this, Activity_DoiMK.class));
         });
