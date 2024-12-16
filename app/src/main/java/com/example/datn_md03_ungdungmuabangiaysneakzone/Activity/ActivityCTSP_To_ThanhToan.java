@@ -291,7 +291,7 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
         if (tvPaymentMethods.getText().toString().equals("Thanh toán qua ngân hàng")) {
             // Xử lý thanh toán qua ngân hàng
             order.setMaDonHang(result);
-            double amount = productItem.getTongTien(); // Tổng tiền
+            double amount = finalTotalPrice; // Tổng tiền
 //            String description = email + " - " + phone; // Tên tài khoản và số điện thoại
             String description = order.getMaDonHang();
             String accountName = "Mua Ban Giay SneakZone"; // Tên tài khoản ngân hàng
