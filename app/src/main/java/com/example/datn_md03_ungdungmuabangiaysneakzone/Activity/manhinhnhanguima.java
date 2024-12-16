@@ -108,9 +108,27 @@ public class manhinhnhanguima extends AppCompatActivity {
                     startActivity(intent);
                 } else {
                     String errorMessage = "Lỗi: " + response.code() + " - " + response.message();
-                    Toast.makeText(manhinhnhanguima.this, errorMessage, Toast.LENGTH_SHORT).show();
-                    Log.d("VerificationRequest", "Response code: " + response.code() + ", message: " + response.message());
+
+                    // Kiểm tra thêm chi tiết phản hồi từ server nếu có
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorBody = response.errorBody().string(); // Lấy chi tiết lỗi từ server
+                            errorMessage += "\nChi tiết: " + errorBody;
+                            Log.e("VerificationRequest", "Response error body: " + errorBody);
+                        } catch (Exception e) {
+                            Log.e("VerificationRequest", "Không thể đọc errorBody", e);
+                        }
+                    } else {
+                        Log.e("VerificationRequest", "Không có errorBody trong response");
+                    }
+
+                    // Hiển thị thông báo cho người dùng
+                    Toast.makeText(manhinhnhanguima.this, "Không thể vào trang xác thực mã vì mã còn tồn tại", Toast.LENGTH_SHORT).show();
+
+                    // Log chi tiết lỗi để tiện debug
+                    Log.e("VerificationRequest", "Response code: " + response.code() + ", message: " + response.message());
                 }
+
             }
 
             @Override

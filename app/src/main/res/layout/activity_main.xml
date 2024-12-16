@@ -161,6 +161,7 @@
                 android:layout_height="match_parent"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
+                android:layout_marginStart="-23dp"
                 android:orientation="horizontal"
                 />
             <!-- Tiêu đề Sản phẩm -->
@@ -195,7 +196,7 @@
                 android:id="@+id/SanPhamPhoBienView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="-7dp"
+                android:layout_marginStart="-6dp"
                 android:layout_marginEnd="-18dp"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="2"
