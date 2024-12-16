@@ -41,7 +41,7 @@ const Products = () => {
             key: product._id,
             HinhAnh:
               Array.isArray(product.HinhAnh) && product.HinhAnh.length > 0
-                ? product.HinhAnh.map((url) => `http://localhost:3000/${url}`)
+                ? product.HinhAnh.map((url) => `http://160.191.50.148:3000/${url}`)
                 : [],
             soLuongTon: product.KichThuoc.reduce(
               (total, size) => total + size.soLuongTon,

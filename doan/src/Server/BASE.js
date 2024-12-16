@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:3000"; // Update this URL as per your environment
+const BASE_URL = "http://160.191.50.148:3000"; // Update this URL as per your environment
 
 const instance = axios.create({
   baseURL: BASE_URL,
