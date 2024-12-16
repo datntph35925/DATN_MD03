@@ -55,7 +55,7 @@ app.use(
 );
 app.use(
   cors({
-    origin: "http://160.191.50.148:3001", // Replace with your actual domain
+    origin: ["http://160.191.50.148:3001","http://localhost:3001"],// Replace with your actual domain
     methods: ["GET", "POST", "PUT", "DELETE"], // Allow GET, POST, PUT, and DELETE methods
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true, // Specify allowed headers
