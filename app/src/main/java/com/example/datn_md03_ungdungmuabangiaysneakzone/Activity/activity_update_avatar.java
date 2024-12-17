@@ -116,7 +116,7 @@ public class activity_update_avatar extends AppCompatActivity {
 
                     if (avatarUrl != null && !avatarUrl.isEmpty()) {
                         // Dùng Glide để tải ảnh vào CircleImageView
-                        String fullUrl = "http://10.0.2.2:3000/" + avatarUrl; // Thêm đường dẫn đầy đủ
+                        String fullUrl = "http://160.191.50.148:3000/" + avatarUrl; // Thêm đường dẫn đầy đủ
                         Glide.with(activity_update_avatar.this)
                                 .load(fullUrl)
                                 .placeholder(R.drawable.anh1) // Đặt ảnh mặc định khi tải

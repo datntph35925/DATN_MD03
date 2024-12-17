@@ -103,7 +103,7 @@ public class Activity_Profile extends AppCompatActivity {
                     String avatarUrl = account.getAnhtk();
                     if (avatarUrl != null && !avatarUrl.isEmpty()) {
                         // Kiểm tra và xây dựng URL đầy đủ cho ảnh
-                        String imageUrl = "http://10.0.2.2:3000/" + avatarUrl;
+                        String imageUrl = "http://160.191.50.148:3000/" + avatarUrl;
                         Glide.with(Activity_Profile.this)
                                 .load(imageUrl)
                                 .placeholder(R.drawable.anh1) // Ảnh mặc định khi đang tải
