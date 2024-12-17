@@ -269,7 +269,7 @@ public class Activity_ThanhToan extends AppCompatActivity {
             @Override
             public void onResponse(Call<com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response<RemoveItemsRequest>> call, Response<com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response<RemoveItemsRequest>> response) {
                 if (response.isSuccessful()) {
-                    Toast.makeText(Activity_ThanhToan.this, "Xóa sản phẩm thành công!", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(Activity_ThanhToan.this, "Xóa sản phẩm thành công!", Toast.LENGTH_SHORT).show();
                     Log.d("API_RESPONSE", "Success: " + response.code());
                 } else {
                     Toast.makeText(Activity_ThanhToan.this, "Xóa sản phẩm thất bại!", Toast.LENGTH_SHORT).show();

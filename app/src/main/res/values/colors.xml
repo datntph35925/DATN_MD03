@@ -19,5 +19,8 @@
     <color name="primary">#FF6200EE</color> <!-- Bạn có thể thay đổi mã màu tùy thích -->
     <color name="light_gray">#D3D3D3</color>
 
-
+    <color name="voucher_used_background">#E0E0E0</color> <!-- Nền xám nhạt -->
+    <color name="voucher_used_text">#A0A0A0</color> <!-- Chữ xám -->
+    <color name="voucher_default_background">#FFFFFF</color> <!-- Nền trắng -->
+    <color name="voucher_default_text">#000000</color> <!-- Chữ đen -->
 </resources>

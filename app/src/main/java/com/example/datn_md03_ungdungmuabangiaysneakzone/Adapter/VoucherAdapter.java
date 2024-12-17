@@ -1,5 +1,7 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,14 +24,14 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
     private boolean isOrderDelivered;
 
     private OnVoucherClickListener onVoucherClickListener;
-    private Voucher selectedVoucher;
+    private String currentAccount; // Tài khoản hiện tại
+    Context context;
 
     public VoucherAdapter(List<Voucher> voucherList, OnVoucherClickListener onVoucherClickListener, boolean isOrderDelivered) {
         this.voucherList = voucherList;
         this.onVoucherClickListener = onVoucherClickListener;
         this.isOrderDelivered = isOrderDelivered;
         this.dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-        this.selectedVoucher = null; // Ban đầu chưa có voucher nào được chọn
     }
 
     @NonNull
@@ -42,7 +44,6 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
     @Override
     public void onBindViewHolder(@NonNull VoucherAdapter.VoucherViewHolder holder, int position) {
         Voucher voucher = voucherList.get(position);
-
         // Set data to views
         holder.tvMaVoucher.setText("Mã Voucher: " + voucher.getMaVoucher());
         holder.tvLoaiVoucher.setText("Loại Voucher: " + voucher.getLoaiVoucher());
@@ -63,15 +64,15 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
                 holder.tvNgayKetThuc.setText(formattedDateKT);
             }
         }
-        if(isOrderDelivered){
-            holder.itemView.setOnClickListener(v -> {
-                if (onVoucherClickListener != null ) {
-                   // Cập nhật lại danh sách sau khi thay đổi
-                    onVoucherClickListener.onVoucherClick(voucher);
-                }
-            });
-        }
 
+            if(isOrderDelivered){
+                holder.itemView.setOnClickListener(v -> {
+                    if (onVoucherClickListener != null ) {
+                        // Cập nhật lại danh sách sau khi thay đổi
+                        onVoucherClickListener.onVoucherClick(voucher);
+                    }
+                });
+            }
     }
 
     @Override

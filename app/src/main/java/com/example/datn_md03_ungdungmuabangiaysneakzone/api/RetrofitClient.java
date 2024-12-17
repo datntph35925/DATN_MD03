@@ -7,7 +7,7 @@ public class RetrofitClient {
 
     private static Retrofit retrofit = null;
     private static final String BASE_URL = "http://160.191.50.148:3000/"; // Localhost trên máy thật Android
-//   private static final String BASE_URL = "http://10.0.2.2:3000/";
+   //private static final String BASE_URL = "http://10.0.2.2:3000/";
 
     // Tạo Retrofit client
     public static Retrofit getClient() {

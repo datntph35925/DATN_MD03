@@ -1,6 +1,7 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.model;
 
 import java.util.Date;
+import java.util.List;
 
 public class Voucher {
     private String _id;
@@ -11,17 +12,17 @@ public class Voucher {
     private Date NgayBatDau;
     private Date NgayKetThuc;
 
-    private boolean isUsed;  // Trạng thái voucher đã sử dụng hay chưa
+    private List<String> UsedBy; // Trạng thái voucher đã sử dụng hay chưa
 
     public Voucher() {
     }
 
-    public boolean isUsed() {
-        return isUsed;
+    public List<String> getUsedBy() {
+        return UsedBy;
     }
 
-    public void setUsed(boolean used) {
-        isUsed = used;
+    public void setUsedBy(List<String> usedBy) {
+        UsedBy = usedBy;
     }
 
     public String get_id() {
