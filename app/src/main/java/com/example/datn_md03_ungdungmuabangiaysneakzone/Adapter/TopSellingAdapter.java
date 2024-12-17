@@ -42,7 +42,7 @@ public class TopSellingAdapter extends RecyclerView.Adapter<TopSellingAdapter.Vi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Product product = productArrayList.get(position);
         holder.shoeName.setText(product.getName());
-        holder.shoePrice.setText(String.valueOf(product.getPrice()) + "đ");
+        holder.shoePrice.setText(String.valueOf(product.getPrice()) + "VND");
         holder.tvQuantitySold.setText("Đã bán: " + product.getQuantitySold());
 
         if (product.getImages() != null && !product.getImages().isEmpty()) {
