@@ -5,12 +5,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -93,8 +97,62 @@ public class activity_chat extends AppCompatActivity {
                 handler.postDelayed(this, 1000);
             }
         };
+        recyclerViewChat.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            int rootViewHeight = recyclerViewChat.getRootView().getHeight();
+            int visibleHeight = recyclerViewChat.getHeight();
+            int heightDiff = rootViewHeight - visibleHeight;
+
+            // Bàn phím được coi là xuất hiện khi chiều cao giảm > 200
+            if (heightDiff > 200) {
+                // Chỉ cuộn khi người dùng nhấn vào EditText
+                if (editTextMessage.hasFocus()) {
+                    recyclerViewChat.post(() -> {
+                        if (chatMessages.size() > 0) {
+                            recyclerViewChat.smoothScrollToPosition(chatMessages.size() - 1);
+                        }
+                    });
+                }
+            }
+        });
+        ConstraintLayout rootLayout = findViewById(R.id.rootLayout); // ID của root layout
+
+//        rootLayout.setOnClickListener(v -> {
+//            // Tắt focus khỏi EditText
+//            editTextMessage.clearFocus();
+//
+//            // Ẩn bàn phím
+//            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//            if (imm != null) {
+//                imm.hideSoftInputFromWindow(editTextMessage.getWindowToken(), 0);
+//            }
+//        });
+
     }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            View currentFocus = getCurrentFocus();
+            if (currentFocus != null && currentFocus instanceof EditText) {
+                // Kiểm tra xem người dùng chạm bên ngoài EditText
+                int[] location = new int[2];
+                currentFocus.getLocationOnScreen(location);
+                float x = event.getRawX() + currentFocus.getLeft() - location[0];
+                float y = event.getRawY() + currentFocus.getTop() - location[1];
+
+                if (x < currentFocus.getLeft() || x > currentFocus.getRight() ||
+                        y < currentFocus.getTop() || y > currentFocus.getBottom()) {
+                    // Ẩn bàn phím
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(currentFocus.getWindowToken(), 0);
+                    }
+                    currentFocus.clearFocus(); // Xóa focus khỏi EditText
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event); // Tiếp tục xử lý các sự kiện khác
+    }
     @Override
     protected void onStart() {
         super.onStart();
