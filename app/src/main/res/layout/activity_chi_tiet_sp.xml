@@ -219,6 +219,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="16dp"
             android:layout_centerVertical="true"
+            app:cornerRadius="10dp"
             android:text="Mua ngay"
             android:textSize="16sp"
             android:textStyle="bold"

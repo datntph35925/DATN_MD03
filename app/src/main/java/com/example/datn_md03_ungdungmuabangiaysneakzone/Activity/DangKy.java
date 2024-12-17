@@ -67,7 +67,7 @@ public class DangKy extends AppCompatActivity {
 
             // Kiểm tra tên
             if (TextUtils.isEmpty(ten)) {
-                editTextTen.setError("Vui lòng nhập tên!");
+                editTextTen.setError("Vui lòng nhập họ tên!");
                 isValid = false;
             } else if (ten.length() < 3 || ten.matches(".*[0-9@#$%^&*!].*")) {
                 editTextTen.setError("Tên không hợp lệ! Tên phải có ít nhất 3 ký tự và không chứa ký tự đặc biệt.");

@@ -61,7 +61,7 @@
     <Button
         android:id="@+id/btnChangeName"
         android:layout_width="280dp"
-        android:layout_height="60dp"
+        android:layout_height="50dp"
         app:cornerRadius="10dp"
         android:text="Đổi họ tên"
         android:layout_marginHorizontal="16dp"

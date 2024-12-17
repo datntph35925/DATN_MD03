@@ -147,15 +147,15 @@
     <!-- Nút xác nhận -->
     <Button
         android:id="@+id/btnConfirm"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        app:cornerRadius="10dp"
         android:text="Tiếp theo"
         android:textSize="18sp"
         app:layout_constraintTop_toBottomOf="@id/llCodeInput"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"
-        android:layout_marginHorizontal="32dp"
         android:backgroundTint="@android:color/holo_red_light"
         android:textColor="@android:color/white"/>
 
