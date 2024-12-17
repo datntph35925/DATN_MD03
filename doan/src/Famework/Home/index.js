@@ -52,7 +52,7 @@ const Dashboard = () => {
         setProductCount(productData.totalProducts || 0);
         setOrderCount(orderData.unprocessedOrders || 0);
         setOrderQuantity(orderQuantityData || 0);
-        setRevenueData(revenueDataResult || 0);
+        setRevenueData(revenueDataResult.revenue || 0);
       } catch (error) {
         message.error("Lỗi khi tải dữ liệu. Vui lòng thử lại.");
         console.error("Error fetching dashboard data:", error);

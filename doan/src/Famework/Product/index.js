@@ -187,9 +187,26 @@ const Products = () => {
       dataIndex: "HinhAnh",
       key: "HinhAnh",
       render: (HinhAnh) => (
-        <Image.PreviewGroup>
-          <Image width={50} src={HinhAnh[0]} style={{ cursor: "pointer" }} />
-        </Image.PreviewGroup>
+          <>
+            {HinhAnh && HinhAnh.length > 0 ? (
+                <Image.PreviewGroup>
+                  {/* Hiển thị ảnh đại diện */}
+                  <Image
+                      width={50}
+                      src={HinhAnh[0]} // Chỉ hiển thị ảnh đầu tiên
+                      style={{ cursor: "pointer" }}
+                  />
+                  {/* Ẩn các ảnh còn lại để xem khi nhấn vào ảnh */}
+                  {HinhAnh.slice(1).map((url, index) => (
+                      <Image key={index} src={url} style={{ display: "none" }} />
+                  ))}
+                </Image.PreviewGroup>
+            ) : (
+                <div>
+                  <span style={{ color: "red" }}>Không có hình ảnh</span>
+                </div>
+            )}
+          </>
       ),
     },
     { title: "Thương Hiệu", dataIndex: "ThuongHieu", key: "ThuongHieu" },

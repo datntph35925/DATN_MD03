@@ -46,17 +46,10 @@ const Header = () => {
       }
     };
 
-    const fetchAccounts = async () => {
-      try {
-        const data = await getUsers(); // Assuming you have an API to get users
-        setAccounts(data); // Set available accounts (users) for notification
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
+
 
     fetchNotifications();
-    fetchAccounts();
+
   }, []);
 
   const showDrawer = () => setDrawerVisible(true);
@@ -130,7 +123,7 @@ const Header = () => {
                 backgroundColor: user?.avatar ? "transparent" : "#87d068",
               }}
             />
-            <span>{user?.name || "Guest"}</span>
+
           </div>
         </Dropdown>
       </div>
