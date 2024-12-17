@@ -29,8 +29,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import android.os.Handler;
-
 public class activity_chat extends AppCompatActivity {
 
     private RecyclerView recyclerViewChat;
@@ -39,10 +37,10 @@ public class activity_chat extends AppCompatActivity {
     private String currentUserId;
     private EditText editTextMessage;
     private Button buttonSend;
-    private ImageButton buttonBack ;
+    private ImageButton buttonBack;
 
-    private Handler handler = new Handler();  // Khai báo handler
-    private Runnable fetchMessagesRunnable;   // Khai báo runnable
+    private Handler handler = new Handler();
+    private Runnable fetchMessagesRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +51,6 @@ public class activity_chat extends AppCompatActivity {
         currentUserId = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
                 .getString("Tentaikhoan", null);
 
-        // Kiểm tra nếu người dùng chưa đăng nhập
         if (currentUserId == null) {
             Toast.makeText(this, "Vui lòng đăng nhập lại!", Toast.LENGTH_SHORT).show();
             finish();
@@ -71,10 +68,8 @@ public class activity_chat extends AppCompatActivity {
         recyclerViewChat.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewChat.setAdapter(chatAdapter);
 
-        // Lấy danh sách tin nhắn khi vào Activity
-        fetchChatMessages();
+        fetchChatMessages(); // Tải tin nhắn ban đầu
 
-        // Xử lý sự kiện khi nhấn nút gửi tin nhắn
         buttonSend.setOnClickListener(v -> {
             String messageContent = editTextMessage.getText().toString().trim();
             if (!messageContent.isEmpty()) {
@@ -84,19 +79,18 @@ public class activity_chat extends AppCompatActivity {
             }
         });
 
-        // Xử lý sự kiện khi nhấn nút quay lại
         buttonBack.setOnClickListener(v -> {
             Intent intent = new Intent(activity_chat.this, Activity_Profile.class);
             startActivity(intent);
             finish();
         });
 
-        // Khởi tạo Runnable để tải tin nhắn định kỳ
+        // Tải tin nhắn định kỳ
         fetchMessagesRunnable = new Runnable() {
             @Override
             public void run() {
-                fetchChatMessages(); // Gọi API để tải tin nhắn
-                handler.postDelayed(this, 1000); // Lặp lại sau mỗi giây
+                fetchChatMessages();
+                handler.postDelayed(this, 1000);
             }
         };
     }
@@ -104,29 +98,26 @@ public class activity_chat extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        handler.post(fetchMessagesRunnable); // Bắt đầu tải tin nhắn định kỳ
+        handler.post(fetchMessagesRunnable);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        handler.removeCallbacks(fetchMessagesRunnable); // Dừng tải tin nhắn khi Activity dừng
+        handler.removeCallbacks(fetchMessagesRunnable);
     }
 
-    // Phương thức tải danh sách tin nhắn từ server
     private void fetchChatMessages() {
         ApiService apiService = RetrofitClient.getApiService();
-        Log.d("DEBUG", "Fetching messages for TentaiKhoan: " + currentUserId);
-
         apiService.getMessages(currentUserId).enqueue(new Callback<List<ChatMessage>>() {
             @Override
             public void onResponse(Call<List<ChatMessage>> call, Response<List<ChatMessage>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    chatMessages.clear(); // Xóa danh sách cũ
-                    chatMessages.addAll(response.body()); // Thêm tin nhắn mới
-                    chatAdapter.notifyDataSetChanged(); // Cập nhật giao diện
+                    chatMessages.clear();
+                    chatMessages.addAll(response.body());
+                    chatAdapter.notifyDataSetChanged();
                 } else {
-                    Toast.makeText(activity_chat.this, "Không có tin nhắn nào!", Toast.LENGTH_SHORT).show();
+                    Log.e("FETCH_MESSAGES", "Không có tin nhắn nào");
                 }
             }
 
@@ -137,10 +128,8 @@ public class activity_chat extends AppCompatActivity {
         });
     }
 
-    // Phương thức gửi tin nhắn lên server
     private void sendMessage(String content) {
         ApiService apiService = RetrofitClient.getApiService();
-
         Map<String, String> messageData = new HashMap<>();
         messageData.put("TentaiKhoan", currentUserId);
         messageData.put("message", content);
@@ -149,10 +138,10 @@ public class activity_chat extends AppCompatActivity {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    editTextMessage.setText(""); // Xóa nội dung đã nhập
-                    fetchChatMessages(); // Tải lại tin nhắn
+                    editTextMessage.setText("");
+                    fetchChatMessages();
                 } else {
-                    Toast.makeText(activity_chat.this, "Không thể gửi tin nhắn!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity_chat.this, "Gửi tin nhắn thất bại!", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -163,23 +152,23 @@ public class activity_chat extends AppCompatActivity {
         });
     }
 
-    // Phương thức xóa tin nhắn
     private void deleteMessage(int position) {
         ChatMessage message = chatMessages.get(position);
-
+        // Debug log để kiểm tra giá trị
+        Log.d("DEBUG", "Message ID: " + message.getId());
+        Log.d("DEBUG", "TentaiKhoan: " + currentUserId);
         ApiService apiService = RetrofitClient.getApiService();
         apiService.deleteMessage(message.getId(), currentUserId).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    chatMessages.remove(position); // Xóa tin nhắn khỏi danh sách
-                    chatAdapter.notifyItemRemoved(position); // Cập nhật giao diện
+                    chatMessages.remove(position);
+                    chatAdapter.notifyItemRemoved(position);
                     Toast.makeText(activity_chat.this, "Đã xóa tin nhắn!", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(activity_chat.this, "Không thể xóa tin nhắn!", Toast.LENGTH_SHORT).show();
                 }
             }
-
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 Toast.makeText(activity_chat.this, "Lỗi mạng: " + t.getMessage(), Toast.LENGTH_SHORT).show();

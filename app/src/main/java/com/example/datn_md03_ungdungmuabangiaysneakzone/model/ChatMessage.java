@@ -1,22 +1,40 @@
 package com.example.datn_md03_ungdungmuabangiaysneakzone.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class ChatMessage {
+
+    @SerializedName("_id")  // Ánh xạ từ MongoDB (_id) sang biến id
     private String id;           // ID của tin nhắn (dùng để xóa)
+
+    @SerializedName("senderId")
     private String senderId;     // ID của người gửi
+
+    @SerializedName("receiverId")
     private String receiverId;   // ID của người nhận
+
+    @SerializedName("message")
     private String message;      // Nội dung văn bản
+
+    @SerializedName("imageUrl")
     private String imageUrl;     // URL của ảnh (nếu có)
+
+    @SerializedName("videoUrl")
     private String videoUrl;     // URL của video (nếu có)
+
+    @SerializedName("timestamp")
+    private String timestamp;    // Thời gian gửi tin nhắn
 
     // Constructor
     public ChatMessage(String id, String senderId, String receiverId, String message,
-                       String imageUrl, String videoUrl) {
+                       String imageUrl, String videoUrl, String timestamp) {
         this.id = id;
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.message = message;
         this.imageUrl = imageUrl;
         this.videoUrl = videoUrl;
+        this.timestamp = timestamp; // Khởi tạo thời gian gửi tin nhắn
     }
 
     // Getter và Setter cho các thuộc tính
@@ -66,6 +84,14 @@ public class ChatMessage {
 
     public void setVideoUrl(String videoUrl) {
         this.videoUrl = videoUrl;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
     }
 
     // Xác định xem tin nhắn này có phải của admin không
