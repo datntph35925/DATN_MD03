@@ -658,5 +658,84 @@ router.get('/top-10-best-selling-products', async (req, res) => {
     }
 });
 
+router.get('/total-delivered-revenue', async (req, res) => {
+    try {
+        // Tính tổng tiền của các đơn hàng đã giao thành công
+        const totalRevenue = await Orders.aggregate([
+            {
+                $match: { TrangThai: 'Đã giao' } // Lọc các đơn hàng đã giao thành công
+            },
+            {
+                $group: {
+                    _id: null, // Gom nhóm tất cả đơn hàng
+                    totalRevenue: { $sum: '$TongTien' } // Tính tổng tiền của cột TongTien
+                }
+            }
+        ]);
+
+        // Trả về kết quả tổng tiền
+        const result = totalRevenue[0]?.totalRevenue || 0;
+
+        res.status(200).json({
+            status: 200,
+            message: 'Thống kê tổng tiền các đơn hàng đã giao thành công.',
+            totalRevenue: result
+        });
+    } catch (error) {
+        console.error('Lỗi khi thống kê tổng tiền đơn hàng đã giao:', error);
+        res.status(500).json({
+            status: 500,
+            message: 'Lỗi khi thống kê tổng tiền đơn hàng đã giao.',
+            error: error.message
+        });
+    }
+});
+
+router.get('/current-month-delivered-revenue', async (req, res) => {
+    try {
+        // Lấy tháng và năm hiện tại
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth() + 1; // Tháng bắt đầu từ 0 nên cộng thêm 1
+        const currentYear = currentDate.getFullYear();
+
+        // Thống kê tổng tiền các đơn hàng đã giao trong tháng hiện tại
+        const monthlyRevenue = await Orders.aggregate([
+            {
+                $match: {
+                    TrangThai: 'Đã giao', // Lọc các đơn hàng đã giao thành công
+                    $expr: {
+                        $and: [
+                            { $eq: [{ $month: '$NgayDatHang' }, currentMonth] }, // Tháng hiện tại
+                            { $eq: [{ $year: '$NgayDatHang' }, currentYear] }    // Năm hiện tại
+                        ]
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: null, // Gom nhóm tất cả đơn hàng trong tháng
+                    totalRevenue: { $sum: '$TongTien' } // Tính tổng tiền của cột TongTien
+                }
+            }
+        ]);
+
+        // Lấy kết quả hoặc trả về 0 nếu không có dữ liệu
+        const result = monthlyRevenue[0]?.totalRevenue || 0;
+
+        res.status(200).json({
+            status: 200,
+            message: `Thống kê tổng tiền các đơn hàng đã giao trong tháng ${currentMonth}/${currentYear}.`,
+            totalRevenue: result
+        });
+    } catch (error) {
+        console.error('Lỗi khi thống kê tổng tiền tháng hiện tại:', error);
+        res.status(500).json({
+            status: 500,
+            message: 'Lỗi khi thống kê tổng tiền tháng hiện tại.',
+            error: error.message
+        });
+    }
+});
+
 
 module.exports = router;
