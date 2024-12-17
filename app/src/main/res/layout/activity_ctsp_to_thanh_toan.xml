@@ -5,7 +5,9 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.ActivityCTSP_To_ThanhToan">
+    tools:context=".Activity.ActivityCTSP_To_ThanhToan"
+    android:background="@color/white"
+    >
 
     <ScrollView
         android:layout_width="match_parent"
@@ -18,7 +20,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                >
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -237,7 +241,7 @@
                     android:id="@+id/edtVoicher"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Ma voicher"
+                    android:hint="Mã voucher"
                     app:layout_constraintTop_toTopOf="@+id/txt7"
                     app:layout_constraintStart_toStartOf="@+id/View"
                     android:layout_marginTop="40dp"

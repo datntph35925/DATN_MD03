@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".Activity.Activity_ThanhToan"
     android:layout_marginTop="20dp"
+    android:background="@color/white"
     >
 
     <ScrollView

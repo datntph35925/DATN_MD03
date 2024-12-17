@@ -241,7 +241,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/button_background"
                     android:text="Quay về hồ sơ cá nhân"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />

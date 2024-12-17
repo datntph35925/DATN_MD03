@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".Activity.activity_update_avatar">
 
     <!-- Nút quay lại -->
@@ -47,6 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Chọn ảnh từ thư viện"
+            android:backgroundTint="@color/blue"
             android:layout_gravity="center"
             android:layout_marginTop="20dp" />
 
@@ -56,6 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Cập nhật ảnh đại diện"
+            android:backgroundTint="@color/blue"
             android:layout_gravity="center"
             android:layout_marginTop="20dp" />
 

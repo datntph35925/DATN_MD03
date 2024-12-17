@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".Activity.Activity_ChiTietSP"
     android:layout_marginTop="10dp"
+    android:background="@color/white"
     >
 
     <!-- Nút Quay Lại -->

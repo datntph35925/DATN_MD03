@@ -5,7 +5,9 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.Activity_SP_PhoBien">
+    tools:context=".Activity.Activity_SP_PhoBien"
+    android:background="@color/white"
+    >
 
     <ImageView
         android:id="@+id/imgBack_SPPB"
