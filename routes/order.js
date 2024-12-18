@@ -636,6 +636,7 @@ router.get('/top-10-best-selling-products', async (req, res) => {
                         quantitySold: order.totalSold,
                         price: product.GiaBan,
                         images: product.HinhAnh || [],
+                        description: product.MoTa || '', // Thêm trường mô tả
                     };
                 }
                 return null;
