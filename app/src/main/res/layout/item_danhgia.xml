@@ -12,11 +12,15 @@
     <ImageView
         android:id="@+id/imgAvatar"
         android:layout_width="60dp"
-        android:layout_height="80dp"
-        android:src="@drawable/ic_launcher_background"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="60dp"
+    android:src="@drawable/ic_launcher_background"
+    android:scaleType="centerCrop"
+    android:background="@drawable/circle_shape"
+    android:clipToOutline="true"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
 
     <TextView
         android:id="@+id/NgayThang"
@@ -38,7 +42,9 @@
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintLeft_toRightOf="@id/imgAvatar"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="@color/black"
+        />
 
     <RatingBar
         android:id="@+id/start"
@@ -47,7 +53,7 @@
         android:isIndicator="true"
         android:numStars="5"
         android:progressBackgroundTint="@color/Grey"
-        android:progressTint="#FFEB3B"
+        android:progressTint="#FF5722"
         android:rating="0"
         android:scaleX="0.4"
         android:scaleY="0.4"
