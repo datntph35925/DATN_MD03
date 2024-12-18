@@ -313,6 +313,44 @@ router.post('/check-upload', upload.single('image'), async (req, res) => {
   }
 });
 
+router.get('/search-product', async (req, res) => {
+  try {
+    const { name } = req.body; // Lấy từ khóa từ query string
+
+    if (!name || name.trim() === '') {
+      return res.status(400).json({
+        status: 400,
+        message: 'Vui lòng cung cấp tên sản phẩm cần tìm',
+      });
+    }
+
+    // Sử dụng biểu thức chính quy để tìm kiếm không phân biệt chữ hoa/thường
+    const regex = new RegExp(name, 'i'); // 'i' để không phân biệt chữ hoa/thường
+    const products = await Products.find({ TenSP: regex });
+
+    if (products.length > 0) {
+      res.status(200).json({
+        status: 200,
+        message: 'Tìm kiếm sản phẩm thành công',
+        data: products,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: 'Không tìm thấy sản phẩm nào phù hợp',
+        data: [],
+      });
+    }
+  } catch (error) {
+    console.error('Lỗi:', error);
+    res.status(500).json({
+      status: 500,
+      message: 'Lỗi server',
+      error: error.message,
+    });
+  }
+});
+
 module.exports = router;
 
 
