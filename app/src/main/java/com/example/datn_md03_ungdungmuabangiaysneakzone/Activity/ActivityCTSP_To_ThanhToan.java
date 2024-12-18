@@ -269,6 +269,16 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
     }
 
     private void handleOrder() {
+        if (name == null || name.trim().isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập địa chỉ người nhận!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (tvPaymentMethods.getText().toString().trim().isEmpty() ||
+                tvPaymentMethods.getText().toString().equals("Phương thức thanh toán")) {
+            Toast.makeText(this, "Vui lòng chọn phương thức thanh toán!", Toast.LENGTH_SHORT).show();
+            return;
+        }
         // Cập nhật thông tin đơn hàng
         order.setSanPham(Collections.singletonList(productItem));
         order.setTenNguoiNhan(name);
@@ -308,6 +318,10 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
             startActivity(intent);
 
         } else if (tvPaymentMethods.getText().toString().equals("Thanh toán khi nhận hàng (COD)")) {
+            if (name == null || name.trim().isEmpty()) {
+                Toast.makeText(this, "Vui lòng nhập địa chỉ người nhận!", Toast.LENGTH_SHORT).show();
+                return;
+            }
             // Lưu đơn hàng vào database
             saveOrderToDatabase();
         }
