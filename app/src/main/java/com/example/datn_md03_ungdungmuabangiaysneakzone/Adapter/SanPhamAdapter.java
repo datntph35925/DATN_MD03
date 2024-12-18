@@ -86,7 +86,7 @@
 
         @Override
         public int getItemCount() {
-            return productArrayList.size();
+            return productArrayList != null ? productArrayList.size():0;
         }
 
         public static class Viewholder extends RecyclerView.ViewHolder {  // Đã sửa

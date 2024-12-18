@@ -6,15 +6,12 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -22,15 +19,11 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter.SanPhamAdapter;
-import com.example.datn_md03_ungdungmuabangiaysneakzone.Demo.SP_PhoBienAdapterDemo;
-import com.example.datn_md03_ungdungmuabangiaysneakzone.Demo.SP_PhoBien_Demo;
-import com.example.datn_md03_ungdungmuabangiaysneakzone.Demo.YeuThichAdapter_Demo;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.ApiService;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.api.RetrofitClient;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Product;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response;
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 
@@ -45,8 +38,7 @@ public class Activity_SP_PhoBien extends AppCompatActivity {
     SanPhamAdapter productAdapter;
     ArrayList<Product> productArrayList;
     EditText edSearch;
-    TextView tvTextView;
-    private Boolean isVisibleSearch = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,12 +77,11 @@ public class Activity_SP_PhoBien extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-              String key = charSequence.toString();
-              if(!key.isEmpty()){
-                  searchProducts(key);
-              } else {
-                  getListProducts();
-              }
+                if (charSequence.length() > 0) {
+                    searchProducts(charSequence.toString()); // Gọi API tìm kiếm khi có chữ nhập vào
+                } else {
+                    getListProducts();
+                }
             }
 
             @Override
@@ -100,10 +91,10 @@ public class Activity_SP_PhoBien extends AppCompatActivity {
         });
     }
 
-    private void searchProducts(String keyword) {
-        Log.d("Search API", "Từ khóa tìm kiếm: " + keyword);
+    private void searchProducts(String name) {
+        Log.d("Search API", "Từ khóa tìm kiếm: " + name);
 
-        Call<Response<ArrayList<Product>>> call = apiService.searchProducts(keyword);
+        Call<Response<ArrayList<Product>>> call = apiService.searchProduct(name);
         call.enqueue(new Callback<Response<ArrayList<Product>>>() {
             @Override
             public void onResponse(Call<Response<ArrayList<Product>>> call, retrofit2.Response<Response<ArrayList<Product>>> response) {
@@ -118,8 +109,6 @@ public class Activity_SP_PhoBien extends AppCompatActivity {
                     } else {
                         Toast.makeText(Activity_SP_PhoBien.this, "Không có kết quả!", Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Toast.makeText(Activity_SP_PhoBien.this, "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
                 }
             }
 

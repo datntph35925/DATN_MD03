@@ -156,8 +156,8 @@ public interface ApiService {
     @PUT("/order/update-order-status/{id}")
     Call<Response<Order>> updateOrderStatus(@Path("id") String orderId, @Body UpdateStatusRequest status);
 
-    @GET("/api/search-products")
-    Call<Response<ArrayList<Product>>> searchProducts(@Query("keyword") String keyword);
+    @GET("/api/search-product")
+    Call<Response<ArrayList<Product>>> searchProduct(@Query("name") String name);
 
     @HTTP(method = "DELETE", path = "/cart/remove-items/{userId}", hasBody = true)
     Call<Response<RemoveItemsRequest>> removeItems(
