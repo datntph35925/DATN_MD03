@@ -7,37 +7,17 @@ const getProduct = async () => {
 };
 
 // Hàm thêm sản phẩm mới (hỗ trợ tải ảnh lên)
-const addProduct = async (productData, imageFiles) => {
+const addProduct = async (formData) => {
   try {
-    // Tạo FormData để gửi dữ liệu sản phẩm và ảnh
-    const formData = new FormData();
-
-    // Thêm các chi tiết sản phẩm vào FormData (trừ trường ảnh)
-    Object.keys(productData).forEach((key) => {
-      if (key !== "HinhAnh") {
-        // Tránh thêm URL ảnh vào đây vì chúng ta sẽ xử lý ảnh riêng
-        formData.append(key, productData[key]);
-      }
-    });
-
-    // Thêm các tệp ảnh vào FormData nếu có
-    if (imageFiles && imageFiles.length > 0) {
-      imageFiles.forEach((file) => {
-        formData.append("images[]", file); // "images[]" là tên khóa, có thể thay đổi theo yêu cầu backend
-      });
-    }
-
-    // Gửi yêu cầu POST với FormData
     const response = await axios.post("/api/add-product", formData, {
       headers: {
-        "Content-Type": "multipart/form-data", // Đảm bảo Content-Type là multipart/form-data
+        "Content-Type": "multipart/form-data",
       },
     });
-
-    return response.data; // Trả về dữ liệu sản phẩm đã được thêm
+    return response.data;
   } catch (error) {
     console.error("Lỗi khi thêm sản phẩm:", error);
-    throw error; // Ném lỗi để xử lý trong component
+    throw error;
   }
 };
 

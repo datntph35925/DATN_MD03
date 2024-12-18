@@ -14,17 +14,17 @@ import { totalListProducts } from "../../Server/ProductsApi";
 import {
   totalOrders,
   totalOrdersQuantity,
-  totalOrdersRevenue,
+  RevenueTotal,
 } from "../../Server/Order";
 import "./index.scss";
 import ApexChart from "../../Componer/Bieudo";
 
 const Dashboard = () => {
-  const [accountCount, setAccountCount] = useState(null);
-  const [productCount, setProductCount] = useState(null);
-  const [orderQuantity, setOrderQuantity] = useState(null);
-  const [orderCount, setOrderCount] = useState(null);
-  const [revenueData, setRevenueData] = useState(null);
+  const [accountCount, setAccountCount] = useState(0);
+  const [productCount, setProductCount] = useState(0);
+  const [orderQuantity, setOrderQuantity] = useState(0);
+  const [orderCount, setOrderCount] = useState(0);
+  const [totalOrdersRevenue, setTotalOrdersRevenue] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
@@ -39,20 +39,20 @@ const Dashboard = () => {
           productData,
           orderData,
           orderQuantityData,
-          revenueDataResult,
+          totalRevenueData,
         ] = await Promise.all([
           getTotalAccounts(),
           totalListProducts(),
           totalOrders(),
           totalOrdersQuantity(),
-          totalOrdersRevenue(),
+          RevenueTotal(),
         ]);
 
         setAccountCount(accountData.totalAccounts || 0);
         setProductCount(productData.totalProducts || 0);
         setOrderCount(orderData.unprocessedOrders || 0);
         setOrderQuantity(orderQuantityData || 0);
-        setRevenueData(revenueDataResult.revenue || 0);
+        setTotalOrdersRevenue(totalRevenueData || 0);
       } catch (error) {
         message.error("Lỗi khi tải dữ liệu. Vui lòng thử lại.");
         console.error("Error fetching dashboard data:", error);
@@ -66,7 +66,7 @@ const Dashboard = () => {
 
   const data = [
     {
-      count: revenueData !== null ? revenueData : "Đang tải...",
+      count: totalOrdersRevenue !== null ? totalOrdersRevenue : "Đang tải...",
       label: "Doanh thu",
       icon: <BarChartOutlined />,
     },
@@ -98,49 +98,45 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="dashboard-container">
-        <Spin size="large" />
-      </div>
+        <div className="dashboard-container">
+          <Spin size="large" />
+        </div>
     );
   }
 
   return (
-    <div className="dashboard-container">
-      <div className="menu">
-        <Row gutter={[16, 16]} justify="space-between">
-          {data.map((item, index) => (
-            <Col xs={24} sm={12} md={8} lg={4} key={index}>
-              <Card
-                className="dashboard-card"
-                hoverable
-                onClick={item.onClick}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "scale(1.05)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "scale(1)";
-                }}
-              >
-                <div className="card-content">
-                  <div className="card-count">{item.count}</div>
-                  <div className="card-label">
-                    {item.icon} <span>{item.label}</span>
-                  </div>
-                  <div className="card-detail">Chi tiết ➡️</div>
-                </div>
-              </Card>
-            </Col>
-          ))}
-        </Row>
+      <div className="dashboard-container">
+        <div className="menu">
+          <Row gutter={[16, 16]} justify="space-between">
+            {data.map((item, index) => (
+                <Col xs={24} sm={12} md={8} lg={4} key={index}>
+                  <Card
+                      className="dashboard-card"
+                      hoverable
+                      onClick={item.onClick}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = "scale(1.05)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = "scale(1)";
+                      }}
+                  >
+                    <div className="card-content">
+                      <div className="card-count">{item.count}</div>
+                      <div className="card-label">
+                        {item.icon} <span>{item.label}</span>
+                      </div>
+                      <div className="card-detail">Chi tiết ➡️</div>
+                    </div>
+                  </Card>
+                </Col>
+            ))}
+          </Row>
+        </div>
+        <div className="bieudo">
+          <ApexChart />
+        </div>
       </div>
-      <div className="bieudo">
-        {revenueData ? (
-          <ApexChart revenueData={revenueData} />
-        ) : (
-          <Spin size="small" />
-        )}
-      </div>
-    </div>
   );
 };
 

@@ -46,8 +46,8 @@ const Products = () => {
                     )
                     : [],
             soLuongTon: product.KichThuoc.reduce(
-              (total, size) => total + size.soLuongTon,
-              0
+                (total, size) => total + size.soLuongTon,
+                0
             ),
           }));
           console.log("Processed Products:", data);
@@ -72,9 +72,9 @@ const Products = () => {
       try {
         const comments = await getComment(record._id); // Fetch comments for the product
         setProducts((prevProducts) =>
-          prevProducts.map((product) =>
-            product._id === record._id ? { ...product, comments } : product
-          )
+            prevProducts.map((product) =>
+                product._id === record._id ? { ...product, comments } : product
+            )
         );
       } catch (error) {
         message.error("Không thể tải bình luận!");
@@ -98,11 +98,11 @@ const Products = () => {
         if (response.status === 200) {
           const updatedProduct = response.data;
           setProducts((prevProducts) =>
-            prevProducts.map((p) =>
-              p._id === updatedProduct._id
-                ? { ...p, ...updatedProduct, key: updatedProduct._id }
-                : p
-            )
+              prevProducts.map((p) =>
+                  p._id === updatedProduct._id
+                      ? { ...p, ...updatedProduct, key: updatedProduct._id }
+                      : p
+              )
           );
           message.success("Sản phẩm đã được cập nhật!");
         }
@@ -141,7 +141,7 @@ const Products = () => {
         try {
           await deleteProductById(productToDelete._id); // Delete the product
           setProducts((prevProducts) =>
-            prevProducts.filter((item) => item.key !== key)
+              prevProducts.filter((item) => item.key !== key)
           );
           message.success("Sản phẩm đã được xóa thành công!");
         } catch (error) {
@@ -176,7 +176,7 @@ const Products = () => {
 
   // Filter products based on search term
   const filteredProducts = products.filter((product) =>
-    product.TenSP.toLowerCase().includes(searchTerm)
+      product.TenSP.toLowerCase().includes(searchTerm)
   );
 
   // Define the table columns
@@ -222,83 +222,83 @@ const Products = () => {
       title: "Hành Động",
       key: "action",
       render: (text, record) => (
-        <>
-          <Button type="link" onClick={() => showEditProductModal(record)}>
-            Sửa
-          </Button>
-          <Button type="link" onClick={() => handleDelete(record.key)} danger>
-            Xóa
-          </Button>
-        </>
+          <>
+            <Button type="link" onClick={() => showEditProductModal(record)}>
+              Sửa
+            </Button>
+            <Button type="link" onClick={() => handleDelete(record.key)} danger>
+              Xóa
+            </Button>
+          </>
       ),
     },
   ];
 
   return (
-    <div>
-      <Input.Search
-        placeholder="Tìm kiếm sản phẩm..."
-        onChange={handleSearch}
-        style={{ marginBottom: "16px" }}
-      />
-      <Button
-        type="primary"
-        style={{ marginBottom: "16px" }}
-        onClick={showAddProductModal}
-      >
-        Thêm Sản Phẩm
-      </Button>
-      <Table
-        columns={columns}
-        dataSource={filteredProducts}
-        loading={isLoading}
-        rowKey="key"
-        expandable={{
-          onExpand: handleRowExpand,
-          expandedRowRender: (record) => (
-            <div>
-              <h4>Kích thước & Số lượng:</h4>
-              <ul>
-                {record.KichThuoc.map((size, index) => (
-                  <li key={index}>
-                    <strong>Size {size.size}:</strong> {size.soLuongTon} còn
-                  </li>
-                ))}
-              </ul>
-              <h4>Mô tả sản phẩm:</h4>
-              <p>{record.MoTa}</p>
-              <h4>Danh sách Comment:</h4>
-              {loadingComments[record._id] ? (
-                <Spin />
-              ) : record.comments && record.comments.length > 0 ? (
-                <ul>
-                  {record.comments.map((comment, index) => (
-                    <li key={index}>
-                      <p>
-                        <strong>{comment.Tentaikhoan || "Anonymous"}:</strong>{" "}
-                        {comment.BinhLuan}
-                      </p>
-                      <p>
-                        <strong>Đánh giá:</strong>{" "}
-                        <Rate disabled defaultValue={comment.DanhGia} />
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>Chưa có bình luận nào</p>
-              )}
-            </div>
-          ),
-        }}
-      />
-      <AddProductModal
-        visible={isAddModalVisible}
-        onAdd={handleAddOrEditProduct}
-        onCancel={handleCancel}
-        initialValues={editingProduct}
-      />
-    </div>
+      <div>
+        <Input.Search
+            placeholder="Tìm kiếm sản phẩm..."
+            onChange={handleSearch}
+            style={{ marginBottom: "16px" }}
+        />
+        <Button
+            type="primary"
+            style={{ marginBottom: "16px" }}
+            onClick={showAddProductModal}
+        >
+          Thêm Sản Phẩm
+        </Button>
+        <Table
+            columns={columns}
+            dataSource={filteredProducts}
+            loading={isLoading}
+            rowKey="key"
+            expandable={{
+              onExpand: handleRowExpand,
+              expandedRowRender: (record) => (
+                  <div>
+                    <h4>Kích thước & Số lượng:</h4>
+                    <ul>
+                      {record.KichThuoc.map((size, index) => (
+                          <li key={index}>
+                            <strong>Size {size.size}:</strong> {size.soLuongTon} còn
+                          </li>
+                      ))}
+                    </ul>
+                    <h4>Mô tả sản phẩm:</h4>
+                    <p>{record.MoTa}</p>
+                    <h4>Danh sách Comment:</h4>
+                    {loadingComments[record._id] ? (
+                        <Spin />
+                    ) : record.comments && record.comments.length > 0 ? (
+                        <ul>
+                          {record.comments.map((comment, index) => (
+                              <li key={index}>
+                                <p>
+                                  <strong>{comment.Tentaikhoan || "Anonymous"}:</strong>{" "}
+                                  {comment.BinhLuan}
+                                </p>
+                                <p>
+                                  <strong>Đánh giá:</strong>{" "}
+                                  <Rate disabled defaultValue={comment.DanhGia} />
+                                </p>
+                              </li>
+                          ))}
+                        </ul>
+                    ) : (
+                        <p>Chưa có bình luận nào</p>
+                    )}
+                  </div>
+              ),
+            }}
+        />
+        <AddProductModal
+            visible={isAddModalVisible}
+            onAdd={handleAddOrEditProduct}
+            onCancel={handleCancel}
+            initialValues={editingProduct}
+        />
+      </div>
   );
 };
 

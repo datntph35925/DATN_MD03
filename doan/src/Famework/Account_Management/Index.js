@@ -55,7 +55,7 @@ const Account_Management = () => {
 
   const columns = [
     {
-      title: "Account ID",
+      title: "Mã tài khoản",
       dataIndex: "Matk",
       key: "Matk",
     },
@@ -65,7 +65,7 @@ const Account_Management = () => {
       key: "Tentaikhoan",
     },
     {
-      title: "Name",
+      title: "Họ tên",
       dataIndex: "Hoten",
       key: "Hoten",
     },
@@ -134,7 +134,7 @@ const Account_Management = () => {
 
   return (
     <div>
-      <h2>Customer Management</h2>
+      <h2>Quản lý tài khoản khách hàng</h2>
       <Table
         columns={columns}
         dataSource={customers}
@@ -153,13 +153,13 @@ const Account_Management = () => {
       >
         {selectedCustomer && (
           <Descriptions column={1}>
-            <Descriptions.Item label="Account ID">
+            <Descriptions.Item label="Mã tài khoản">
               {selectedCustomer.Matk}
             </Descriptions.Item>
             <Descriptions.Item label="Email">
               {selectedCustomer.Tentaikhoan}
             </Descriptions.Item>
-            <Descriptions.Item label="Name">
+            <Descriptions.Item label="Họ tên">
               {selectedCustomer.Hoten}
             </Descriptions.Item>
             <Descriptions.Item label="Avatar">

@@ -55,11 +55,20 @@ const totalOrdersRevenue = async (start, end) => {
     throw error;
   }
 };
-
+const RevenueTotal = async () => {
+  try {
+    const response = await axios.get("/order/total-delivered-revenue");
+    return response.data.totalRevenue;
+  } catch (error) {
+    console.error("Lỗi khi lấy tổng doanh thu:", error);
+    throw error;
+  }
+};
 export {
   getListOrders,
   updateOrderList,
   totalOrders,
   totalOrdersQuantity,
   totalOrdersRevenue,
+  RevenueTotal,
 };
