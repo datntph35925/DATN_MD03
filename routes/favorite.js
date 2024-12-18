@@ -41,14 +41,27 @@ router.post("/add-favorites/:Tentaikhoan", async (req, res) => {
 // Lấy danh sách yêu thích của một người dùng
 router.get("/get-favorites/:Tentaikhoan", async (req, res) => {
     const { Tentaikhoan } = req.params;
-  
+
     try {
-      const favorites = await Favorite.find({ Tentaikhoan }).populate("SanPham");
-      res.status(200).json({ message: "Danh sách yêu thích", data: favorites });
+        // Lấy danh sách yêu thích và populate sản phẩm
+        const favorites = await Favorite.find({ Tentaikhoan }).populate("SanPham");
+
+        // Lọc ra những bản ghi có sản phẩm tồn tại
+        const validFavorites = favorites.filter(fav => fav.SanPham !== null);
+
+        // Nếu có bản ghi bị thiếu sản phẩm, xóa nó khỏi cơ sở dữ liệu
+        const invalidFavorites = favorites.filter(fav => fav.SanPham === null);
+        if (invalidFavorites.length > 0) {
+            const invalidIds = invalidFavorites.map(fav => fav._id);
+            await Favorite.deleteMany({ _id: { $in: invalidIds } });
+        }
+
+        // Trả về danh sách hợp lệ
+        res.status(200).json({ message: "Danh sách yêu thích", data: validFavorites });
     } catch (error) {
-      res.status(500).json({ message: "Lỗi lấy danh sách yêu thích", error });
+        res.status(500).json({ message: "Lỗi lấy danh sách yêu thích", error });
     }
-  });
+});
 
 // Xóa sản phẩm khỏi danh sách yêu thích
 router.delete("/delete-favorites/:Tentaikhoan", async (req, res) => {
