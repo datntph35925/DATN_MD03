@@ -62,7 +62,7 @@ public class ThanhToanAdapter extends RecyclerView.Adapter<ThanhToanAdapter.View
         ProductItemCart item = productItemList.get(position);
         holder.tvProductName.setText(item.getTenSP());
         holder.tvProductQuantity.setText(String.format("Số lượng: %d", item.getSoLuongGioHang()));
-        holder.tvProductPrice.setText(String.format("VND%.2f", item.getGia()));
+        holder.tvProductPrice.setText(String.format("%.2f", item.getGia()) + "VNĐ");
         holder.tvProductSize.setText(String.format("Size: %d", item.getSize()));
 
         // Load ảnh sản phẩm

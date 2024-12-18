@@ -138,7 +138,7 @@
 
 
             tvName.setText(tenSP);
-            tvGia.setText(giaSP+"VNĐ");
+            tvGia.setText(giaSP + "VNĐ");
             tvMoTa.setText(moTa);
 
             kichThuocArrayList = new ArrayList();

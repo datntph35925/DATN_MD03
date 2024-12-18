@@ -76,7 +76,7 @@ public class TopSellingAdapter extends RecyclerView.Adapter<TopSellingAdapter.Vi
                 in.putExtra("name", product.getName());
                 in.putExtra("price", product.getPrice());
                 in.putStringArrayListExtra("image", (ArrayList<String>) product.getImages());
-                in.putExtra("description", product.getMoTa());
+                in.putExtra("description", product.getDescription());
 
                 Log.d("Top10", "Full ID: " + product.getProductId());
                 Log.d("Top10", "Full Name URL: " + product.getName());

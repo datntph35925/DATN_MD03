@@ -47,7 +47,7 @@
         public void onBindViewHolder(@NonNull Viewholder holder, int position) {  // Đã sửa
             Product product = productArrayList.get(position);
             holder.shoeName.setText(product.getTenSP());
-            holder.shoePrice.setText(String.valueOf(product.getGiaBan()) + "đ");
+            holder.shoePrice.setText(String.valueOf(product.getGiaBan()) + "VNĐ");
 
             if (product.getHinhAnh() != null && !product.getHinhAnh().isEmpty()) {
                 String imageUrl = product.getHinhAnh().get(0).trim();

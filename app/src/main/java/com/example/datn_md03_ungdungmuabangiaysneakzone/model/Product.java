@@ -21,6 +21,15 @@ public class Product {
     private double price;
     private List<String> images;
     private int quantitySold;
+    private String description;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public int getQuantitySold() {
         return quantitySold;
