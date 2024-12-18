@@ -8,8 +8,11 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -54,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     int currentImageIndex = 0; // Chỉ mục ảnh hiện tại
     Handler handler = new Handler(); // Handler để quản lý thời gian trễ cho slideshow
     private TopSellingAdapter adapter;
-
+    EditText edSearch;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         imageView = findViewById(R.id.imageView);
         tvXemThem = findViewById(R.id.tvXemThem);
         hienthiso = findViewById(R.id.hienthiso);
+        edSearch = findViewById(R.id.editTextText);
         tvXemThem.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, Activity_SP_PhoBien.class));
         });
@@ -129,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
             startService(new Intent(this, MyForegroundService.class));
         }
 
+        setupSearch();
         fetchTopSellingProducts();
     }
 
@@ -139,6 +144,56 @@ public class MainActivity extends AppCompatActivity {
         spRecyclerView.setAdapter(productAdapter);
     }
 
+    private void setupSearch() {
+        edSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.length() > 0) {
+                    searchProducts(charSequence.toString()); // Gọi API tìm kiếm khi có chữ nhập vào
+                } else {
+                    getListProducts();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+    }
+
+    private void searchProducts(String name) {
+        Log.d("Search API", "Từ khóa tìm kiếm: " + name);
+
+        Call<Response<ArrayList<Product>>> call = apiService.searchProduct(name);
+        call.enqueue(new Callback<Response<ArrayList<Product>>>() {
+            @Override
+            public void onResponse(Call<Response<ArrayList<Product>>> call, retrofit2.Response<Response<ArrayList<Product>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    if (response.body().getStatus() == 200) {
+                        ArrayList<Product> searchResults = response.body().getData();
+                        if (!searchResults.isEmpty()) {
+                            loadDuLieu(searchResults); // Hiển thị kết quả tìm kiếm
+                        } else {
+                            Toast.makeText(MainActivity.this, "Không tìm thấy sản phẩm nào!", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(MainActivity.this, "Không có kết quả!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Response<ArrayList<Product>>> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     //get top 10
     private void fetchTopSellingProducts() {
         Call<Response<ArrayList<Product>>> call = apiService.getTopSellingProducts();
