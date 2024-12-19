@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Order;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
@@ -48,7 +49,9 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
                 holder.tvDate.setText(formattedDate);
             }
         }
-        holder.tvTongTien.setText("Tổng tiền: " + String.format("%.2f", order.getTongTien()) + "VNĐ");
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        String formattedTotal = decimalFormat.format(order.getTongTien());
+        holder.tvTongTien.setText("Tổng tiền: " + formattedTotal + "VNĐ");
 
         holder.tvSoLuong.setText("Tổng số lượng: " + String.valueOf(order.getTongSoLuong()));
     }
@@ -73,6 +76,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             tvTenNguoiNhan = itemView.findViewById(R.id.tv_nameByer);
             tvDiaChi = itemView.findViewById(R.id.adresByer);
             tvSoDienThoai = itemView.findViewById(R.id.phoneByer);
+            //2
             tvTongTien = itemView.findViewById(R.id.tvTotal);
             tvSoLuong = itemView.findViewById(R.id.soluong);
             tvDate = itemView.findViewById(R.id.tvDate);

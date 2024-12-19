@@ -25,6 +25,7 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Order;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ProductItemCart;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Voucher;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -61,7 +62,7 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
 
         // Khởi tạo các thành phần giao diện
         initializeViews();
-
+//6
         // Lấy thông tin tài khoản người dùng từ SharedPreferences
         SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
         email = sharedPreferences.getString("Tentaikhoan", ""); // Tên tài khoản người dùng
@@ -134,18 +135,30 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
         // Tính lại tổng tiền mà không có voucher
         double totalCost = originalTotalCost;  // Lấy tổng tiền ban đầu
 
+        // Sử dụng DecimalFormat để định dạng tổng tiền
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        String formattedTotalCost = decimalFormat.format(totalCost);
         // Cập nhật lại giao diện
-        tvTotalPrice.setText(String.format("%.2f", totalCost));  // Hiển thị tổng tiền ban đầu
+        tvTotalPrice.setText(formattedTotalCost + " VNĐ");   // Hiển thị tổng tiền ban đầu
         Toast.makeText(ActivityCTSP_To_ThanhToan.this, "Voucher đã được xóa. Tổng tiền đã khôi phục!", Toast.LENGTH_SHORT).show();
     }
 
 
     private void displayProductInfo(ProductItemCart productItem) {
         tvProductName.setText(productItem.getTenSP());
-        tvProductPrice.setText(String.format("%.2f", productItem.getGia()));
+
+        // Sử dụng DecimalFormat để định dạng giá sản phẩm
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        String formattedPrice = decimalFormat.format(productItem.getGia()); // Định dạng giá
+        tvProductPrice.setText(formattedPrice + " VNĐ");
+
+
         tvProductQuantity.setText(String.format("Quantity: %d", productItem.getSoLuongGioHang()));
         tvProductSize.setText(String.format("Size: %d", productItem.getSize()));
-        tvTotalPrice.setText(String.format("%.2f", productItem.getTongTien()));
+
+        String formattedTotalPrice = decimalFormat.format(productItem.getTongTien()); // Định dạng tổng tiền
+        tvTotalPrice.setText(formattedTotalPrice + "");
+
 
         originalTotalCost = productItem.getTongTien();
 
@@ -249,8 +262,12 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
         // Đảm bảo tổng tiền không âm
         totalPrice = Math.max(0, totalPrice);
 
+        // Sử dụng DecimalFormat để định dạng tổng tiền
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        String formattedTotalPrice = decimalFormat.format(totalPrice); // Định dạng tổng tiền
+
         // Hiển thị tổng tiền mới
-        tvTotalPrice.setText(String.format("%.2f", totalPrice));
+        tvTotalPrice.setText(formattedTotalPrice + "");
     }
 
     private void poppuGetListPayment() {
@@ -293,7 +310,9 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
 
         order.setMaDonHang(result);
 
-        double finalTotalPrice = Double.parseDouble(tvTotalPrice.getText().toString());
+        String totalPriceText = tvTotalPrice.getText().toString().replace(",", "").trim();
+        double finalTotalPrice = Double.parseDouble(totalPriceText);
+
         order.setTongTien(finalTotalPrice);  // Cập nhật tổng tiền vào đơn hàng
         // Thêm email vào order
         order.setTentaikhoan(email);

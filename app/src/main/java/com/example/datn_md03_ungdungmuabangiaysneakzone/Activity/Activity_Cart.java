@@ -184,8 +184,14 @@
                 totalCost += item.getGia() * item.getSoLuongGioHang();
             }
 
+            // Chuyển sang VND (giả sử tỷ giá là 1 USD = 24,000 VND)
+            double totalCostVND = totalCost ;
+
+            // Định dạng số tiền theo kiểu Việt Nam
+            String formattedCost = String.format("%,.0f", totalCostVND);
+
             // Cập nhật UI (Giả sử bạn có một TextView để hiển thị tổng tiền)
-            tvTotalCost.setText(String.format("$%.2f", totalCost));
+            tvTotalCost.setText(String.format("%s VNĐ", formattedCost));
         }
 
 

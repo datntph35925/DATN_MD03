@@ -25,6 +25,7 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ProductItemCart;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Review;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ReviewResponse;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 import retrofit2.Call;
@@ -62,7 +63,10 @@ public class ThanhToanAdapter extends RecyclerView.Adapter<ThanhToanAdapter.View
         ProductItemCart item = productItemList.get(position);
         holder.tvProductName.setText(item.getTenSP());
         holder.tvProductQuantity.setText(String.format("Số lượng: %d", item.getSoLuongGioHang()));
-        holder.tvProductPrice.setText(String.format("%.2f", item.getGia()) + "VNĐ");
+        //4
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        String formattedPrice = decimalFormat.format(item.getGia());
+        holder.tvProductPrice.setText(  formattedPrice + " VNĐ");
         holder.tvProductSize.setText(String.format("Size: %d", item.getSize()));
 
         // Load ảnh sản phẩm

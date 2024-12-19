@@ -47,6 +47,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.Favori
         Product product = favorite.getSanPham();
 
         holder.shoeName.setText(product.getTenSP());
+        //3
         holder.shoePrice.setText(String.format("%,.0f đ", product.getGiaBan())); // Format price with thousand separator
 
         if (product.getHinhAnh() != null && !product.getHinhAnh().isEmpty()) {

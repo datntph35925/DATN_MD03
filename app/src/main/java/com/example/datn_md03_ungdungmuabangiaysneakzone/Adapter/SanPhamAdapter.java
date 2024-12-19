@@ -23,6 +23,7 @@
     import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Product;
 
     import java.io.Serializable;
+    import java.text.DecimalFormat;
     import java.util.ArrayList;
     import java.util.List;
 
@@ -47,7 +48,9 @@
         public void onBindViewHolder(@NonNull Viewholder holder, int position) {  // Đã sửa
             Product product = productArrayList.get(position);
             holder.shoeName.setText(product.getTenSP());
-            holder.shoePrice.setText(String.valueOf(product.getGiaBan()) + "VNĐ");
+            DecimalFormat decimalFormat = new DecimalFormat("#,###");
+            String formattedPrice = decimalFormat.format(product.getGiaBan());
+            holder.shoePrice.setText(formattedPrice + " VNĐ");
 
             if (product.getHinhAnh() != null && !product.getHinhAnh().isEmpty()) {
                 String imageUrl = product.getHinhAnh().get(0).trim();
@@ -86,7 +89,7 @@
 
         @Override
         public int getItemCount() {
-            return productArrayList != null ? productArrayList.size():0;
+            return productArrayList.size();
         }
 
         public static class Viewholder extends RecyclerView.ViewHolder {  // Đã sửa

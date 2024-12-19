@@ -18,6 +18,7 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.Activity.Activity_ChiTie
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Product;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +43,11 @@ public class TopSellingAdapter extends RecyclerView.Adapter<TopSellingAdapter.Vi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Product product = productArrayList.get(position);
         holder.shoeName.setText(product.getName());
-        holder.shoePrice.setText(String.valueOf(product.getPrice()) + "VND");
+        //5
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        String formattedPrice = decimalFormat.format(product.getPrice());
+        holder.shoePrice.setText(formattedPrice + " VNĐ");
+
         holder.tvQuantitySold.setText("Đã bán: " + product.getQuantitySold());
 
         if (product.getImages() != null && !product.getImages().isEmpty()) {

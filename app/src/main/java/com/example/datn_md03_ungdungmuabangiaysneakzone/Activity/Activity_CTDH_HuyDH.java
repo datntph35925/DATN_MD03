@@ -18,6 +18,7 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.Adapter.ThanhToanAdapter
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ProductItemCart;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class Activity_CTDH_HuyDH extends AppCompatActivity {
@@ -64,7 +65,9 @@ public class Activity_CTDH_HuyDH extends AppCompatActivity {
         });
         
         tvTT.setText(tt);
-        tvTCP.setText(String.format("%.2f", tcp));
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        String formattedPrice = decimalFormat.format(tcp);
+        tvTCP.setText(formattedPrice + " VNĐ");
 
         sanPhamList = new ArrayList<>();
         sanPhamList = (ArrayList<ProductItemCart>) intent.getSerializableExtra("order_sp");

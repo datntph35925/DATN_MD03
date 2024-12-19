@@ -150,53 +150,21 @@
                     app:layout_constraintEnd_toEndOf="@id/txtMoney"
                     app:layout_constraintStart_toStartOf="@id/txt0"
                     />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/txt1"
-                    android:text="Subtotal"
-                    style="@style/textStyle"
-                    app:layout_constraintStart_toStartOf="@+id/txt0"
-                    app:layout_constraintTop_toBottomOf="@id/View1"/>/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/txtSubtotal"
-                    app:layout_constraintEnd_toEndOf="@id/txtMoney"
-                    app:layout_constraintTop_toTopOf="@id/View1"
-                    style="@style/textStyle"
-                    android:text="10$"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/txt3"
-                    style="@style/textStyle"
-                    android:text="Delivery"
-                    app:layout_constraintStart_toStartOf="@+id/txt1"
-                    android:layout_marginTop="8dp"
-                    app:layout_constraintTop_toBottomOf="@id/txt1"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/txtDelivery"
-                    app:layout_constraintEnd_toEndOf="@id/txtSubtotal"
-                    app:layout_constraintTop_toTopOf="@id/txt3"
-                    style="@style/textStyle"
-                    android:text="5000 VND"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/txt5"
                     style="@style/textStyle"
                     android:text="Voucher"
-                    app:layout_constraintStart_toStartOf="@+id/txt3"
+                    app:layout_constraintStart_toStartOf="@+id/txt0"
                     android:layout_marginTop="8dp"
-                    app:layout_constraintTop_toBottomOf="@id/txt3"/>
+                    app:layout_constraintTop_toBottomOf="@id/View1"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/txtTax"
-                    app:layout_constraintEnd_toEndOf="@id/txtDelivery"
+                    app:layout_constraintEnd_toEndOf="@id/txtMoney"
                     app:layout_constraintTop_toTopOf="@id/txt5"
                     style="@style/textStyle"
                     android:text="0"/>
@@ -235,7 +203,7 @@
                     app:layout_constraintEnd_toEndOf="@id/txtTax"
                     app:layout_constraintTop_toTopOf="@id/txt7"
                     style="@style/textStyleBold"
-                    android:text="VND"/>
+                    android:text="VNĐ"/>
 
                 <EditText
                     android:id="@+id/edtVoicher"
@@ -417,7 +385,7 @@
             <androidx.appcompat.widget.AppCompatButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Order Now"
+            android:text="Mua Ngay"
             android:textSize="16sp"
             android:textColor="@color/white"
             android:id="@+id/btnOrder_CTSP"
