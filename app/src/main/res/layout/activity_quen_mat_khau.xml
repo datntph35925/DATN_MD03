@@ -4,47 +4,50 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="15dp"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:background="@color/white"
-    >
+    android:id="@+id/relative_layout_id">
+
+    <!--    <TextView-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignBottom="@id/img_back"-->
+<!--        android:layout_marginStart="1dp"-->
+<!--        android:layout_marginBottom="3dp"-->
+<!--        android:layout_toEndOf="@id/img_back"-->
+<!--        android:text="Quên mật khẩu"-->
+<!--        android:textAlignment="center"-->
+<!--        android:textColor="@color/blue"-->
+<!--        android:textSize="30sp"-->
+<!--        android:textStyle="bold" />-->
+
+<!--    <ImageButton-->
+<!--        android:id="@+id/img_back"-->
+<!--        android:layout_width="48dp"-->
+<!--        android:layout_height="48dp"-->
+<!--        android:layout_alignParentStart="true"-->
+<!--        android:layout_marginStart="13dp"-->
+<!--        android:layout_marginEnd="16dp"-->
+<!--        android:background="@color/white"-->
+<!--        android:src="@drawable/ic_back" />-->
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+
+        android:layout_marginTop="12dp"
+        android:padding="20dp"
+        android:gravity="center_horizontal"
         android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:orientation="horizontal">
-
-            <ImageButton
-                android:id="@+id/img_back"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:src="@drawable/ic_back" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="20dp"
-                android:text="Quên mật khẩu"
-                android:textAlignment="center"
-                android:textColor="@color/blue"
-                android:textSize="25sp"
-                android:textStyle="bold" />
-        </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:layout_marginBottom="10dp"
-            android:text="Nhập Email"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="8dp"
+            android:text="NHẬP EMAIL"
             android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -53,13 +56,11 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/edittext_background"
             android:hint="Email"
             app:boxCornerRadiusBottomEnd="16dp"
             app:boxCornerRadiusBottomStart="16dp"
             app:boxCornerRadiusTopEnd="16dp"
-            app:boxCornerRadiusTopStart="16dp"
-            app:boxStrokeWidth="0dp">
+            app:boxCornerRadiusTopStart="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/ed_email"
@@ -68,26 +69,30 @@
                 android:inputType="text"
                 android:textSize="16sp" />
         </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/btn_send"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="#FF5722"
+            android:padding="12dp"
+            android:text="Gửi"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:cornerRadius="8dp" />
+
+        <Button
+            android:id="@+id/img_back"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:backgroundTint="@color/blue"
+            android:padding="12dp"
+            android:text="QUAY LẠI"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:cornerRadius="8dp" />
     </LinearLayout>
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone" />
-
-    <Button
-        android:id="@+id/btn_send"
-        android:layout_width="280dp"
-        android:layout_height="60dp"
-        android:layout_below="@+id/linearLayout"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="570dp"
-        android:backgroundTint="@color/blue"
-        android:text="Gửi"
-        app:cornerRadius="10dp" />
 
 </RelativeLayout>
