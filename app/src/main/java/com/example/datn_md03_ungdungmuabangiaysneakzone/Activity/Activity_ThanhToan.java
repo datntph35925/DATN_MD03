@@ -186,7 +186,7 @@ public class Activity_ThanhToan extends AppCompatActivity {
 
         // Thêm email vào order
         order.setTentaikhoan(email);
-        String totalPriceText = tvTotalCost.getText().toString().replace(",", "").trim();
+        String totalPriceText = tvTotalCost.getText().toString().replace(",", "").replace(".", "").trim();
         double totalCost = Double.parseDouble(totalPriceText);
 
         order.setTongTien(totalCost);
@@ -248,8 +248,7 @@ public class Activity_ThanhToan extends AppCompatActivity {
         order.setMaDonHang(result);
 
         // Lấy tổng tiền sau khi áp dụng voucher
-        String totalPriceText = tvTotalCost.getText().toString().replace(",", "").trim();
-        double finalTotalPrice = Double.parseDouble(totalPriceText);
+        String totalPriceText = tvTotalCost.getText().toString().replace(",", "").replace(".", "").trim();        double finalTotalPrice = Double.parseDouble(totalPriceText);
         
         order.setTongTien(finalTotalPrice);  // Cập nhật tổng tiền vào đơn hàng
 

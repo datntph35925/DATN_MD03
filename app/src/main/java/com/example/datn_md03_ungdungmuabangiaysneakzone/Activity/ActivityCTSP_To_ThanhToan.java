@@ -309,8 +309,7 @@ public class ActivityCTSP_To_ThanhToan extends AppCompatActivity {
         }
 
         order.setMaDonHang(result);
-
-        String totalPriceText = tvTotalPrice.getText().toString().replace(",", "").trim();
+        String totalPriceText = tvTotalPrice.getText().toString().replace(",", "").replace(".", "").trim();
         double finalTotalPrice = Double.parseDouble(totalPriceText);
 
         order.setTongTien(finalTotalPrice);  // Cập nhật tổng tiền vào đơn hàng
