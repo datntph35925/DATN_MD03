@@ -241,4 +241,8 @@ public class activity_update_avatar extends AppCompatActivity {
         }
         return path;
     }
+    @Override
+    public void onBackPressed() {
+        // Không làm gì, ngăn không cho quay lại màn hình trước
+    }
 }

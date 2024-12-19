@@ -161,6 +161,9 @@ public class CapnhathotenActivity extends AppCompatActivity {
             }
         });
     }
-
+    @Override
+    public void onBackPressed() {
+        // Không làm gì, ngăn không cho quay lại màn hình trước
+    }
 
 }

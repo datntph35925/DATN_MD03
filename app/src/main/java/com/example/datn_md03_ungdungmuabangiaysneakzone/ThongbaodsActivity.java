@@ -76,13 +76,13 @@ public class ThongbaodsActivity extends AppCompatActivity {
         });
 
         // Xử lý sự kiện long click để xóa thông báo
-        notificationAdapter.setOnNotificationLongClickListener((notificationId, position) -> {
-            if (notificationId != null && !notificationId.isEmpty()) {
-                deleteNotification(notificationId, position);
-            } else {
-                Toast.makeText(this, "ID thông báo không hợp lệ!", Toast.LENGTH_SHORT).show();
-            }
-        });
+//        notificationAdapter.setOnNotificationLongClickListener((notificationId, position) -> {
+//            if (notificationId != null && !notificationId.isEmpty()) {
+//                deleteNotification(notificationId, position);
+//            } else {
+//                Toast.makeText(this, "ID thông báo không hợp lệ!", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
         btnExit.setOnClickListener(view -> {
             Intent intent = new Intent(ThongbaodsActivity.this, MainActivity.class);

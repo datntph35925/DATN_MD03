@@ -83,7 +83,7 @@
         String[] imageList; // Danh sách ảnh slideshow
         int currentImageIndex = 0;
 
-        ImageView imageViewSlider; // ImageView cho slideshow
+        ImageView imageViewSlider,btnBoxChat_CTSP; // ImageView cho slideshow
         ImageButton btnPrev, btnNext;
 
         @Override
@@ -124,6 +124,7 @@
             }
     // hieuaddd
 
+            btnBoxChat_CTSP = findViewById(R.id.btnBoxChat_CTSP);
             imgBack = findViewById(R.id.imgBack);
             imageViewSlider = findViewById(R.id.imageViewSlider);
             btnPrev = findViewById(R.id.btnPrev); // Nút "Trước đó"
@@ -216,6 +217,13 @@
                         currentImageIndex = 0; // Quay lại hình ảnh đầu tiên nếu đã hết
                     }
                     showImage(); // Hiển thị hình ảnh mới
+                }
+            });
+            btnBoxChat_CTSP.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(Activity_ChiTietSP.this, activity_chat.class);
+                    startActivity(intent);
                 }
             });
         }

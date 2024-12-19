@@ -63,4 +63,8 @@ public class Activity_FixInfor extends AppCompatActivity {
             startActivity(new Intent(Activity_FixInfor.this, Activity_DoiMK.class));
         });
     }
+    @Override
+    public void onBackPressed() {
+        // Không làm gì, ngăn không cho quay lại màn hình trước
+    }
 }
