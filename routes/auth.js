@@ -419,7 +419,7 @@ router.post('/send-reset-password-email', async (req, res) => {
         const token = jwt.sign({ id: user._id }, 'namanhdepzaivippromax2604@#!%', { expiresIn: '15m' }); // Token có hiệu lực 15 phút
 
         // Tạo liên kết đặt lại mật khẩu
-        const resetLink = `http://localhost:3000/reset-password.html?token=${token}`;
+        const resetLink = `http://160.191.50.148:3000/reset-password.html?token=${token}`;
 
         // Cấu hình email
         const mailOptions = {
