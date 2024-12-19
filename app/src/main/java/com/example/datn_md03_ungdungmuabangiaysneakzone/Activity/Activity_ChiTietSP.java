@@ -67,7 +67,7 @@
         double priceText;
         String idMaTK;
         private String email, tenSP;
-
+        TextView tvAverageRating;
         private double giaSP;
         String hinh;
 
@@ -136,7 +136,7 @@
             btnYeuThich = findViewById(R.id.btnYeuThich_CTSP);
             btnYeuThichRed = findViewById(R.id.btnYeuThich_CTSP_red);
             btnGioHang = findViewById(R.id.btnGioHang_CTSP);
-
+            tvAverageRating = findViewById(R.id.tvDanhGia_SPCT_Label);
 
             tvName.setText(tenSP);
             DecimalFormat decimalFormat = new DecimalFormat("#,###");
@@ -251,6 +251,19 @@
 
         }
 
+        private double calculateAverageRating() {
+            if (reviewList == null || reviewList.isEmpty()) {
+                return 0; // Không có đánh giá
+            }
+
+            double totalStars = 0;
+            for (Review review : reviewList) {
+                totalStars += review.getDanhGia(); // Giả sử 'getRating()' trả về số sao của đánh giá
+            }
+
+            return totalStars / reviewList.size(); // Tính trung bình
+        }
+
         private void loadReviewsByProduct() {
          Call<Response<ArrayList<Review>>> call = apiService.getReviewsByProduct(maSP);
          call.enqueue(new Callback<Response<ArrayList<Review>>>() {
@@ -262,6 +275,10 @@
                          reviewList.clear();
                          reviewList.addAll(data);
                          reviewAdapter.notifyDataSetChanged();
+
+                         double avgRating = calculateAverageRating();
+                         tvAverageRating.setText("Đánh giá trung bình: " + String.format("%.1f", avgRating));
+
                      } else {
                          Log.d("API Response", "No reviews available");
                          Toast.makeText(Activity_ChiTietSP.this, "No reviews found for this product.", Toast.LENGTH_SHORT).show();
