@@ -18,8 +18,8 @@ const updateOrderList = async (id, TrangThai) => {
     return response.data; // Trả về đơn hàng đã được cập nhật
   } catch (error) {
     console.error(
-      "Lỗi khi cập nhật trạng thái đơn hàng:",
-      error.response || error
+        "Lỗi khi cập nhật trạng thái đơn hàng:",
+        error.response || error
     );
     throw error; // Ném lỗi để xử lý tiếp
   }
@@ -44,12 +44,12 @@ const totalOrdersQuantity = async () => {
   }
 };
 
-const totalOrdersRevenue = async (start, end) => {
+const getRevenueStatistics = async (start, end) => {
   try {
     const response = await axios.get("/order/revenue-statistics", {
       params: { start, end }, // Truyền tham số start và end
     });
-    return response.data.data.totalRevenue;
+    return response.data.data;
   } catch (error) {
     console.error("Lỗi khi lấy tổng doanh thu đơn hàng:", error);
     throw error;
@@ -64,11 +64,12 @@ const RevenueTotal = async () => {
     throw error;
   }
 };
+
 export {
   getListOrders,
   updateOrderList,
   totalOrders,
   totalOrdersQuantity,
-  totalOrdersRevenue,
+  getRevenueStatistics,
   RevenueTotal,
 };
