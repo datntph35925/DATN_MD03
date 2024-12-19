@@ -5,7 +5,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Patterns;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,115 +38,136 @@ public class DangNhap extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Kiểm tra trạng thái đăng nhập khi mở ứng dụng
         sharedPreferences = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
-        boolean isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false); // Kiểm tra trạng thái đăng nhập
+        boolean isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false);
 
         if (isLoggedIn) {
-            // Nếu đã đăng nhập, chuyển sang trang chủ
-            Intent intent = new Intent(DangNhap.this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK); // Xóa ngăn xếp
-            startActivity(intent);
-            finish(); // Đảm bảo không quay lại màn hình đăng nhập
+            navigateToMainActivity();
         } else {
-            // Nếu chưa đăng nhập, hiển thị màn hình đăng nhập
             setContentView(R.layout.activity_dang_nhap);
+            initializeViews();
+            setupListeners();
+            setupUI(findViewById(R.id.main)); // ID của layout cha
+        }
+    }
 
-            // Khởi tạo các phần tử giao diện
-            editTextEmail = findViewById(R.id.editTextMail);
-            editTextPassword = findViewById(R.id.editTextPassword);
-            btnDangKy = findViewById(R.id.btnDangKy);
-            btnDangNhap = findViewById(R.id.btnDangNhap);
-            textviewQMK = findViewById(R.id.textviewQMK);
+    private void initializeViews() {
+        editTextEmail = findViewById(R.id.editTextMail);
+        editTextPassword = findViewById(R.id.editTextPassword);
+        btnDangKy = findViewById(R.id.btnDangKy);
+        btnDangNhap = findViewById(R.id.btnDangNhap);
+        textviewQMK = findViewById(R.id.textviewQMK);
+        apiService = RetrofitClient.getClient().create(ApiService.class);
+    }
 
-            // Khởi tạo ApiService
-            apiService = RetrofitClient.getClient().create(ApiService.class);
+    private void setupListeners() {
+        btnDangKy.setOnClickListener(view -> startActivity(new Intent(DangNhap.this, DangKy.class)));
 
-            // Xử lý sự kiện khi bấm vào nút Đăng Ký
-            btnDangKy.setOnClickListener(view -> {
-                Intent intent = new Intent(DangNhap.this, DangKy.class);
-                startActivity(intent);
-            });
+        textviewQMK.setOnClickListener(view -> startActivity(new Intent(DangNhap.this, Activity_QuenMatKhau.class)));
 
-            // Xử lý sự kiện khi bấm vào TextView Quên Mật Khẩu
-            textviewQMK.setOnClickListener(view -> {
-                Intent intent = new Intent(DangNhap.this, Activity_QuenMatKhau.class);
-                startActivity(intent);
-            });
+        btnDangNhap.setOnClickListener(view -> {
+            String email = editTextEmail.getText().toString().trim();
+            String password = editTextPassword.getText().toString().trim();
 
-            // Xử lý sự kiện khi bấm vào nút Đăng Nhập
-            btnDangNhap.setOnClickListener(view -> {
-                String email = editTextEmail.getText().toString().trim();
-                String password = editTextPassword.getText().toString().trim();
+            if (!validateInputs(email, password)) return;
 
-                Boolean isValid = true;
-                // Kiểm tra email
-                if (email.isEmpty()) {
-                    editTextEmail.setError("Vui lòng nhập email!");
-                    isValid = false;
-                } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    editTextEmail.setError("Email không hợp lệ!");
-                    isValid = false;
-                }
+            CustomerAccount account = new CustomerAccount.Builder()
+                    .setTentaikhoan(email)
+                    .setMatkhau(password)
+                    .build();
 
-                // Kiểm tra mật khẩu
-                if (password.isEmpty()) {
-                    editTextPassword.setError("Vui lòng nhập mật khẩu!");
-                    isValid = false;
-                } else if (password.length() < 6) {
-                    editTextPassword.setError("Mật khẩu phải có ít nhất 6 ký tự!");
-                    isValid = false;
-                }
+            performLogin(account);
+        });
+    }
 
-                // Nếu không hợp lệ, thoát ra
-                if (!isValid) {
-                    return;
-                }
-
-                // Chuẩn bị dữ liệu đăng nhập
-                CustomerAccount account = new CustomerAccount.Builder()
-                        .setTentaikhoan(email)
-                        .setMatkhau(password)
-                        .build();
-
-                // Gọi API để đăng nhập
-                apiService.login(account).enqueue(new Callback<ApiResponse>() {
-                    @Override
-                    public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            // Đăng nhập thành công
-                            Toast.makeText(DangNhap.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-
-                            // Lưu thông tin tài khoản và trạng thái đăng nhập vào SharedPreferences
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString("Tentaikhoan", email); // Lưu email vào SharedPreferences
-                            editor.putString("matkhau", password); // Lưu mật khẩu vào SharedPreferences
-                            editor.putBoolean("is_logged_in", true); // Lưu trạng thái đăng nhập
-                            editor.apply();
-
-                            // Chuyển sang MainActivity (Trang chủ)
-                            Intent intent = new Intent(DangNhap.this, MainActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK); // Xóa ngăn xếp
-                            startActivity(intent);
-                            finish(); // Đảm bảo không quay lại màn hình đăng nhập
-                        } else {
-                            // Đăng nhập thất bại
-                            Toast.makeText(DangNhap.this, "Đăng nhập thất bại. Vui lòng thử lại!", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ApiResponse> call, Throwable t) {
-                        // Lỗi kết nối
-                        Toast.makeText(DangNhap.this, "Lỗi kết nối. Vui lòng thử lại!", Toast.LENGTH_SHORT).show();
-                    }
-                });
+    private void setupUI(View view) {
+        // Thiết lập ẩn bàn phím khi nhấn ra ngoài
+        if (!(view instanceof EditText)) {
+            view.setOnTouchListener((v, event) -> {
+                hideKeyboard();
+                return false;
             });
         }
+
+        // Nếu là ViewGroup, lặp qua các con của nó
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                View innerView = ((ViewGroup) view).getChildAt(i);
+                setupUI(innerView);
+            }
+        }
+    }
+
+    private boolean validateInputs(String email, String password) {
+        boolean isValid = true;
+
+        if (email.isEmpty()) {
+            editTextEmail.setError("Vui lòng nhập email!");
+            isValid = false;
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            editTextEmail.setError("Email không hợp lệ!");
+            isValid = false;
+        }
+
+        if (password.isEmpty()) {
+            editTextPassword.setError("Vui lòng nhập mật khẩu!");
+            isValid = false;
+        } else if (password.length() < 6) {
+            editTextPassword.setError("Mật khẩu phải có ít nhất 6 ký tự!");
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    private void performLogin(CustomerAccount account) {
+        apiService.login(account).enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    handleLoginSuccess(account.getTentaikhoan(), account.getMatkhau());
+                } else {
+                    Toast.makeText(DangNhap.this, "Đăng nhập thất bại. Vui lòng thử lại!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse> call, Throwable t) {
+                Toast.makeText(DangNhap.this, "Lỗi kết nối. Vui lòng thử lại!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void handleLoginSuccess(String email, String password) {
+        Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("Tentaikhoan", email);
+        editor.putString("matkhau", password);
+        editor.putBoolean("is_logged_in", true);
+        editor.apply();
+
+        navigateToMainActivity();
+    }
+
+    private void navigateToMainActivity() {
+        Intent intent = new Intent(DangNhap.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
     @Override
     public void onBackPressed() {
-        // Không làm gì, ngăn không cho quay lại màn hình trước
+        // Ngăn không cho quay lại màn hình trước
+    }
+
+    private void hideKeyboard() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            view.clearFocus(); // Xóa tiêu điểm khỏi EditText
+        }
     }
 }

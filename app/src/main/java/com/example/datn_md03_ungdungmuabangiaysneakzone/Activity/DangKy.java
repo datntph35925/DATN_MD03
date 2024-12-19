@@ -4,6 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -42,6 +46,9 @@ public class DangKy extends AppCompatActivity {
 
         // Khởi tạo ApiService
         apiService = RetrofitClient.getClient().create(ApiService.class);
+
+        // Thiết lập để ẩn bàn phím khi nhấn ra ngoài
+        setupUI(findViewById(R.id.main)); // ID của ConstraintLayout gốc
 
         // Kiểm tra và điền lại thông tin nếu có
         Intent intent = getIntent();
@@ -144,6 +151,32 @@ public class DangKy extends AppCompatActivity {
         backButton.setOnClickListener(view -> {
             startActivity(new Intent(DangKy.this, DangNhap.class));
         });
+    }
+
+    private void setupUI(View view) {
+        // Thiết lập ẩn bàn phím khi nhấn ra ngoài
+        if (!(view instanceof EditText)) {
+            view.setOnTouchListener((v, event) -> {
+                hideKeyboard();
+                return false;
+            });
+        }
+
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                View innerView = ((ViewGroup) view).getChildAt(i);
+                setupUI(innerView);
+            }
+        }
+    }
+
+    private void hideKeyboard() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            view.clearFocus(); // Xóa tiêu điểm khỏi EditText
+        }
     }
 
     @Override
