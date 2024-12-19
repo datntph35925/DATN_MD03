@@ -30,6 +30,7 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Order;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ProductItemCart;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.RemoveItemsRequest;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -61,7 +62,7 @@ public class Activity_ThanhToan extends AppCompatActivity {
     private Button btnXoaVoucher;
 
     String maVoucher;
-
+//6
     private double originalTotalCost;  // Lưu tổng tiền ban đầu của giỏ hàng
     private String voucherType; // Loại voucher (Giảm giá theo % hoặc Giảm giá cố định)
     private double voucherValue; // Giá trị voucher (số tiền hoặc phần trăm)
@@ -141,7 +142,9 @@ public class Activity_ThanhToan extends AppCompatActivity {
             }
             originalTotalCost = totalCost;  // Lưu tổng tiền ban đầu
 
-            tvTotalCost.setText(String.format("%.2f", totalCost));
+            DecimalFormat decimalFormat = new DecimalFormat("#,###"); // Format with commas for thousands
+            String formattedTotalCost = decimalFormat.format(totalCost); // Format the total cost
+            tvTotalCost.setText(formattedTotalCost + "");
         }
 
         btnOrder.setOnClickListener(new View.OnClickListener() {
@@ -183,7 +186,9 @@ public class Activity_ThanhToan extends AppCompatActivity {
 
         // Thêm email vào order
         order.setTentaikhoan(email);
-        double totalCost = Double.parseDouble(tvTotalCost.getText().toString().replace("$", "").trim());
+        String totalPriceText = tvTotalCost.getText().toString().replace(",", "").replace(".", "").trim();
+        double totalCost = Double.parseDouble(totalPriceText);
+
         order.setTongTien(totalCost);
 
         if (tvPayMent.getText().toString().equals("Thanh toán qua ngân hàng")) {
@@ -243,7 +248,8 @@ public class Activity_ThanhToan extends AppCompatActivity {
         order.setMaDonHang(result);
 
         // Lấy tổng tiền sau khi áp dụng voucher
-        double finalTotalPrice = Double.parseDouble(tvTotalCost.getText().toString());
+        String totalPriceText = tvTotalCost.getText().toString().replace(",", "").replace(".", "").trim();        double finalTotalPrice = Double.parseDouble(totalPriceText);
+        
         order.setTongTien(finalTotalPrice);  // Cập nhật tổng tiền vào đơn hàng
 
 
@@ -389,7 +395,9 @@ public class Activity_ThanhToan extends AppCompatActivity {
         double totalCost = originalTotalCost;  // Lấy tổng tiền ban đầu
 
         // Cập nhật lại giao diện
-        tvTotalCost.setText(String.format("%.2f", totalCost));  // Hiển thị tổng tiền ban đầu
+        DecimalFormat decimalFormat = new DecimalFormat("#,###"); // Format with commas for thousands
+        String formattedTotalCost = decimalFormat.format(totalCost); // Format the total cost
+        tvTotalCost.setText(formattedTotalCost + "");  // Hiển thị tổng tiền ban đầu
         Toast.makeText(Activity_ThanhToan.this, "Voucher đã được xóa. Tổng tiền đã khôi phục!", Toast.LENGTH_SHORT).show();
     }
 
@@ -406,7 +414,9 @@ public class Activity_ThanhToan extends AppCompatActivity {
         totalCost = Math.max(0, totalCost);
 
         // Cập nhật tổng tiền mới lên giao diện
-        tvTotalCost.setText(String.format("%.2f", totalCost));
+        DecimalFormat decimalFormat = new DecimalFormat("#,###"); // Format with commas for thousands
+        String formattedTotalCost = decimalFormat.format(totalCost); // Format the total cost
+        tvTotalCost.setText(formattedTotalCost + "");
     }
 
     private void poppuGetListPayment() {

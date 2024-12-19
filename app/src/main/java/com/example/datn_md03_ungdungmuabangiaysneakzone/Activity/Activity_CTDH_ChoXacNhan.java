@@ -25,6 +25,7 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ProductItemCart;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Response;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.UpdateStatusRequest;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import retrofit2.Call;
@@ -134,7 +135,9 @@ public class Activity_CTDH_ChoXacNhan extends AppCompatActivity {
         tvPhone.setText(phone);
         tvPayMent.setText(payMent);
         tvTT.setText(tt);
-        tvTCP.setText(String.format("%.2f", tcp));
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        String formattedPrice = decimalFormat.format(tcp);
+        tvTCP.setText(formattedPrice + " VNĐ");
 
         // Lấy danh sách sản phẩm từ Intent
         sanPhamList = new ArrayList<>();

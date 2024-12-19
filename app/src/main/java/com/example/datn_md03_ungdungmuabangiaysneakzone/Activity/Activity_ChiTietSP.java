@@ -42,6 +42,7 @@
     import com.example.datn_md03_ungdungmuabangiaysneakzone.model.Review;
 
     import java.io.Serializable;
+    import java.text.DecimalFormat;
     import java.util.ArrayList;
     import java.util.Collections;
     import java.util.List;
@@ -95,7 +96,7 @@
                 v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
                 return insets;
             });
-
+//5
             apiService = RetrofitClient.getClient().create(ApiService.class);
             Intent i = getIntent();
             maSP =i.getStringExtra("id");
@@ -138,7 +139,9 @@
 
 
             tvName.setText(tenSP);
-            tvGia.setText(giaSP + "VNĐ");
+            DecimalFormat decimalFormat = new DecimalFormat("#,###");
+            String formattedPrice = decimalFormat.format(giaSP);
+            tvGia.setText(formattedPrice + " VNĐ");
             tvMoTa.setText(moTa);
 
             kichThuocArrayList = new ArrayList();

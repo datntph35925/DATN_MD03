@@ -50,7 +50,7 @@
             android:id="@+id/cart_item_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="$64.95"
+            android:text="64.000VNĐ"
             android:textColor="@android:color/darker_gray"
             android:textSize="14sp" />
 

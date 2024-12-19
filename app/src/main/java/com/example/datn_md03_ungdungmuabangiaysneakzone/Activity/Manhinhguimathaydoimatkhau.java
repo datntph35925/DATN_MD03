@@ -100,7 +100,7 @@ public class Manhinhguimathaydoimatkhau extends AppCompatActivity {
                     startActivity(intent);
                 } else {
                     Log.e("API Response", "Lỗi: " + response.message());
-                    Toast.makeText(Manhinhguimathaydoimatkhau.this, "Lỗi: Không thể gửi mã xác thực.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Manhinhguimathaydoimatkhau.this, "Không thể vào màn xác thực vì mã vẫn tồn tại, vui lòng thử lại sau !", Toast.LENGTH_SHORT).show();
                 }
             }
 

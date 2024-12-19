@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activity.Activity_ThanhToan"
-    android:layout_marginTop="20dp"
+
     android:background="@color/white"
     >
 
@@ -17,6 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:layout_marginTop="40dp"
             android:padding="24dp">
             <LinearLayout
                 android:layout_width="match_parent"
@@ -47,7 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/txtV"
-                android:text="Order Summary"
+                android:text="Tóm tắt đơn hàng"
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 android:textSize="18sp"
@@ -63,7 +64,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/txt0"
-                    android:text="Your amount"
+                    android:text="Mệnh giá"
                     style="@style/textStyle"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"/>
@@ -74,7 +75,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/txt0"
                     style="@style/textStyle"
-                    android:text="VND"/>
+                    android:text="VNĐ"/>
                 <View
                     android:layout_width="wrap_content"
                     android:layout_height="1dp"
@@ -85,53 +86,21 @@
                     app:layout_constraintEnd_toEndOf="@id/txtMoney"
                     app:layout_constraintStart_toStartOf="@id/txt0"
                     />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/txt1"
-                    android:text="Subtotal"
-                    style="@style/textStyle"
-                    app:layout_constraintStart_toStartOf="@+id/txt0"
-                    app:layout_constraintTop_toBottomOf="@id/View1"/>/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/txtSubtotal"
-                    app:layout_constraintEnd_toEndOf="@id/txtMoney"
-                    app:layout_constraintTop_toTopOf="@id/View1"
-                    style="@style/textStyle"
-                    android:text="10$"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/txt3"
-                    style="@style/textStyle"
-                    android:text="Delivery"
-                    app:layout_constraintStart_toStartOf="@+id/txt1"
-                    android:layout_marginTop="8dp"
-                    app:layout_constraintTop_toBottomOf="@id/txt1"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/txtDelivery"
-                    app:layout_constraintEnd_toEndOf="@id/txtSubtotal"
-                    app:layout_constraintTop_toTopOf="@id/txt3"
-                    style="@style/textStyle"
-                    android:text="5000 VND"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/txt5"
                     style="@style/textStyle"
                     android:text="Voucher"
-                    app:layout_constraintStart_toStartOf="@+id/txt3"
+                    app:layout_constraintStart_toStartOf="@+id/txt0"
                     android:layout_marginTop="8dp"
-                    app:layout_constraintTop_toBottomOf="@id/txt3"/>
+                    app:layout_constraintTop_toBottomOf="@id/View1"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/txtTax"
-                    app:layout_constraintEnd_toEndOf="@id/txtDelivery"
+                    app:layout_constraintEnd_toEndOf="@id/txtMoney"
                     app:layout_constraintTop_toTopOf="@id/txt5"
                     style="@style/textStyle"
                     android:text="0"/>
@@ -150,7 +119,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/txt7"
                     style="@style/textStyleBold"
-                    android:text="Total"
+                    android:text="Tổng tiền"
                     app:layout_constraintStart_toStartOf="@+id/txt5"
                     android:layout_marginTop="8dp"
                     app:layout_constraintTop_toBottomOf="@id/View"/>
@@ -170,7 +139,7 @@
                     app:layout_constraintEnd_toEndOf="@id/txtTax"
                     app:layout_constraintTop_toTopOf="@id/txt7"
                     style="@style/textStyleBold"
-                    android:text="VND"/>
+                    android:text="VNĐ"/>
 
                 <EditText
                     android:id="@+id/edtVoicher"
@@ -222,7 +191,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"
-                android:text="Infomation"
+                android:text="Thông tin"
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -237,7 +206,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/txtA"
-                    android:text="Your Address"
+                    android:text="Địa chỉ của bạn"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"/>
                 <LinearLayout
@@ -297,7 +266,7 @@
                             android:layout_height="wrap_content"
                             android:id="@+id/txtAddress"
                             android:layout_marginStart="8dp"
-                            android:text="Enter your address"
+                            android:text="Thêm địa chỉ của bạn"
                             style="@style/textStyleBold"
                             />
                         <TextView
@@ -324,7 +293,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/txtB"
-                    android:text="Payment Method"
+                    android:text="Phương thức thanh toán"
                     android:layout_marginTop="8dp"
                     />
                 <LinearLayout
@@ -345,7 +314,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/txtPayment"
                         android:layout_marginStart="8dp"
-                        android:text="Phương thức thanh toán"
+                        android:text="Thanh toán bằng phương thức"
                         style="@style/textStyleBold"
                         app:layout_constraintBottom_toBottomOf="@id/imgPayment"
                         app:layout_constraintStart_toEndOf="@id/imgPayment"
@@ -362,7 +331,7 @@
             <androidx.appcompat.widget.AppCompatButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Order Now"
+            android:text="Mua Ngay"
             android:textSize="16sp"
             android:textColor="@color/white"
             android:id="@+id/btnOrder"

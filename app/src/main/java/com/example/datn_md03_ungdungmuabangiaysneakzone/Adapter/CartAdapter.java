@@ -18,6 +18,7 @@ import com.example.datn_md03_ungdungmuabangiaysneakzone.Domain.SanPham;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.R;
 import com.example.datn_md03_ungdungmuabangiaysneakzone.model.ProductItemCart;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -47,7 +48,10 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         ProductItemCart item = cartItems.get(position);
 
         holder.cartItemName.setText(item.getTenSP());
-        holder.cartItemPrice.setText("VND" + item.getGia());
+        //1
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        String formattedPrice = decimalFormat.format(item.getGia());
+        holder.cartItemPrice.setText( formattedPrice + " VNĐ");
         holder.cartItemQuantity.setText(String.valueOf(item.getSoLuongGioHang()));
         holder.cartItemSize.setText(String.valueOf(item.getSize()));
 
@@ -125,7 +129,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
     @Override
     public int getItemCount() {
-        return cartItems.size();
+        return cartItems != null ? cartItems.size():0;
     }
 
     public static class CartViewHolder extends RecyclerView.ViewHolder {
