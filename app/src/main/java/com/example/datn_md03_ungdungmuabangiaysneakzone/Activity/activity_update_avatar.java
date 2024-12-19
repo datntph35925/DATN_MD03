@@ -120,10 +120,10 @@ public class activity_update_avatar extends AppCompatActivity {
                         Glide.with(activity_update_avatar.this)
                                 .load(fullUrl)
                                 .placeholder(R.drawable.anh1) // Đặt ảnh mặc định khi tải
-                                .error(R.drawable.anh1) // Đặt ảnh mặc định khi có lỗi
+                                .error(R.drawable.btn_4) // Đặt ảnh mặc định khi có lỗi
                                 .into(imgAvatar);
                     } else {
-                        imgAvatar.setImageResource(R.drawable.anh1); // Đặt ảnh mặc định nếu URL trống
+                        imgAvatar.setImageResource(R.drawable.btn_4); // Đặt ảnh mặc định nếu URL trống
                     }
                 } else {
                     Toast.makeText(activity_update_avatar.this, "Lỗi khi tải ảnh từ server", Toast.LENGTH_SHORT).show();

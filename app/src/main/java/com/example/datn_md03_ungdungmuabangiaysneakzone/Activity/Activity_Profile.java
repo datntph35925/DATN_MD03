@@ -106,11 +106,11 @@ public class Activity_Profile extends AppCompatActivity {
                         String imageUrl = "http://160.191.50.148:3000/" + avatarUrl;
                         Glide.with(Activity_Profile.this)
                                 .load(imageUrl)
-                                .placeholder(R.drawable.anh1) // Ảnh mặc định khi đang tải
-                                .error(R.drawable.anh1)       // Ảnh lỗi khi tải thất bại
+                                .placeholder(R.drawable.btn_4) // Ảnh mặc định khi đang tải
+                                .error(R.drawable.btn_4)       // Ảnh lỗi khi tải thất bại
                                 .into(imgAvatarProfile);
                     } else {
-                        imgAvatarProfile.setImageResource(R.drawable.anh1);
+                        imgAvatarProfile.setImageResource(R.drawable.btn_4);
                     }
 
                     Log.d(TAG, "Thông tin tài khoản đã được hiển thị thành công.");
