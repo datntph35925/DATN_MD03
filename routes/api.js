@@ -315,7 +315,7 @@ router.post('/check-upload', upload.single('image'), async (req, res) => {
 
 router.get('/search-product', async (req, res) => {
   try {
-    const { name } = req.body; // Lấy từ khóa từ query string
+    const { name } = req.query; // Lấy từ khóa từ query string
 
     if (!name || name.trim() === '') {
       return res.status(400).json({
