@@ -71,6 +71,9 @@ public class Activity_QuenMatKhau extends AppCompatActivity {
             public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Toast.makeText(Activity_QuenMatKhau.this, "Yêu cầu quên mật khẩu đã được gửi", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(Activity_QuenMatKhau.this, DangNhap.class);
+                    startActivity(intent);
+                   finish(); // Kết thúc Activity hiện tại nếu muốn
                 } else {
                     String errorMessage = "Gửi yêu cầu thất bại: " + response.code() + " - " + response.message();
                     Toast.makeText(Activity_QuenMatKhau.this, errorMessage, Toast.LENGTH_SHORT).show();
