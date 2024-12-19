@@ -447,11 +447,8 @@ router.post('/reset-password', async (req, res) => {
         const decoded = jwt.verify(token, 'namanhdepzaivippromax2604@#!%');
         const userId = decoded.id;
 
-        // Mã hóa mật khẩu mới
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-        // Cập nhật mật khẩu trong cơ sở dữ liệu
-        await CustomerAccounts.findByIdAndUpdate(userId, { Matkhau: hashedPassword });
+        // Lưu mật khẩu thô vào cơ sở dữ liệu
+        await CustomerAccounts.findByIdAndUpdate(userId, { Matkhau: newPassword });
 
         res.status(200).json({ message: 'Mật khẩu đã được đặt lại thành công' });
     } catch (error) {
@@ -465,6 +462,7 @@ router.post('/reset-password', async (req, res) => {
         }
     }
 });
+
 // Route gửi mã xác thực
 router.post('/ma-xac-thuc', async (req, res) => {
     const { Tentaikhoan } = req.body;
