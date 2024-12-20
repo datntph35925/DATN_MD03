@@ -77,12 +77,12 @@ public class Activity_ShowList_Voucher extends AppCompatActivity {
                     voucherList = new ArrayList<>();
                     for (Voucher voucher : allVouchers) {
                         List<String> usedByList = voucher.getUsedBy();
-
+                        String trangThai = voucher.getTrangThai();
                         Log.d("VoucherFilter", "usedByList: " + usedByList + ", CurrentUser: " + currentUserId);
 
                         // So sánh có xử lý khoảng trắng và không phân biệt hoa thường
                         if (usedByList == null || usedByList.isEmpty() ||
-                                !containsIgnoreCase(usedByList, currentUserId.trim().toLowerCase())) {
+                                !containsIgnoreCase(usedByList, currentUserId.trim().toLowerCase()) && !"Không thể sử dụng".equalsIgnoreCase(trangThai)) {
                             voucherList.add(voucher); // Thêm voucher nếu currentUserId không tồn tại trong usedBy
                         }
                     }

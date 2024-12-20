@@ -72,18 +72,22 @@ public class Activity_Voucher extends AppCompatActivity {
 
                   // Debug dữ liệu từng voucher để kiểm tra giá trị usedBy
                   for (Voucher voucher : allVouchers) {
-                      Log.d("VoucherDebug", "Mã Voucher: " + voucher.getMaVoucher() + ", UsedBy: " + voucher.getUsedBy());
+                      Log.d("VoucherDebug", "Mã Voucher: " + voucher.getMaVoucher() +
+                              ", UsedBy: " + voucher.getUsedBy() +
+                              ", TrangThai: " + voucher.getTrangThai());
                   }
+
+
                   // Lọc danh sách voucher: loại bỏ những voucher đã sử dụng bởi currentUserId
                   voucherList = new ArrayList<>();
                   for (Voucher voucher : allVouchers) {
                       List<String> usedByList = voucher.getUsedBy();
-
+                      String trangThai = voucher.getTrangThai();
                       Log.d("VoucherFilter", "usedByList: " + usedByList + ", CurrentUser: " + currentUserId);
 
                       // So sánh có xử lý khoảng trắng và không phân biệt hoa thường
                       if (usedByList == null || usedByList.isEmpty() ||
-                              !containsIgnoreCase(usedByList, currentUserId.trim().toLowerCase())) {
+                              !containsIgnoreCase(usedByList, currentUserId.trim().toLowerCase()) && !"Không thể sử dụng".equalsIgnoreCase(trangThai)) {
                           voucherList.add(voucher); // Thêm voucher nếu currentUserId không tồn tại trong usedBy
                       }
                   }
