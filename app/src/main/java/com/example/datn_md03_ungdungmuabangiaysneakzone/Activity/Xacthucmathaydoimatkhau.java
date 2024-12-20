@@ -2,7 +2,9 @@ package com.example.datn_md03_ungdungmuabangiaysneakzone.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -43,7 +45,7 @@ public class Xacthucmathaydoimatkhau extends AppCompatActivity {
         edtCode5 = findViewById(R.id.edtVerificationCode5);
         edtCode6 = findViewById(R.id.edtVerificationCode6);
         btnConfirm = findViewById(R.id.btnConfirm);
-        tvResendCode = findViewById(R.id.tvResendCode);
+//        tvResendCode = findViewById(R.id.tvResendCode);
         tvEmail = findViewById(R.id.tvEmail);
         ImageButton btnback = findViewById(R.id.btnBack);
         btnback.setOnClickListener(new View.OnClickListener() {
@@ -71,9 +73,39 @@ public class Xacthucmathaydoimatkhau extends AppCompatActivity {
                 Toast.makeText(this, "Vui lòng nhập đủ 6 số của mã xác thực", Toast.LENGTH_SHORT).show();
             }
         });
+        // Thiết lập tự động chuyển focus giữa các ô nhập mã
+        setupEditTextFocusHandling();
 
         // Xử lý sự kiện khi nhấn "Gửi lại mã"
-        tvResendCode.setOnClickListener(v -> resendCode());
+//        tvResendCode.setOnClickListener(v -> resendCode());
+    }
+    private void setupEditTextFocusHandling() {
+        EditText[] editTexts = {
+                edtCode1, edtCode2, edtCode3,
+                edtCode4, edtCode5, edtCode6
+        };
+
+        for (int i = 0; i < editTexts.length; i++) {
+            int currentIndex = i;
+            editTexts[i].addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    if (s.length() == 1 && currentIndex < editTexts.length - 1) {
+                        // Chuyển sang ô tiếp theo
+                        editTexts[currentIndex + 1].requestFocus();
+                    } else if (s.length() == 0 && currentIndex > 0) {
+                        // Quay lại ô trước nếu xóa
+                        editTexts[currentIndex - 1].requestFocus();
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {}
+            });
+        }
     }
 
     // Lấy mã xác thực từ các ô nhập liệu

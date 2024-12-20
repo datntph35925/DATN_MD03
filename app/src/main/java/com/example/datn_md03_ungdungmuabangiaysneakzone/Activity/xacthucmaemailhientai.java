@@ -47,7 +47,7 @@ public class xacthucmaemailhientai extends AppCompatActivity {
         edtVerificationCode5 = findViewById(R.id.edtVerificationCode5);
         edtVerificationCode6 = findViewById(R.id.edtVerificationCode6);
         btnConfirm = findViewById(R.id.btnConfirm);
-        tvResendCode = findViewById(R.id.tvResendCode);
+//        tvResendCode = findViewById(R.id.tvResendCode);
         tvEmail = findViewById(R.id.tvEmail);
 
         ImageButton btnback = findViewById(R.id.btnBack);
@@ -75,8 +75,8 @@ public class xacthucmaemailhientai extends AppCompatActivity {
         // Xử lý khi nhấn nút "Xác nhận"
         btnConfirm.setOnClickListener(view -> verifyEmailCode());
 
-        // Xử lý khi nhấn nút "Gửi lại bây giờ"
-        tvResendCode.setOnClickListener(view -> resendVerificationCode());
+//        // Xử lý khi nhấn nút "Gửi lại bây giờ"
+//        tvResendCode.setOnClickListener(view -> resendVerificationCode());
     }
 
     private void setupEditTextFocusHandling() {
@@ -181,5 +181,9 @@ public class xacthucmaemailhientai extends AppCompatActivity {
                 Toast.makeText(xacthucmaemailhientai.this, "Lỗi mạng: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    @Override
+    public void onBackPressed() {
+        // Không làm gì, ngăn không cho quay lại màn hình trước
     }
 }

@@ -12,16 +12,18 @@
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="160dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="190dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="100dp"
         android:background="@drawable/background_menu"
         android:elevation="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
         <TextView
             android:id="@+id/tvTitle"
@@ -29,9 +31,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="Thông tin cá nhân"
+            android:textColor="#000000"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:textColor="#000000"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -40,10 +42,11 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginStart="24dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="32dp"
-            android:layout_marginTop="10dp"
             android:orientation="vertical"
+            android:padding="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -64,7 +67,7 @@
                     android:layout_marginStart="8dp"
                     android:text="Thay đổi và cập nhật ảnh đại diện của bạn."
                     android:textColor="#000000"
-                    android:textSize="12sp"
+                    android:textSize="10sp"
                     app:layout_constraintBottom_toBottomOf="@id/ivProfileImage"
                     app:layout_constraintStart_toEndOf="@id/ivProfileImage"
                     app:layout_constraintTop_toTopOf="@id/ivProfileImage"
@@ -72,8 +75,8 @@
 
                 <ImageView
                     android:id="@+id/ivProfileImage"
-                    android:layout_width="55dp"
-                    android:layout_height="55dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -87,19 +90,19 @@
                     android:layout_marginTop="8dp"
                     android:text="Cập nhật ảnh đại diện"
                     android:textColor="#000000"
-                    android:textSize="16sp"
+                    android:textSize="12sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toEndOf="@id/ivProfileImage"
                     app:layout_constraintTop_toTopOf="@id/ivProfileImage" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/btnName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
                 android:background="@drawable/item_background"
-                android:id="@+id/btnName"
                 android:elevation="3dp">
 
                 <TextView
@@ -109,7 +112,7 @@
                     android:layout_marginStart="8dp"
                     android:text="Chỉnh sửa và cập nhật thông tin họ và tên."
                     android:textColor="#000000"
-                    android:textSize="12sp"
+                    android:textSize="10sp"
                     app:layout_constraintBottom_toBottomOf="@id/ivNameIcon"
                     app:layout_constraintStart_toEndOf="@id/ivNameIcon"
                     app:layout_constraintTop_toTopOf="@id/ivNameIcon"
@@ -117,8 +120,8 @@
 
                 <ImageView
                     android:id="@+id/ivNameIcon"
-                    android:layout_width="55dp"
-                    android:layout_height="55dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -132,19 +135,19 @@
                     android:layout_marginTop="8dp"
                     android:text="Cập nhật họ tên"
                     android:textColor="#000000"
-                    android:textSize="16sp"
+                    android:textSize="12sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toEndOf="@id/ivNameIcon"
                     app:layout_constraintTop_toTopOf="@id/ivNameIcon" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/btnEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
                 android:background="@drawable/item_background"
-                android:id="@+id/btnEmail"
                 android:elevation="3dp">
 
                 <TextView
@@ -152,9 +155,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
+                    android:layout_marginTop="10dp"
                     android:text="Thay đổi và cập nhật địa chỉ email của bạn."
                     android:textColor="#000000"
-                    android:textSize="12sp"
+                    android:textSize="10sp"
                     app:layout_constraintBottom_toBottomOf="@id/ivEmailIcon"
                     app:layout_constraintStart_toEndOf="@id/ivEmailIcon"
                     app:layout_constraintTop_toTopOf="@id/ivEmailIcon"
@@ -162,8 +166,8 @@
 
                 <ImageView
                     android:id="@+id/ivEmailIcon"
-                    android:layout_width="55dp"
-                    android:layout_height="55dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -177,19 +181,19 @@
                     android:layout_marginTop="8dp"
                     android:text="Cập nhật email"
                     android:textColor="#000000"
-                    android:textSize="16sp"
+                    android:textSize="12sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toEndOf="@id/ivEmailIcon"
                     app:layout_constraintTop_toTopOf="@id/ivEmailIcon" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cvChangePass"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
                 android:background="@drawable/item_background"
-                android:id="@+id/cvChangePass"
                 android:elevation="3dp">
 
                 <TextView
@@ -199,7 +203,7 @@
                     android:layout_marginStart="8dp"
                     android:text="Đổi mật khẩu tài khoản để bảo mật tốt hơn."
                     android:textColor="#000000"
-                    android:textSize="12sp"
+                    android:textSize="10sp"
                     app:layout_constraintBottom_toBottomOf="@id/ivPasswordIcon"
                     app:layout_constraintStart_toEndOf="@id/ivPasswordIcon"
                     app:layout_constraintTop_toTopOf="@id/ivPasswordIcon"
@@ -207,8 +211,8 @@
 
                 <ImageView
                     android:id="@+id/ivPasswordIcon"
-                    android:layout_width="55dp"
-                    android:layout_height="55dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -222,7 +226,7 @@
                     android:layout_marginTop="8dp"
                     android:text="Thay đổi mật khẩu"
                     android:textColor="#000000"
-                    android:textSize="16sp"
+                    android:textSize="12sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toEndOf="@id/ivPasswordIcon"
                     app:layout_constraintTop_toTopOf="@id/ivPasswordIcon" />

@@ -67,7 +67,9 @@ public class xacthucemailmoi extends AppCompatActivity {
 
         // Xử lý sự kiện khi nhấn "Thay đổi"
         btnChangeEmail.setOnClickListener(view -> verifyEmailCode());
+
     }
+
 
     private void verifyEmailCode() {
         // Ghép các mã xác thực từ các EditText
@@ -141,5 +143,9 @@ public class xacthucemailmoi extends AppCompatActivity {
                 public void afterTextChanged(Editable s) {}
             });
         }
+    }
+    @Override
+    public void onBackPressed() {
+        // Không làm gì, ngăn không cho quay lại màn hình trước
     }
 }
