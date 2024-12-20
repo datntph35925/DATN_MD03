@@ -64,6 +64,28 @@ const RevenueTotal = async () => {
     throw error;
   }
 };
+const getTopSellingProducts = async (startDate, endDate) => {
+  try {
+    // Gửi request đến endpoint backend với tham số thời gian (nếu có)
+    const response = await axios.get("/order/top-10-best-selling-products", {
+      params: { startDate, endDate }, // Truyền tham số startDate và endDate nếu có
+    });
+
+    // Kiểm tra phản hồi từ backend
+    if (response.status === 200 && response.data.status === 200) {
+      return response.data.data; // Trả về danh sách top sản phẩm bán chạy
+    } else {
+      console.error(
+          "Lỗi khi lấy top sản phẩm bán chạy:",
+          response.data.message
+      );
+      return []; // Trả về mảng rỗng nếu có lỗi
+    }
+  } catch (error) {
+    console.error("Lỗi khi gọi API lấy top 10 sản phẩm bán chạy:", error);
+    return []; // Trả về mảng rỗng nếu có lỗi
+  }
+};
 
 export {
   getListOrders,
@@ -72,4 +94,5 @@ export {
   totalOrdersQuantity,
   getRevenueStatistics,
   RevenueTotal,
+  getTopSellingProducts,
 };

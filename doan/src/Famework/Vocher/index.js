@@ -140,13 +140,13 @@ function VoucherList() {
           >
             Cập nhật
           </Button>
-          <Button
-            type="danger"
-            style={{ background: "#FF0000" }}
-            onClick={() => showDeleteConfirm(record._id)}
-          >
-            Xóa
-          </Button>
+          {/*<Button*/}
+          {/*  type="danger"*/}
+          {/*  style={{ background: "#FF0000" }}*/}
+          {/*  onClick={() => showDeleteConfirm(record._id)}*/}
+          {/*>*/}
+          {/*  Xóa*/}
+          {/*</Button>*/}
         </>
       ),
     },

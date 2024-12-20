@@ -226,9 +226,9 @@ const Products = () => {
             <Button type="link" onClick={() => showEditProductModal(record)}>
               Sửa
             </Button>
-            <Button type="link" onClick={() => handleDelete(record.key)} danger>
-              Xóa
-            </Button>
+            {/*<Button type="link" onClick={() => handleDelete(record.key)} danger>*/}
+            {/*  Xóa*/}
+            {/*</Button>*/}
           </>
       ),
     },

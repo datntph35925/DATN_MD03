@@ -8,7 +8,7 @@ import {
   ShoppingCartOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-
+import TopProducts from "../../Componer/TopProduct";
 import { getTotalAccounts } from "../../Server/Auth";
 import { totalListProducts } from "../../Server/ProductsApi";
 import {
@@ -132,6 +132,9 @@ const Dashboard = () => {
                 </Col>
             ))}
           </Row>
+        </div>
+        <div className="top-content">
+          <TopProducts />
         </div>
         <div className="bieudo">
           <ApexChart />

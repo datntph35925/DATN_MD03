@@ -7,7 +7,7 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     background-color: #ffffff;
-    height: 200px; // Ensures uniform card height
+    height: 200px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -58,6 +58,28 @@
           color: #40a9ff;
         }
       }
+    }
+  }
+
+  .top-content {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    overflow-x: auto;
+
+    h2 {
+      text-align: center;
+      font-size: 18px;
+      font-weight: 600;
+      color: #001529;
+      margin-bottom: 15px;
+    }
+
+    .ant-table {
+      border-radius: 10px;
     }
   }
 
