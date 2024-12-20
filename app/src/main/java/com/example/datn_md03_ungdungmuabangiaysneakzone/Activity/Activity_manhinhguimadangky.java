@@ -101,4 +101,8 @@ public class Activity_manhinhguimadangky extends AppCompatActivity {
             }
         });
     }
+    @Override
+    public void onBackPressed() {
+        // Không làm gì để ngăn quay lại màn hình trước
+    }
 }

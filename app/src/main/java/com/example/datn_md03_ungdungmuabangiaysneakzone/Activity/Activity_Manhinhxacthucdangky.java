@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -65,7 +66,14 @@ public class Activity_Manhinhxacthucdangky extends AppCompatActivity {
         setupEditTextFocusHandling();
 
         // Xử lý nút quay lại
-        btnBack.setOnClickListener(v -> onBackPressed());
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Activity_Manhinhxacthucdangky.this, DangKy.class);
+                startActivity(intent);
+                finish();
+            }
+        });
 
         // Xử lý nút xác nhận
         btnConfirm.setOnClickListener(v -> {
@@ -169,5 +177,9 @@ public class Activity_Manhinhxacthucdangky extends AppCompatActivity {
                 Toast.makeText(Activity_Manhinhxacthucdangky.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    @Override
+    public void onBackPressed() {
+        // Không làm gì để ngăn quay lại màn hình trước
     }
 }

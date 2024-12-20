@@ -191,4 +191,8 @@ public class Activity_Profile extends AppCompatActivity {
         // Đặt tab "Hồ sơ" được chọn mặc định
         bottomNavigationView.setSelectedItemId(R.id.hoso);
     }
+    @Override
+    public void onBackPressed() {
+        // Không làm gì để ngăn quay lại màn hình trước
+    }
 }
