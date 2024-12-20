@@ -370,7 +370,7 @@ router.post('/add-order-directly/:userId', async (req, res) => {
 
 router.put('/update-order-status/:id', async (req, res) => {
     const { id } = req.params; // Lấy id từ URL
-    const { TrangThai } = req.body; // Lấy trạng thái mới từ request body
+    const { TrangThai, Tentaikhoan } = req.body; // Lấy trạng thái mới và tên tài khoản từ request body
 
     try {
         // Kiểm tra trạng thái hợp lệ
@@ -435,6 +435,14 @@ router.put('/update-order-status/:id', async (req, res) => {
                 statusMessage = `Trạng thái đơn hàng ${id} đã được cập nhật.`;
         }
 
+        // Tạo thông báo
+        const notification = new Notification({
+            tentaikhoan: Tentaikhoan, // Tên tài khoản nhận thông báo
+            title: 'Cập nhật trạng thái đơn hàng',
+            message: `Đơn hàng của bạn đã được cập nhật trạng thái: ${TrangThai}`,
+        });
+        await notification.save();
+
         // Trả về kết quả thành công với thông báo
         res.status(200).json({
             status: 200,
@@ -449,6 +457,7 @@ router.put('/update-order-status/:id', async (req, res) => {
         });
     }
 });
+
 
 
 router.get('/get-order-by-id/:id', async (req, res) => {
