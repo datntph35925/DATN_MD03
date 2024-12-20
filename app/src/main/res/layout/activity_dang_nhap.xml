@@ -28,25 +28,7 @@
         android:padding="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3"
->
-
-<!--        <TextView-->
-<!--            -->
-<!--            android:id="@+id/textView3"-->
-<!--            android:layout_width="450dp"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text=" Xin chào, Vui lòng đăng nhập"-->
-<!--            android:layout_marginStart="16dp"-->
-<!--            android:layout_marginTop="16dp"-->
-<!--            android:textSize="25sp"-->
-<!--            android:textStyle="bold"-->
-<!--            android:textColor="#333333"-->
-<!--            android:fontFamily="sans-serif-medium"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent"-->
-<!--            -->
-<!--            />-->
+        app:layout_constraintTop_toBottomOf="@+id/imageView3">
 
         <TextView
             android:id="@+id/textMail"
@@ -68,9 +50,7 @@
             android:inputType="textEmailAddress"
             android:padding="12dp"
             android:textColor="#707070"
-            android:textSize="16sp"
-
-            />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/textPassword"
@@ -82,18 +62,34 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/editTextPassword"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="10dp"
-            android:background="@drawable/edittext_background"
-            android:ems="10"
-            android:hint="Nhập mật khẩu của bạn"
-            android:inputType="textPassword"
-            android:padding="12dp"
-            android:textColor="#000000"
-            android:textSize="16sp" />
+            android:background="@drawable/edittext_background">
+
+            <EditText
+                android:id="@+id/editTextPassword"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toStartOf="@+id/imgTogglePasswordd"
+                android:hint="Nhập mật khẩu của bạn"
+                android:inputType="textPassword"
+                android:padding="12dp"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                android:background="@null"/>
+
+            <ImageView
+                android:id="@+id/imgTogglePasswordd"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:padding="4dp"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/baseline_visibility_off_24" />
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/textviewQMK"

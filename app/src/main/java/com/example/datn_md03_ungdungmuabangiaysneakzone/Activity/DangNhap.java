@@ -4,12 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Patterns;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,8 +33,10 @@ public class DangNhap extends AppCompatActivity {
     private EditText editTextEmail, editTextPassword;
     private AppCompatButton btnDangKy, btnDangNhap;
     private TextView textviewQMK;
+    private ImageView imgTogglePassword;
     private ApiService apiService;
     private SharedPreferences sharedPreferences;
+    private boolean isPasswordVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,14 +61,18 @@ public class DangNhap extends AppCompatActivity {
         btnDangKy = findViewById(R.id.btnDangKy);
         btnDangNhap = findViewById(R.id.btnDangNhap);
         textviewQMK = findViewById(R.id.textviewQMK);
+        imgTogglePassword = findViewById(R.id.imgTogglePasswordd); // Biểu tượng mắt
         apiService = RetrofitClient.getClient().create(ApiService.class);
     }
 
     private void setupListeners() {
+        // Chuyển tới màn hình đăng ký
         btnDangKy.setOnClickListener(view -> startActivity(new Intent(DangNhap.this, DangKy.class)));
 
+        // Chuyển tới màn hình quên mật khẩu
         textviewQMK.setOnClickListener(view -> startActivity(new Intent(DangNhap.this, Activity_QuenMatKhau.class)));
 
+        // Xử lý đăng nhập
         btnDangNhap.setOnClickListener(view -> {
             String email = editTextEmail.getText().toString().trim();
             String password = editTextPassword.getText().toString().trim();
@@ -78,6 +86,9 @@ public class DangNhap extends AppCompatActivity {
 
             performLogin(account);
         });
+
+        // Xử lý ẩn/hiện mật khẩu
+        imgTogglePassword.setOnClickListener(view -> togglePasswordVisibility());
     }
 
     private void setupUI(View view) {
@@ -157,9 +168,18 @@ public class DangNhap extends AppCompatActivity {
         finish();
     }
 
-    @Override
-    public void onBackPressed() {
-        // Ngăn không cho quay lại màn hình trước
+    private void togglePasswordVisibility() {
+        if (isPasswordVisible) {
+            // Đặt mật khẩu bị ẩn
+            editTextPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            imgTogglePassword.setImageResource(R.drawable.baseline_visibility_off_24); // Đổi icon thành "mắt đóng"
+        } else {
+            // Đặt mật khẩu hiển thị
+            editTextPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            imgTogglePassword.setImageResource(R.drawable.baseline_visibility_24); // Đổi icon thành "mắt mở"
+        }
+        isPasswordVisible = !isPasswordVisible;
+        editTextPassword.setSelection(editTextPassword.getText().length()); // Đặt con trỏ ở cuối
     }
 
     private void hideKeyboard() {
@@ -169,5 +189,10 @@ public class DangNhap extends AppCompatActivity {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             view.clearFocus(); // Xóa tiêu điểm khỏi EditText
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Ngăn không cho quay lại màn hình trước
     }
 }
