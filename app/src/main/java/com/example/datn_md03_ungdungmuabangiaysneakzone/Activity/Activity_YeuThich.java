@@ -49,20 +49,23 @@ public class Activity_YeuThich extends AppCompatActivity {
         setBottomNavigationView();
 
         rcvYT = findViewById(R.id.rcvYeuThich_YT);
-        rcvYT.setLayoutManager(new GridLayoutManager(this, 2));
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
+        rcvYT.setLayoutManager(layoutManager);
+
+        // Thêm GridSpacingItemDecoration để tạo khoảng cách
+        int spacingInDp = 16; // khoảng cách giữa các mục (dp)
+        rcvYT.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(spacingInDp), true));
+
         favoriteArrayList = new ArrayList<>();
-
-        Log.d("CartAdapter", "Current Quantity: " + favoriteArrayList);
-
         apiService = RetrofitClient.getClient().create(ApiService.class);
 
         SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-        email = sharedPreferences.getString("Tentaikhoan", ""); // Retrieve the email
+        email = sharedPreferences.getString("Tentaikhoan", ""); // Lấy email
 
         fetchFavoriteRunnable = new Runnable() {
             @Override
             public void run() {
-                getListFavorite(); // Gọi API để tải tin nhắn
+                getListFavorite(); // Gọi API để tải danh sách yêu thích
                 handler.postDelayed(this, 1000); // Lặp lại sau mỗi giây
             }
         };
@@ -71,28 +74,24 @@ public class Activity_YeuThich extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        handler.post(fetchFavoriteRunnable); // Bắt đầu tải tin nhắn định kỳ
+        handler.post(fetchFavoriteRunnable); // Bắt đầu tải dữ liệu định kỳ
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        handler.removeCallbacks(fetchFavoriteRunnable); // Dừng tải tin nhắn khi Activity dừng
+        handler.removeCallbacks(fetchFavoriteRunnable); // Dừng khi Activity bị dừng
     }
-
-//    favoriteArrayList = response.body().getData();
-//    favoriteAdapter = new FavoriteAdapter(Activity_YeuThich.this, favoriteArrayList);
-//                    rcvYT.setAdapter(favoriteAdapter);
 
     private void getListFavorite() {
         Call<Response<ArrayList<Favorite>>> call = apiService.getFavorites(email);
         call.enqueue(new Callback<Response<ArrayList<Favorite>>>() {
             @Override
             public void onResponse(Call<Response<ArrayList<Favorite>>> call, retrofit2.Response<Response<ArrayList<Favorite>>> response) {
-                if(response.isSuccessful() && response.body() != null){
-                  favoriteArrayList = response.body().getData();
-                  favoriteAdapter = new FavoriteAdapter(Activity_YeuThich.this, favoriteArrayList);
-                  rcvYT.setAdapter(favoriteAdapter);
+                if (response.isSuccessful() && response.body() != null) {
+                    favoriteArrayList = response.body().getData();
+                    favoriteAdapter = new FavoriteAdapter(Activity_YeuThich.this, favoriteArrayList);
+                    rcvYT.setAdapter(favoriteAdapter);
                 } else {
                     Toast.makeText(Activity_YeuThich.this, "Lỗi khi lấy danh sách sản phẩm yêu thích", Toast.LENGTH_SHORT).show();
                 }
@@ -100,17 +99,16 @@ public class Activity_YeuThich extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Response<ArrayList<Favorite>>> call, Throwable t) {
-                Toast.makeText(Activity_YeuThich.this, "looi", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Activity_YeuThich.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
     public void setBottomNavigationView() {
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                if(item.getItemId() == R.id.trangchu){
+                if (item.getItemId() == R.id.trangchu) {
                     startActivity(new Intent(Activity_YeuThich.this, MainActivity.class));
                 } else if (item.getItemId() == R.id.giohang) {
                     startActivity(new Intent(Activity_YeuThich.this, Activity_Cart.class));
@@ -121,5 +119,14 @@ public class Activity_YeuThich extends AppCompatActivity {
             }
         });
         bottomNavigationView.setSelectedItemId(R.id.yeuthich);
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Không làm gì để ngăn quay lại màn hình trước
+    }
+
+    private int dpToPx(int dp) {
+        return Math.round(dp * getResources().getDisplayMetrics().density);
     }
 }

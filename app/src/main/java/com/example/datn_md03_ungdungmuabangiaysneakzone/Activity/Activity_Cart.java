@@ -234,4 +234,8 @@
                 startActivity(intent);
             }
         }
+    @Override
+    public void onBackPressed() {
+        // Không làm gì để ngăn quay lại màn hình trước
+    }
     }

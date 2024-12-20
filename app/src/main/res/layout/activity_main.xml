@@ -197,11 +197,15 @@
                 android:id="@+id/SanPhamPhoBienView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="-6dp"
-                android:layout_marginEnd="-18dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:clipToPadding="false"
+
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="2"
-                android:layout_marginBottom="16dp" />
+                tools:listitem="@layout/item_product_card" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
