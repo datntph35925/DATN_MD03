@@ -75,11 +75,19 @@ public class Activity_ShowList_Voucher extends AppCompatActivity {
                     }
                     // Lọc danh sách voucher: loại bỏ những voucher đã sử dụng bởi currentUserId
                     voucherList = new ArrayList<>();
+                    java.util.Date currentDate = new java.util.Date(); // Ngày hiện tại
                     for (Voucher voucher : allVouchers) {
                         List<String> usedByList = voucher.getUsedBy();
                         String trangThai = voucher.getTrangThai();
                         Log.d("VoucherFilter", "usedByList: " + usedByList + ", CurrentUser: " + currentUserId);
 
+                        boolean isBeforeStartDate = voucher.getNgayBatDau() != null && voucher.getNgayBatDau().after(currentDate);
+                        boolean isExpired = voucher.getNgayKetThuc() != null && voucher.getNgayKetThuc().before(currentDate);
+
+                        if (isBeforeStartDate || isExpired) {
+                            Log.d("VoucherFilter", "Voucher không hợp lệ: " + voucher.getMaVoucher());
+                            continue;
+                        }
                         // So sánh có xử lý khoảng trắng và không phân biệt hoa thường
                         if (usedByList == null || usedByList.isEmpty() ||
                                 !containsIgnoreCase(usedByList, currentUserId.trim().toLowerCase()) && !"Không thể sử dụng".equalsIgnoreCase(trangThai)) {
