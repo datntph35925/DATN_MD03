@@ -126,6 +126,7 @@ const Products = () => {
     }
 
     setEditingProduct(null);
+    setIsAddModalVisible(false);
   };
 
   // Handle product deletion

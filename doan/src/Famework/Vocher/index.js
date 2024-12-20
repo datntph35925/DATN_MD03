@@ -72,7 +72,9 @@ function VoucherList() {
       console.error("Error processing voucher:", error);
       message.error("Có lỗi xảy ra. Vui lòng thử lại sau.");
     } finally {
+
       setIsModalVisible(false);
+      setEditingVoucher(null);
     }
   };
 
@@ -167,7 +169,7 @@ function VoucherList() {
       <Table
         dataSource={vouchers}
         columns={columns}
-        pagination={{ pageSize: 5 }}
+        pagination={{ pageSize: 10 }}
       />
       <AddVoucherModal
         isVisible={isModalVisible}

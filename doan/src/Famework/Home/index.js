@@ -29,6 +29,13 @@ const Dashboard = () => {
 
   const navigate = useNavigate();
 
+  // Hàm định dạng doanh thu
+  const formatRevenue = (value) => {
+    if (value >= 1e9) return `${(value / 1e9).toFixed(1)} B`; // Định dạng thành tỷ
+    if (value >= 1e6) return `${(value / 1e6).toFixed(1)} M`; // Định dạng thành triệu
+    return value.toLocaleString(); // Định dạng số bình thường
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -66,7 +73,10 @@ const Dashboard = () => {
 
   const data = [
     {
-      count: totalOrdersRevenue !== null ? totalOrdersRevenue : "Đang tải...",
+      count:
+          totalOrdersRevenue !== null
+              ? formatRevenue(totalOrdersRevenue)
+              : "Đang tải...",
       label: "Doanh thu",
       icon: <BarChartOutlined />,
     },

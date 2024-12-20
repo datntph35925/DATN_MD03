@@ -56,6 +56,8 @@ function AddVoucherModal({ isVisible, onOk, onCancel, voucher }) {
       message.error(
         `Lỗi: ${error.message || "Không thể xử lý yêu cầu. Vui lòng thử lại!"}`
       );
+    } finally {
+      onCancel(); // Đóng modal trong mọi trường hợp
     }
   };
 
