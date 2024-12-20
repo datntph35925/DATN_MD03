@@ -273,4 +273,8 @@ public class ThongbaodsActivity extends AppCompatActivity {
             handler.removeCallbacks(refreshRunnable);
         }
     }
+    @Override
+    public void onBackPressed() {
+        // Ngăn không cho quay lại màn hình trước
+    }
 }
